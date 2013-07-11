@@ -1,0 +1,5 @@
+arte_pcms_bizlogic:
+    resource: "@ArtePCMSBizlogicBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
