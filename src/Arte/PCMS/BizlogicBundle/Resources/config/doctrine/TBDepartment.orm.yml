@@ -1,0 +1,43 @@
+Arte\PCMS\BizlogicBundle\Entity\TBDepartment:
+    type: entity
+    indexes: {  }
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        Name:
+            type: string
+            length: 255
+            nullable: false
+        SortNo:
+            type: integer
+            nullable: false
+        DeleteFlug:
+            type: boolean
+            nullable: true
+        CreatedUserId:
+            type: integer
+            nullable: true
+        CreatedDatetime:
+            type: datetime
+            nullable: true
+        UpdatedUserId:
+            type: integer
+            nullable: true
+        UpdatedDatetime:
+            type: datetime
+            nullable: true
+    oneToMany:
+        tbsystemusers:
+            targetEntity: TBSystemUser
+            mappedBy: tbdepartment
+    manyToOne:
+        tbsystemuser:
+            targetEntity: TBSystemUser
+            inversedBy: tbdepartments
+            joinColumns:
+                CreatedUserId:
+                    referencedColumnName: id
+    manyToMany: {  }

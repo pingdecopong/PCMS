@@ -20,6 +20,7 @@ class AppKernel extends Kernel
             new pingdecopong\FormFreezeBundle\pingdecopongFormFreezeBundle(),//FormFreeze
             new pingdecopong\PagerBundle\pingdecopongPagerBundle(),//Pager
             new Arte\PCMS\BizlogicBundle\ArtePCMSBizlogicBundle(),
+            new Arte\PCMS\AdminBundle\ArtePCMSAdminBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

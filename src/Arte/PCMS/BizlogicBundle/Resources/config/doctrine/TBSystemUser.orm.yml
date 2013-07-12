@@ -1,0 +1,85 @@
+Arte\PCMS\BizlogicBundle\Entity\TBSystemUser:
+    type: entity
+    indexes: {  }
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        LoginId:
+            type: string
+            length: 40
+            nullable: false
+        Salt:
+            type: string
+            length: 40
+            nullable: false
+        Password:
+            type: string
+            length: 40
+            nullable: false
+        Active:
+            type: boolean
+            nullable: false
+        SystemRoleId:
+            type: integer
+            nullable: true
+        DisplayName:
+            type: string
+            length: 50
+            nullable: false
+        DisplayNameKana:
+            type: string
+            length: 50
+            nullable: false
+        NickName:
+            type: string
+            length: 50
+            nullable: false
+        MailAddress:
+            type: string
+            length: 100
+            nullable: false
+        DepartmentId:
+            type: integer
+            nullable: true
+        LastLoginDatetime:
+            type: datetime
+            nullable: true
+        DeleteFlug:
+            type: boolean
+            nullable: true
+        CreatedUserId:
+            type: integer
+            nullable: true
+        CreatedDatetime:
+            type: datetime
+            nullable: true
+        UpdatedUserId:
+            type: integer
+            nullable: true
+        UpdatedDatetime:
+            type: datetime
+            nullable: true
+    oneToMany:
+        tbsystemusers:
+            targetEntity: TBSystemUser
+            mappedBy: tbsystemuser
+        tbdepartments:
+            targetEntity: TBDepartment
+            mappedBy: tbsystemuser
+    manyToOne:
+        tbdepartment:
+            targetEntity: TBDepartment
+            inversedBy: tbsystemusers
+            joinColumns:
+                DepartmentId:
+                    referencedColumnName: id
+        tbsystemuser:
+            targetEntity: TBSystemUser
+            inversedBy: tbsystemusers
+            joinColumns:
+                CreatedUserId:
+                    referencedColumnName: id
+    manyToMany: {  }

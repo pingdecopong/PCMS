@@ -1,3 +1,8 @@
+arte_pcms_admin:
+    resource: "@ArtePCMSAdminBundle/Controller/"
+    type:     annotation
+    prefix:   /admin
+
 arte_pcms_bizlogic:
     resource: "@ArtePCMSBizlogicBundle/Controller/"
     type:     annotation

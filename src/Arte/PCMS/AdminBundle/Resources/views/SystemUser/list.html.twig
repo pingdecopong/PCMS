@@ -1,0 +1,42 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}ユーザー一覧{% endblock %}
+
+{% block body %}
+    <h1>ユーザー一覧</h1>
+    <form action="{{ path('list') }}" method="post" {{ form_enctype(form) }} novalidate name="list" id="list">
+
+        {{ pdp_pager_hidden_render(pager) }}
+
+        <div class="search_box">
+            {{ form_widget(form.search) }}
+            <input type="submit" value="検索">
+        </div>
+
+        <table>
+            <thead>
+            {{ pdp_pager_column_render(pager) }}
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.ID }}</td>
+                    <td>{{ entity.Active }}</td>
+                    <td>{{ entity.LoginId }}</td>
+                    <td>{{ entity.DisplayName }}</td>
+                    {#<td>{{ entity.DisplayNameKana }}</td>#}
+                    {#<td>{{ entity.NickName }}</td>#}
+                    <td>{{ entity.MailAddress }}</td>
+                    <td>{{ entity.tbdepartment is null ? "" : entity.tbdepartment.Name }}</td>
+                    <td>{{ entity.LastLoginDatetime is empty ? "" : entity.LastLoginDatetime|date('Y年m月d日') }}</td>
+                    {#<td>{{ entity.CreatedDatetime is empty ? "" : entity.CreatedDatetime|date('Y年m月d日') }}</td>#}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ pdp_pager_selector_render(pager) }}
+        {{ pdp_pager_pagesize_render(pager) }}
+
+    </form>
+{% endblock %}
