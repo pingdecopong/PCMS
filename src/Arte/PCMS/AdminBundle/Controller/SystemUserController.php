@@ -198,4 +198,13 @@ class SystemUserController extends Controller
         );
     }
 
+    /**
+     * @Route("/create", name="create")
+     * @Template()
+     */
+    public function createAction(Request $request)
+    {
+        
+    }
+
 }
