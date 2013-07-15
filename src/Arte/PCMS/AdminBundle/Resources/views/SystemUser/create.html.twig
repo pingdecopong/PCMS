@@ -1,0 +1,44 @@
+{% extends "::base.html.twig" %}
+{% form_theme form 'pingdecopongFormFreezeBundle:Form:form_layout.html.twig' %}
+
+{% block title %}ユーザー登録{% endblock %}
+
+{% block body %}
+    <h1>ユーザー登録</h1>
+    <form action="{{ path('create') }}" method="post" {{ form_enctype(form) }} novalidate name="systemuser_create" id="systemuser_create">
+        {{ form_widget(form) }}
+        <p>
+            {% if mode == "input" %}
+                <a href="{{ path('list') }}?{{ returnUrlParam|raw }}">&lt;&lt;戻る</a>
+                <button onclick="postConfirm()">確認</button>
+            {% elseif mode == "confirm" %}
+                <button onclick="postReturn()">戻る</button>
+                <button onclick="postSubmit()">登録</button>
+            {% endif %}
+        </p>
+    </form>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+        //<![CDATA[
+        function postReturn(){
+            document.systemuser_create.{{ form.buttonAction.vars.id }}.value = "";
+            document.systemuser_create.submit();
+        }
+        function postConfirm(){
+            document.systemuser_create.{{ form.buttonAction.vars.id }}.value = "confirm";
+            document.systemuser_create.submit();
+        }
+        function postSubmit(){
+            document.systemuser_create.{{ form.buttonAction.vars.id }}.value = "submit";
+            document.systemuser_create.submit();
+        }
+        function postBack(){
+            document.systemuser_create.action = "{{ path('create') }}";
+            document.systemuser_create.{{ form.buttonAction.vars.id }}.value = "";
+            document.systemuser_create.submit();
+        }
+        //]]>
+    </script>
+{% endblock %}

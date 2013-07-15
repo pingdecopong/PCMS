@@ -3,6 +3,10 @@
 namespace Arte\PCMS\AdminBundle\Controller;
 
 use Arte\PCMS\AdminBundle\Form\SystemUser\ListSearchFormType;
+use Arte\PCMS\AdminBundle\Form\SystemUser\SystemUserFormModel;
+use Arte\PCMS\AdminBundle\Form\SystemUser\SystemUserFormType;
+use Arte\PCMS\BizlogicBundle\Entity\TBSystemUser;
+use Arte\PCMS\BizlogicBundle\Lib\SystemUserManager;
 use pingdecopong\PagerBundle\Pager\Pager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -191,20 +195,345 @@ class SystemUserController extends Controller
         //クエリー実行
         $entities = $queryBuilder->getQuery()->getResult();
 
+        //returnURL生成
+        $returnUrlQueryDataArray = $pager->getAllFormQueryStrings();
+        $returnUrlQueryString = urlencode(http_build_query($returnUrlQueryDataArray));
+
         return array(
             'form' => $formView,
             'pager' => $pager->createView(),
             'entities' => $entities,
+            'returnUrlParam' => $returnUrlQueryString,
         );
     }
 
     /**
+     * 詳細
+     * @Route("/read/{id}", name="read")
+     * @Method({"GET"})
+     * @Template()
+     */
+    public function readAction($id)
+    {
+        $request = $this->getRequest();
+        $formModel = new SystemUserFormModel();
+        $formType = new SystemUserFormType();
+
+        $em = $this->getDoctrine()->getManager();
+        $systemUserManager = new SystemUserManager($em);
+        $tbSystemUser = null;
+        try{
+
+            $tbSystemUser = $systemUserManager->getTbSystemUser($id);
+
+            //初期値設定
+            $formModel->setId($tbSystemUser->getId());
+            $formModel->setLoginId($tbSystemUser->getLoginId());
+            $formModel->setDisplayName($tbSystemUser->getDisplayName());
+            $formModel->setDisplayNameKana($tbSystemUser->getDisplayNameKana());
+            $formModel->setNickName($tbSystemUser->getNickName());
+            $formModel->setDepartment($tbSystemUser->getTbdepartment());
+            $formModel->setMailAddress($tbSystemUser->getMailAddress());
+            $formModel->setSystemRoleId($tbSystemUser->getSystemRoleId());
+
+        }catch (\Exception $e){
+
+            throw $e;
+//            return $this->redirect($this->generateUrl('read_error'));
+
+        }
+
+        /* @var $builder \Symfony\Component\Form\FormBuilderInterface */
+        $builder = $this->get('form.factory')->createBuilder($formType, $formModel, array('freeze' => true));
+        $form = $builder->getForm();
+
+        //returnUrlデコード
+        $returnUrlQueryString = urldecode($request->get('ret'));
+
+        return array(
+            'entity' => $formModel,
+            'form' => $form->createView(),
+            'returnUrlParam' => $returnUrlQueryString,
+        );
+    }
+
+    /**
+     * 新規作成
      * @Route("/create", name="create")
+     * @Method({"GET", "POST"})
      * @Template()
      */
     public function createAction(Request $request)
     {
-        
+        $formModel = new SystemUserFormModel();
+        $formType = new SystemUserFormType();
+
+        /* @var $builder \Symfony\Component\Form\FormBuilderInterface */
+        $builder = $this->get('form.factory')->createBuilder($formType, $formModel);
+        $form = $builder->getForm();
+
+        if($request->isMethod('POST'))
+        {
+            $form->bind($request);
+
+            //ボタン押下
+            $buttonAction = $formModel->getButtonAction();
+            if($buttonAction == "confirm" || $buttonAction == "submit")
+            {
+                if($form->isValid())
+                {
+                    if($buttonAction == "confirm")
+                    {
+                        //確認画面
+                        $builder->setAttribute('freeze', true);
+                        $confirmForm = $builder->getForm();
+
+                        return array(
+                            'mode' => "confirm",
+                            'entity' => $formModel,
+                            'form' => $confirmForm->createView(),
+                        );
+
+                    }else if($buttonAction == "submit")
+                    {
+                        //登録実行
+                        $em = $this->getDoctrine()->getManager();
+                        $tbSystemUser = new TBSystemUser();
+
+                        $tbSystemUser->setLoginId($formModel->getLoginId());
+                        $tbSystemUser->setDisplayName($formModel->getDisplayName());
+                        $tbSystemUser->setDisplayNameKana($formModel->getDisplayNameKana());
+                        $tbSystemUser->setNickName($formModel->getNickName());
+                        $tbSystemUser->setTbdepartment($formModel->getDepartment());
+                        $tbSystemUser->setMailAddress($formModel->getMailAddress());
+                        $tbSystemUser->setSystemRoleId($formModel->getSystemRoleId());
+
+                        try{
+
+                            $systemUserManager = new SystemUserManager($em);
+                            $systemUserManager->createSystemUser($tbSystemUser);
+
+                        }catch (\Exception $e){
+
+                            return $this->redirect($this->generateUrl('create_error'));
+
+                        }
+
+                        return $this->redirect($this->generateUrl('create'));
+                    }
+                }
+            }else
+            {
+                //ドロップダウンなどのポストバック
+                $builder->setAttribute('novalidation', true);
+                $form = $builder->getForm();
+            }
+
+        }
+
+        //returnUrlデコード
+        $returnUrlQueryString = urldecode($request->get('ret'));
+
+        return array(
+            'mode' => "input",
+            'validate' => false,
+            'entity' => $formModel,
+            'form' => $form->createView(),
+            'returnUrlParam' => $returnUrlQueryString,
+        );
     }
 
+    /**
+     * 編集
+     * @Route("/update/{id}", name="update")
+     * @Method({"GET", "POST"})
+     * @Template()
+     */
+    public function updateAction($id)
+    {
+        $request = $this->getRequest();
+        $formModel = new SystemUserFormModel();
+        $formType = new SystemUserFormType();
+
+        $em = $this->getDoctrine()->getManager();
+        $systemUserManager = new SystemUserManager($em);
+        $tbSystemUser = null;
+        try{
+
+            $tbSystemUser = $systemUserManager->getTbSystemUser($id);
+
+            //初期値設定
+            $formModel->setId($tbSystemUser->getId());
+            $formModel->setLoginId($tbSystemUser->getLoginId());
+            $formModel->setDisplayName($tbSystemUser->getDisplayName());
+            $formModel->setDisplayNameKana($tbSystemUser->getDisplayNameKana());
+            $formModel->setNickName($tbSystemUser->getNickName());
+            $formModel->setDepartment($tbSystemUser->getTbdepartment());
+            $formModel->setMailAddress($tbSystemUser->getMailAddress());
+            $formModel->setSystemRoleId($tbSystemUser->getSystemRoleId());
+
+        }catch (\Exception $e){
+
+//            return $this->redirect($this->generateUrl('read_error'));
+
+        }
+
+        /* @var $builder \Symfony\Component\Form\FormBuilderInterface */
+        $builder = $this->get('form.factory')->createBuilder($formType, $formModel);
+        $form = $builder->getForm();
+
+        if($request->isMethod('POST'))
+        {
+            $form->bind($request);
+
+            //ボタン押下
+            $buttonAction = $formModel->getButtonAction();
+            if($buttonAction == "confirm" || $buttonAction == "submit")
+            {
+                if($form->isValid())
+                {
+                    if($buttonAction == "confirm")
+                    {
+                        //確認画面
+                        $builder->setAttribute('freeze', true);
+                        $confirmForm = $builder->getForm();
+
+                        return array(
+                            'mode' => "confirm",
+                            'entity' => $formModel,
+                            'form' => $confirmForm->createView(),
+                        );
+
+                    }else if($buttonAction == "submit")
+                    {
+                        //登録実行
+                        $tbSystemUser->setLoginId($formModel->getLoginId());
+                        $tbSystemUser->setDisplayName($formModel->getDisplayName());
+                        $tbSystemUser->setDisplayNameKana($formModel->getDisplayNameKana());
+                        $tbSystemUser->setNickName($formModel->getNickName());
+                        $tbSystemUser->setTbdepartment($formModel->getDepartment());
+                        $tbSystemUser->setMailAddress($formModel->getMailAddress());
+                        $tbSystemUser->setSystemRoleId($formModel->getSystemRoleId());
+
+                        try{
+
+                            $systemUserManager = new SystemUserManager($em);
+                            $systemUserManager->updateSystemUser($tbSystemUser);
+
+                        }catch (\Exception $e){
+
+                            return $this->redirect($this->generateUrl('create_error'));
+
+                        }
+
+                        return $this->redirect($this->generateUrl('read', array('id' => $id)));
+                    }
+                }
+            }else
+            {
+                //ドロップダウンなどのポストバック
+                $builder->setAttribute('novalidation', true);
+                $form = $builder->getForm();
+            }
+
+        }
+
+        //returnUrlデコード
+        $returnUrlQueryString = urldecode($request->get('ret'));
+
+        return array(
+            'mode' => "input",
+            'validate' => false,
+            'entity' => $formModel,
+            'form' => $form->createView(),
+            'returnUrlParam' => $returnUrlQueryString,
+        );
+    }
+
+    /**
+     * 削除
+     * @Route("/delete/{id}", name="delete")
+     * @Method({"GET", "POST"})
+     * @Template()
+     */
+    public function deleteAction($id)
+    {
+        $request = $this->getRequest();
+        $formModel = new SystemUserFormModel();
+        $formType = new SystemUserFormType();
+
+        $em = $this->getDoctrine()->getManager();
+        $systemUserManager = new SystemUserManager($em);
+        $tbSystemUser = null;
+        try{
+
+            $tbSystemUser = $systemUserManager->getTbSystemUser($id);
+
+            //初期値設定
+            $formModel->setLoginId($tbSystemUser->getLoginId());
+            $formModel->setDisplayName($tbSystemUser->getDisplayName());
+            $formModel->setDisplayNameKana($tbSystemUser->getDisplayNameKana());
+            $formModel->setNickName($tbSystemUser->getNickName());
+            $formModel->setDepartment($tbSystemUser->getTbdepartment());
+            $formModel->setMailAddress($tbSystemUser->getMailAddress());
+            $formModel->setSystemRoleId($tbSystemUser->getSystemRoleId());
+
+        }catch (\Exception $e){
+
+//            return $this->redirect($this->generateUrl('read_error'));
+
+        }
+
+        /* @var $builder \Symfony\Component\Form\FormBuilderInterface */
+        $builder = $this->get('form.factory')->createBuilder($formType, $formModel, array('freeze' => true));
+        $form = $builder->getForm();
+
+        if($request->isMethod('POST'))
+        {
+            $form->bind($request);
+
+            //ボタン押下
+            $buttonAction = $formModel->getButtonAction();
+            if($buttonAction == "submit")
+            {
+                if($form->isValid())
+                {
+                    if($buttonAction == "submit")
+                    {
+                        //削除実行
+                        try{
+
+                            $systemUserManager = new SystemUserManager($em);
+                            $systemUserManager->deleteSystemUser($tbSystemUser);
+
+                        }catch (\Exception $e){
+
+                            return $this->redirect($this->generateUrl('delete_error'));
+
+                        }
+
+                        return $this->redirect($this->generateUrl('list'));
+                    }
+                }
+            }else
+            {
+                //ドロップダウンなどのポストバック
+                $builder->setAttribute('novalidation', true);
+                $form = $builder->getForm();
+            }
+
+        }
+
+        //returnUrlデコード
+        $returnUrlQueryString = urldecode($request->get('ret'));
+
+        return array(
+            'mode' => "input",
+            'validate' => false,
+            'entity' => $formModel,
+            'form' => $form->createView(),
+            'returnUrlParam' => $returnUrlQueryString,
+        );
+
+    }
 }

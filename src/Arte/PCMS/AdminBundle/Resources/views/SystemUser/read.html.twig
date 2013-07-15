@@ -1,0 +1,24 @@
+{% extends "::base.html.twig" %}
+{% form_theme form 'pingdecopongFormFreezeBundle:Form:form_layout.html.twig' %}
+
+{% block title %}ユーザー詳細{% endblock %}
+
+{% block body %}
+
+    <h1>ユーザー詳細</h1>
+    {{ form_widget(form) }}
+
+    <p>
+        <a href="{{ path('list') }}?{{ returnUrlParam|raw }}">一覧へ戻る</a>
+        <a href="{{ path('update', {id: entity.ID}) }}">編集</a>
+        <a href="{{ path('delete', {id: entity.ID}) }}">削除</a>
+    </p>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+        //<![CDATA[
+        //]]>
+    </script>
+{% endblock %}

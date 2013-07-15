@@ -1,0 +1,28 @@
+{% extends "::base.html.twig" %}
+{% form_theme form 'pingdecopongFormFreezeBundle:Form:form_layout.html.twig' %}
+
+{% block title %}ユーザー削除{% endblock %}
+
+{% block body %}
+
+    <h1>ユーザー削除</h1>
+    <form action="" method="post" {{ form_enctype(form) }} novalidate name="systemuser_delete" id="systemuser_delete">
+        {{ form_widget(form) }}
+        <p>
+            <a href="{{ path('list') }}?{{ returnUrlParam|raw }}">一覧へ戻る</a>
+            <button onclick="postSubmit()">削除</button>
+        </p>
+    </form>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+        //<![CDATA[
+        function postSubmit(){
+            document.systemuser_delete.{{ form.buttonAction.vars.id }}.value = "submit";
+            document.systemuser_delete.submit();
+        }
+        //]]>
+    </script>
+{% endblock %}

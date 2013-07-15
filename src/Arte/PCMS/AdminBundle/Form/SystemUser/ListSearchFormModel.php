@@ -15,77 +15,29 @@ class ListSearchFormModel {
      *      max = "10"
      * )
      */
-    private $LoginId;
+    private $loginId;
 
     /**
      * @var string
      */
-    private $DisplayName;
+    private $displayName;
 
     /**
      * @var string
      */
-    private $MailAddress;
+    private $mailAddress;
 
     /**
      * @var
      */
-    private $Department;
+    private $department;
 
     /**
-     * @param string $DisplayName
+     * @param mixed $department
      */
-    public function setDisplayName($DisplayName)
+    public function setDepartment($department)
     {
-        $this->DisplayName = $DisplayName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDisplayName()
-    {
-        return $this->DisplayName;
-    }
-
-    /**
-     * @param string $LoginId
-     */
-    public function setLoginId($LoginId)
-    {
-        $this->LoginId = $LoginId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLoginId()
-    {
-        return $this->LoginId;
-    }
-
-    /**
-     * @param string $MailAddress
-     */
-    public function setMailAddress($MailAddress)
-    {
-        $this->MailAddress = $MailAddress;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMailAddress()
-    {
-        return $this->MailAddress;
-    }
-
-    /**
-     * @param mixed $Department
-     */
-    public function setDepartment($Department)
-    {
-        $this->Department = $Department;
+        $this->department = $department;
     }
 
     /**
@@ -93,7 +45,55 @@ class ListSearchFormModel {
      */
     public function getDepartment()
     {
-        return $this->Department;
+        return $this->department;
+    }
+
+    /**
+     * @param string $displayName
+     */
+    public function setDisplayName($displayName)
+    {
+        $this->displayName = $displayName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDisplayName()
+    {
+        return $this->displayName;
+    }
+
+    /**
+     * @param string $loginId
+     */
+    public function setLoginId($loginId)
+    {
+        $this->loginId = $loginId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLoginId()
+    {
+        return $this->loginId;
+    }
+
+    /**
+     * @param string $mailAddress
+     */
+    public function setMailAddress($mailAddress)
+    {
+        $this->mailAddress = $mailAddress;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMailAddress()
+    {
+        return $this->mailAddress;
     }
 
 }

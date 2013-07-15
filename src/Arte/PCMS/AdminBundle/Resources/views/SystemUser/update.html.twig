@@ -1,0 +1,44 @@
+{% extends "::base.html.twig" %}
+{% form_theme form 'pingdecopongFormFreezeBundle:Form:form_layout.html.twig' %}
+
+{% block title %}ユーザー編集{% endblock %}
+
+{% block body %}
+    <h1>ユーザー編集</h1>
+    <form action="" method="post" {{ form_enctype(form) }} novalidate name="systemuser_update" id="systemuser_update">
+        {{ form_widget(form) }}
+        <p>
+            {% if mode == "input" %}
+                <a href="{{ path('list') }}?{{ returnUrlParam|raw }}">&lt;&lt;一覧へ戻る</a>
+                <button onclick="postConfirm()">確認</button>
+            {% elseif mode == "confirm" %}
+                <button onclick="postReturn()">戻る</button>
+                <button onclick="postSubmit()">登録</button>
+            {% endif %}
+        </p>
+    </form>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+        //<![CDATA[
+        function postReturn(){
+            document.systemuser_update.{{ form.buttonAction.vars.id }}.value = "";
+            document.systemuser_update.submit();
+        }
+        function postConfirm(){
+            document.systemuser_update.{{ form.buttonAction.vars.id }}.value = "confirm";
+            document.systemuser_update.submit();
+        }
+        function postSubmit(){
+            document.systemuser_update.{{ form.buttonAction.vars.id }}.value = "submit";
+            document.systemuser_update.submit();
+        }
+        function postBack(){
+
+            document.systemuser_update.{{ form.buttonAction.vars.id }}.value = "";
+            document.systemuser_update.submit();
+        }
+        //]]>
+    </script>
+{% endblock %}
