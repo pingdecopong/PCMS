@@ -23,6 +23,9 @@
         "pingdecopong/FormFreezeBundle": "0.0.2",
         "pingdecopong/PagerBundle": "0.0.1"
     },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
     "scripts": {
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
