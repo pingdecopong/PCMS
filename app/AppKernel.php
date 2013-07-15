@@ -21,6 +21,7 @@ class AppKernel extends Kernel
             new pingdecopong\PagerBundle\pingdecopongPagerBundle(),//Pager
             new Arte\PCMS\BizlogicBundle\ArtePCMSBizlogicBundle(),
             new Arte\PCMS\AdminBundle\ArtePCMSAdminBundle(),
+            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

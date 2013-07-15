@@ -21,7 +21,9 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "pingdecopong/Ober2doctrineBundle": "0.0.7",
         "pingdecopong/FormFreezeBundle": "0.0.2",
-        "pingdecopong/PagerBundle": "0.0.1"
+        "pingdecopong/PagerBundle": "0.0.1",
+        "doctrine/data-fixtures" : "dev-master",
+        "doctrine/doctrine-fixtures-bundle": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*"
