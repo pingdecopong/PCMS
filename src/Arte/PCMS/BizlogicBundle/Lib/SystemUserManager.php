@@ -19,6 +19,7 @@ class SystemUserManager {
     }
 
     /**
+     * ユーザー取得
      * @param $id
      * @return \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser
      * @throws \Exception
@@ -44,6 +45,13 @@ class SystemUserManager {
         return $tbSystemUser;
     }
 
+    /**
+     * ユーザー新規作成
+     * @param TBSystemUser $systemUser
+     * @return TBSystemUser
+     * @throws \Exception
+     * @TODO CreatedUserIdの実装
+     */
     public function createSystemUser(TBSystemUser $systemUser)
     {
         //ユーザー情報取得
@@ -54,7 +62,7 @@ class SystemUserManager {
             $systemUser->setPassword('bbb');
             $systemUser->setActive(true);
             $systemUser->setDeleteFlug(false);
-            $systemUser->setTbsystemuser($createSystemUser);
+//            $systemUser->setTbsystemuser($createSystemUser);
             $systemUser->setCreatedDatetime(new \DateTime());
 
             $this->em->persist($systemUser);
@@ -67,6 +75,12 @@ class SystemUserManager {
         return $systemUser;
     }
 
+    /**
+     * ユーザー更新
+     * @param TBSystemUser $systemUser
+     * @return TBSystemUser
+     * @throws \Exception
+     */
     public function updateSystemUser(TBSystemUser $systemUser)
     {
         //ユーザー情報取得
@@ -87,6 +101,12 @@ class SystemUserManager {
         return $systemUser;
     }
 
+    /**
+     * ユーザー削除
+     * @param TBSystemUser $systemUser
+     * @return TBSystemUser
+     * @throws \Exception
+     */
     public function deleteSystemUser(TBSystemUser $systemUser)
     {
         //ユーザー情報取得
