@@ -19,6 +19,7 @@ class AppKernel extends Kernel
             new Arte\Ober2doctrineBundle\ArteOber2doctrineBundle(),//Ober2doctrine
             new pingdecopong\FormFreezeBundle\pingdecopongFormFreezeBundle(),//FormFreeze
             new pingdecopong\PagerBundle\pingdecopongPagerBundle(),//Pager
+            new pingdecopong\PDPGeneratorBundle\pingdecopongPDPGeneratorBundle(),//PDPGenerator
             new Arte\PCMS\BizlogicBundle\ArtePCMSBizlogicBundle(),
             new Arte\PCMS\AdminBundle\ArtePCMSAdminBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),

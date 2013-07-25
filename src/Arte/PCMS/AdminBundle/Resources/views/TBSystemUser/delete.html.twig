@@ -1,0 +1,106 @@
+{% extends 'ArtePCMSAdminBundle:TBSystemUser:layout.html.twig' %}
+
+{% block body -%}
+    <header>
+        <h1>TBSystemUser削除</h1>
+    </header>
+
+    <section class="section">
+        <h1 class="caption"><span id="selectFolderName">TBSystemUser詳細</span></h1>
+        <div class="functionListArea">
+            <ul class="functionList clearfix">
+                <li class="home"><a href="{{ path('systemuser') }}?{{ returnUrlParam|raw }}">一覧へもどる</a></li>
+            </ul>
+        </div>
+        <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
+                <tr>
+                    <th scope="row">Id</th>
+                        <td>{{ entity.id }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Loginid</th>
+                        <td>{{ entity.LoginId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Salt</th>
+                        <td>{{ entity.Salt }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Password</th>
+                        <td>{{ entity.Password }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Active</th>
+                        <td>{{ entity.Active }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Systemroleid</th>
+                        <td>{{ entity.SystemRoleId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Displayname</th>
+                        <td>{{ entity.DisplayName }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Displaynamekana</th>
+                        <td>{{ entity.DisplayNameKana }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Nickname</th>
+                        <td>{{ entity.NickName }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Mailaddress</th>
+                        <td>{{ entity.MailAddress }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Departmentid</th>
+                        <td>{{ entity.DepartmentId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Lastlogindatetime</th>
+                        <td>{{ entity.LastLoginDatetime|date('Y-m-d H:i:s') }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Deleteflag</th>
+                        <td>{{ entity.DeleteFlag }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Createduserid</th>
+                        <td>{{ entity.CreatedUserId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Createddatetime</th>
+                        <td>{{ entity.CreatedDatetime|date('Y-m-d H:i:s') }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Updateduserid</th>
+                        <td>{{ entity.UpdatedUserId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Updateddatetime</th>
+                        <td>{{ entity.UpdatedDatetime|date('Y-m-d H:i:s') }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tbdepartmentdepartmentid</th>
+                    <td>{{ entity.TBDepartmentDepartmentId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tbsystemuserupdateduserid</th>
+                    <td>{{ entity.TBSystemUserUpdatedUserId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tbsystemusercreateduserid</th>
+                    <td>{{ entity.TBSystemUserCreatedUserId }}</td>
+                </tr>
+        </table>
+        <form action="{{ path('systemuser_delete', { 'id': entity.id }) }}" novalidate method="post" {{ form_enctype(form) }} name="systemuser_delete_form">
+
+            <div class="submit_box">
+                <input type="submit" value="削除" style="width:100px;"/>
+            </div>
+
+            {{ form_end(form) }}
+    </section>
+
+{% endblock %}
