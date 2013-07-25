@@ -29,12 +29,12 @@ class SystemUserManager {
         try {
             $queryBuilder = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')
                 ->createQueryBuilder('u')
-                ->leftJoin('u.tbdepartment', 'd')
+                ->leftJoin('u.TBDepartmentDepartmentId', 'd')
                 ->select(array('u', 'd'))
                 ->andWhere('u.id = :id')
-                ->andWhere('u.DeleteFlug = :DeleteFlug')
+                ->andWhere('u.DeleteFlag = :DeleteFlag')
                 ->setParameter('id', $id)
-                ->setParameter('DeleteFlug', false)
+                ->setParameter('DeleteFlag', false)
                 ->getQuery();
 
             $tbSystemUser = $queryBuilder->getSingleResult();
@@ -61,7 +61,8 @@ class SystemUserManager {
             $systemUser->setSalt('aaa');
             $systemUser->setPassword('bbb');
             $systemUser->setActive(true);
-            $systemUser->setDeleteFlug(false);
+            $systemUser->setDeleteFlag(false);
+            $systemUser->setTBSystemUserCreatedUserId($createSystemUser);
 //            $systemUser->setTbsystemuser($createSystemUser);
             $systemUser->setCreatedDatetime(new \DateTime());
 
@@ -88,7 +89,8 @@ class SystemUserManager {
 
         try {
 
-            $systemUser->setTbsystemuser($createSystemUser);
+//            $systemUser->setTbsystemuser($createSystemUser);
+            $systemUser->setTBSystemUserCreatedUserId($createSystemUser);
             $systemUser->setUpdatedDatetime(new \DateTime());
 
             $this->em->persist($systemUser);
@@ -114,7 +116,7 @@ class SystemUserManager {
 
         try {
 
-            $systemUser->setDeleteFlug(true);
+            $systemUser->setDeleteFlag(true);
 
             $this->em->persist($systemUser);
             $this->em->flush();

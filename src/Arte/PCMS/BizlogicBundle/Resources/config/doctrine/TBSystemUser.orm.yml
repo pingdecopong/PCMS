@@ -47,7 +47,7 @@ Arte\PCMS\BizlogicBundle\Entity\TBSystemUser:
         LastLoginDatetime:
             type: datetime
             nullable: true
-        DeleteFlug:
+        DeleteFlag:
             type: boolean
             nullable: true
         CreatedUserId:
@@ -63,22 +63,34 @@ Arte\PCMS\BizlogicBundle\Entity\TBSystemUser:
             type: datetime
             nullable: true
     oneToMany:
-        tbsystemusers:
+        TBSystemUsersUpdatedUserId:
             targetEntity: TBSystemUser
-            mappedBy: tbsystemuser
-        tbdepartments:
+            mappedBy: TBSystemUserUpdatedUserId
+        TBSystemUsersCreatedUserId:
+            targetEntity: TBSystemUser
+            mappedBy: TBSystemUserCreatedUserId
+        TBDepartmentsUpdatedUserId:
             targetEntity: TBDepartment
-            mappedBy: tbsystemuser
+            mappedBy: TBSystemUserUpdatedUserId
+        TBDepartmentsCreatedUserId:
+            targetEntity: TBDepartment
+            mappedBy: TBSystemUserCreatedUserId
     manyToOne:
-        tbdepartment:
+        TBDepartmentDepartmentId:
             targetEntity: TBDepartment
-            inversedBy: tbsystemusers
+            inversedBy: TBSystemUsersDepartmentId
             joinColumns:
                 DepartmentId:
                     referencedColumnName: id
-        tbsystemuser:
+        TBSystemUserUpdatedUserId:
             targetEntity: TBSystemUser
-            inversedBy: tbsystemusers
+            inversedBy: TBSystemUsersUpdatedUserId
+            joinColumns:
+                UpdatedUserId:
+                    referencedColumnName: id
+        TBSystemUserCreatedUserId:
+            targetEntity: TBSystemUser
+            inversedBy: TBSystemUsersCreatedUserId
             joinColumns:
                 CreatedUserId:
                     referencedColumnName: id

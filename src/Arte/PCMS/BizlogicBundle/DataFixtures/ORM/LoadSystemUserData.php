@@ -72,7 +72,7 @@ class LoadSystemUserData implements FixtureInterface {
         }
 
 
-        //SystemUser
+        //SystemUser2
         ///1
         $tbSystemUser = new TBSystemUser();
         $tbSystemUser->setLoginId('test001');
@@ -174,7 +174,7 @@ class LoadSystemUserData implements FixtureInterface {
             $createdDateTime->modify('+1 day');
         }
 
-        //SystemUser
+        //SystemUser2
         $createdDateTime = new \DateTime("2012-01-01 0:0:0");
         $lastLoginDateTime = new \DateTime("2013-01-01 0:0:0");
         for($i=1; $i<=10; $i++)

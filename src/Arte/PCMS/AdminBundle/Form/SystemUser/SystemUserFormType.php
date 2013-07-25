@@ -47,9 +47,9 @@ class SystemUserFormType extends AbstractType {
                 'property' => 'Name',
                 'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('d')
-                        ->andWhere('d.DeleteFlug = :DeleteFlug')
+                        ->andWhere('d.DeleteFlag = :DeleteFlag')
                         ->orderBy('d.SortNo', 'ASC')
-                        ->setParameter('DeleteFlug', false);
+                        ->setParameter('DeleteFlag', false);
                 },
             ))
             ->add('mailAddress', 'text', array(

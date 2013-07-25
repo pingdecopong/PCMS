@@ -16,9 +16,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * ユーザー管理　コントローラ
- * @Route("/systemuser")
+ * @Route("/systemuser2")
  */
-class SystemUserController extends Controller
+class SystemUser2Controller extends Controller
 {
     /**
      * @Route("/")
@@ -123,10 +123,10 @@ class SystemUserController extends Controller
         $queryBuilder = $this->getDoctrine()
             ->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')
             ->createQueryBuilder('u')
-            ->leftJoin('u.tbdepartment', 'd')
+            ->leftJoin('u.TBDepartmentDepartmentId', 'd')
             ->select(array('u', 'd'))
-            ->andWhere('u.DeleteFlug = :DeleteFlug')
-            ->setParameter('DeleteFlug', false);
+            ->andWhere('u.DeleteFlag = :DeleteFlag')
+            ->setParameter('DeleteFlag', false);
 
         //検索
         $data = $form->getData();
@@ -155,7 +155,7 @@ class SystemUserController extends Controller
         $searchDepartment = $data['search']->getDepartment();
         if(isset($searchDepartment) && $form['search']['Department']->isValid())
         {
-            $queryBuilder = $queryBuilder->andWhere('u.tbdepartment = :Department')
+            $queryBuilder = $queryBuilder->andWhere('u.TBDepartmentDepartmentId = :Department')
                 ->setParameter('Department', $searchDepartment);
         }
 
@@ -232,7 +232,8 @@ class SystemUserController extends Controller
             $formModel->setDisplayName($tbSystemUser->getDisplayName());
             $formModel->setDisplayNameKana($tbSystemUser->getDisplayNameKana());
             $formModel->setNickName($tbSystemUser->getNickName());
-            $formModel->setDepartment($tbSystemUser->getTbdepartment());
+            $formModel->setDepartment($tbSystemUser->getTBDepartmentDepartmentId());
+//            $formModel->setDepartment($tbSystemUser->getTbdepartment());
             $formModel->setMailAddress($tbSystemUser->getMailAddress());
             $formModel->setSystemRoleId($tbSystemUser->getSystemRoleId());
 
@@ -304,7 +305,7 @@ class SystemUserController extends Controller
                         $tbSystemUser->setDisplayName($formModel->getDisplayName());
                         $tbSystemUser->setDisplayNameKana($formModel->getDisplayNameKana());
                         $tbSystemUser->setNickName($formModel->getNickName());
-                        $tbSystemUser->setTbdepartment($formModel->getDepartment());
+                        $tbSystemUser->setTBDepartmentDepartmentId($formModel->getDepartment());
                         $tbSystemUser->setMailAddress($formModel->getMailAddress());
                         $tbSystemUser->setSystemRoleId($formModel->getSystemRoleId());
 
@@ -368,7 +369,8 @@ class SystemUserController extends Controller
             $formModel->setDisplayName($tbSystemUser->getDisplayName());
             $formModel->setDisplayNameKana($tbSystemUser->getDisplayNameKana());
             $formModel->setNickName($tbSystemUser->getNickName());
-            $formModel->setDepartment($tbSystemUser->getTbdepartment());
+            $formModel->setDepartment($tbSystemUser->getTBDepartmentDepartmentId());
+//            $formModel->setDepartment($tbSystemUser->getTbdepartment());
             $formModel->setMailAddress($tbSystemUser->getMailAddress());
             $formModel->setSystemRoleId($tbSystemUser->getSystemRoleId());
 
@@ -411,7 +413,8 @@ class SystemUserController extends Controller
                         $tbSystemUser->setDisplayName($formModel->getDisplayName());
                         $tbSystemUser->setDisplayNameKana($formModel->getDisplayNameKana());
                         $tbSystemUser->setNickName($formModel->getNickName());
-                        $tbSystemUser->setTbdepartment($formModel->getDepartment());
+                        $tbSystemUser->setTBDepartmentDepartmentId($formModel->getDepartment());
+//                        $tbSystemUser->setTbdepartment($formModel->getDepartment());
                         $tbSystemUser->setMailAddress($formModel->getMailAddress());
                         $tbSystemUser->setSystemRoleId($formModel->getSystemRoleId());
 

@@ -14,7 +14,7 @@ Arte\PCMS\BizlogicBundle\Entity\TBDepartment:
         SortNo:
             type: integer
             nullable: false
-        DeleteFlug:
+        DeleteFlag:
             type: boolean
             nullable: true
         CreatedUserId:
@@ -30,13 +30,19 @@ Arte\PCMS\BizlogicBundle\Entity\TBDepartment:
             type: datetime
             nullable: true
     oneToMany:
-        tbsystemusers:
+        TBSystemUsersDepartmentId:
             targetEntity: TBSystemUser
-            mappedBy: tbdepartment
+            mappedBy: TBDepartmentDepartmentId
     manyToOne:
-        tbsystemuser:
+        TBSystemUserUpdatedUserId:
             targetEntity: TBSystemUser
-            inversedBy: tbdepartments
+            inversedBy: TBDepartmentsUpdatedUserId
+            joinColumns:
+                UpdatedUserId:
+                    referencedColumnName: id
+        TBSystemUserCreatedUserId:
+            targetEntity: TBSystemUser
+            inversedBy: TBDepartmentsCreatedUserId
             joinColumns:
                 CreatedUserId:
                     referencedColumnName: id

@@ -72,7 +72,7 @@ class TBSystemUser
     /**
      * @var boolean
      */
-    private $DeleteFlug;
+    private $DeleteFlag;
 
     /**
      * @var integer
@@ -97,30 +97,47 @@ class TBSystemUser
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
-    private $tbsystemusers;
+    private $TBSystemUsersUpdatedUserId;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
-    private $tbdepartments;
+    private $TBSystemUsersCreatedUserId;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $TBDepartmentsUpdatedUserId;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $TBDepartmentsCreatedUserId;
 
     /**
      * @var \Arte\PCMS\BizlogicBundle\Entity\TBDepartment
      */
-    private $tbdepartment;
+    private $TBDepartmentDepartmentId;
 
     /**
      * @var \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser
      */
-    private $tbsystemuser;
+    private $TBSystemUserUpdatedUserId;
+
+    /**
+     * @var \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser
+     */
+    private $TBSystemUserCreatedUserId;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->tbsystemusers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->tbdepartments = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->TBSystemUsersUpdatedUserId = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->TBSystemUsersCreatedUserId = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->TBDepartmentsUpdatedUserId = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->TBDepartmentsCreatedUserId = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -387,26 +404,26 @@ class TBSystemUser
     }
 
     /**
-     * Set DeleteFlug
+     * Set DeleteFlag
      *
-     * @param boolean $deleteFlug
+     * @param boolean $deleteFlag
      * @return TBSystemUser
      */
-    public function setDeleteFlug($deleteFlug)
+    public function setDeleteFlag($deleteFlag)
     {
-        $this->DeleteFlug = $deleteFlug;
+        $this->DeleteFlag = $deleteFlag;
     
         return $this;
     }
 
     /**
-     * Get DeleteFlug
+     * Get DeleteFlag
      *
      * @return boolean 
      */
-    public function getDeleteFlug()
+    public function getDeleteFlag()
     {
-        return $this->DeleteFlug;
+        return $this->DeleteFlag;
     }
 
     /**
@@ -502,114 +519,203 @@ class TBSystemUser
     }
 
     /**
-     * Add tbsystemusers
+     * Add TBSystemUsersUpdatedUserId
      *
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tbsystemusers
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUsersUpdatedUserId
      * @return TBSystemUser
      */
-    public function addTbsystemuser(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tbsystemusers)
+    public function addTBSystemUsersUpdatedUserId(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUsersUpdatedUserId)
     {
-        $this->tbsystemusers[] = $tbsystemusers;
+        $this->TBSystemUsersUpdatedUserId[] = $tBSystemUsersUpdatedUserId;
     
         return $this;
     }
 
     /**
-     * Remove tbsystemusers
+     * Remove TBSystemUsersUpdatedUserId
      *
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tbsystemusers
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUsersUpdatedUserId
      */
-    public function removeTbsystemuser(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tbsystemusers)
+    public function removeTBSystemUsersUpdatedUserId(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUsersUpdatedUserId)
     {
-        $this->tbsystemusers->removeElement($tbsystemusers);
+        $this->TBSystemUsersUpdatedUserId->removeElement($tBSystemUsersUpdatedUserId);
     }
 
     /**
-     * Get tbsystemusers
+     * Get TBSystemUsersUpdatedUserId
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getTbsystemusers()
+    public function getTBSystemUsersUpdatedUserId()
     {
-        return $this->tbsystemusers;
+        return $this->TBSystemUsersUpdatedUserId;
     }
 
     /**
-     * Add tbdepartments
+     * Add TBSystemUsersCreatedUserId
      *
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tbdepartments
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUsersCreatedUserId
      * @return TBSystemUser
      */
-    public function addTbdepartment(\Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tbdepartments)
+    public function addTBSystemUsersCreatedUserId(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUsersCreatedUserId)
     {
-        $this->tbdepartments[] = $tbdepartments;
+        $this->TBSystemUsersCreatedUserId[] = $tBSystemUsersCreatedUserId;
     
         return $this;
     }
 
     /**
-     * Remove tbdepartments
+     * Remove TBSystemUsersCreatedUserId
      *
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tbdepartments
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUsersCreatedUserId
      */
-    public function removeTbdepartment(\Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tbdepartments)
+    public function removeTBSystemUsersCreatedUserId(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUsersCreatedUserId)
     {
-        $this->tbdepartments->removeElement($tbdepartments);
+        $this->TBSystemUsersCreatedUserId->removeElement($tBSystemUsersCreatedUserId);
     }
 
     /**
-     * Get tbdepartments
+     * Get TBSystemUsersCreatedUserId
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getTbdepartments()
+    public function getTBSystemUsersCreatedUserId()
     {
-        return $this->tbdepartments;
+        return $this->TBSystemUsersCreatedUserId;
     }
 
     /**
-     * Set tbdepartment
+     * Add TBDepartmentsUpdatedUserId
      *
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tbdepartment
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tBDepartmentsUpdatedUserId
      * @return TBSystemUser
      */
-    public function setTbdepartment(\Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tbdepartment = null)
+    public function addTBDepartmentsUpdatedUserId(\Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tBDepartmentsUpdatedUserId)
     {
-        $this->tbdepartment = $tbdepartment;
+        $this->TBDepartmentsUpdatedUserId[] = $tBDepartmentsUpdatedUserId;
     
         return $this;
     }
 
     /**
-     * Get tbdepartment
+     * Remove TBDepartmentsUpdatedUserId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tBDepartmentsUpdatedUserId
+     */
+    public function removeTBDepartmentsUpdatedUserId(\Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tBDepartmentsUpdatedUserId)
+    {
+        $this->TBDepartmentsUpdatedUserId->removeElement($tBDepartmentsUpdatedUserId);
+    }
+
+    /**
+     * Get TBDepartmentsUpdatedUserId
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTBDepartmentsUpdatedUserId()
+    {
+        return $this->TBDepartmentsUpdatedUserId;
+    }
+
+    /**
+     * Add TBDepartmentsCreatedUserId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tBDepartmentsCreatedUserId
+     * @return TBSystemUser
+     */
+    public function addTBDepartmentsCreatedUserId(\Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tBDepartmentsCreatedUserId)
+    {
+        $this->TBDepartmentsCreatedUserId[] = $tBDepartmentsCreatedUserId;
+    
+        return $this;
+    }
+
+    /**
+     * Remove TBDepartmentsCreatedUserId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tBDepartmentsCreatedUserId
+     */
+    public function removeTBDepartmentsCreatedUserId(\Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tBDepartmentsCreatedUserId)
+    {
+        $this->TBDepartmentsCreatedUserId->removeElement($tBDepartmentsCreatedUserId);
+    }
+
+    /**
+     * Get TBDepartmentsCreatedUserId
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTBDepartmentsCreatedUserId()
+    {
+        return $this->TBDepartmentsCreatedUserId;
+    }
+
+    /**
+     * Set TBDepartmentDepartmentId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tBDepartmentDepartmentId
+     * @return TBSystemUser
+     */
+    public function setTBDepartmentDepartmentId(\Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tBDepartmentDepartmentId = null)
+    {
+        $this->TBDepartmentDepartmentId = $tBDepartmentDepartmentId;
+    
+        return $this;
+    }
+
+    /**
+     * Get TBDepartmentDepartmentId
      *
      * @return \Arte\PCMS\BizlogicBundle\Entity\TBDepartment 
      */
-    public function getTbdepartment()
+    public function getTBDepartmentDepartmentId()
     {
-        return $this->tbdepartment;
+        return $this->TBDepartmentDepartmentId;
     }
 
     /**
-     * Set tbsystemuser
+     * Set TBSystemUserUpdatedUserId
      *
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tbsystemuser
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUserUpdatedUserId
      * @return TBSystemUser
      */
-    public function setTbsystemuser(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tbsystemuser = null)
+    public function setTBSystemUserUpdatedUserId(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUserUpdatedUserId = null)
     {
-        $this->tbsystemuser = $tbsystemuser;
+        $this->TBSystemUserUpdatedUserId = $tBSystemUserUpdatedUserId;
     
         return $this;
     }
 
     /**
-     * Get tbsystemuser
+     * Get TBSystemUserUpdatedUserId
      *
      * @return \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser 
      */
-    public function getTbsystemuser()
+    public function getTBSystemUserUpdatedUserId()
     {
-        return $this->tbsystemuser;
+        return $this->TBSystemUserUpdatedUserId;
+    }
+
+    /**
+     * Set TBSystemUserCreatedUserId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUserCreatedUserId
+     * @return TBSystemUser
+     */
+    public function setTBSystemUserCreatedUserId(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUserCreatedUserId = null)
+    {
+        $this->TBSystemUserCreatedUserId = $tBSystemUserCreatedUserId;
+    
+        return $this;
+    }
+
+    /**
+     * Get TBSystemUserCreatedUserId
+     *
+     * @return \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser 
+     */
+    public function getTBSystemUserCreatedUserId()
+    {
+        return $this->TBSystemUserCreatedUserId;
     }
 }

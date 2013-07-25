@@ -30,7 +30,7 @@
                     {#<td>{{ entity.DisplayNameKana }}</td>#}
                     {#<td>{{ entity.NickName }}</td>#}
                     <td>{{ entity.MailAddress }}</td>
-                    <td>{{ entity.tbdepartment is null ? "" : entity.tbdepartment.Name }}</td>
+                    <td>{{ entity.TBDepartmentDepartmentId is null ? "" : entity.TBDepartmentDepartmentId.Name }}</td>
                     <td>{{ entity.LastLoginDatetime is empty ? "" : entity.LastLoginDatetime|date('Y年m月d日') }}</td>
                     {#<td>{{ entity.CreatedDatetime is empty ? "" : entity.CreatedDatetime|date('Y年m月d日') }}</td>#}
                     <td>
