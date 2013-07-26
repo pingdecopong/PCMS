@@ -1,4 +1,4 @@
-Arte\PCMS\BizlogicBundle\Entity\TBDepartment:
+Arte\PCMS\BizlogicBundle\Entity\TBCustomer:
     type: entity
     indexes: {  }
     id:
@@ -11,15 +11,12 @@ Arte\PCMS\BizlogicBundle\Entity\TBDepartment:
             type: string
             length: 255
             nullable: false
-        SortNo:
-            type: integer
-            nullable: false
         DeleteFlag:
             type: boolean
             nullable: true
     oneToMany:
-        TBSystemUsersDepartmentId:
-            targetEntity: TBSystemUser
-            mappedBy: TBDepartmentDepartmentId
+        TBProjectMastersCustomerId:
+            targetEntity: TBProjectMaster
+            mappedBy: TBCustomerCustomerId
     manyToOne: {  }
     manyToMany: {  }

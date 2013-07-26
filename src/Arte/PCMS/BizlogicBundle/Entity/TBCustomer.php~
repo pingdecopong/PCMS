@@ -1,0 +1,83 @@
+<?php
+
+namespace Arte\PCMS\BizlogicBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * TBCustomer
+ */
+class TBCustomer
+{
+    /**
+     * @var integer
+     */
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $Name;
+
+    /**
+     * @var boolean
+     */
+    private $DeleteFlag;
+
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set Name
+     *
+     * @param string $name
+     * @return TBCustomer
+     */
+    public function setName($name)
+    {
+        $this->Name = $name;
+    
+        return $this;
+    }
+
+    /**
+     * Get Name
+     *
+     * @return string 
+     */
+    public function getName()
+    {
+        return $this->Name;
+    }
+
+    /**
+     * Set DeleteFlag
+     *
+     * @param boolean $deleteFlag
+     * @return TBCustomer
+     */
+    public function setDeleteFlag($deleteFlag)
+    {
+        $this->DeleteFlag = $deleteFlag;
+    
+        return $this;
+    }
+
+    /**
+     * Get DeleteFlag
+     *
+     * @return boolean 
+     */
+    public function getDeleteFlag()
+    {
+        return $this->DeleteFlag;
+    }
+}

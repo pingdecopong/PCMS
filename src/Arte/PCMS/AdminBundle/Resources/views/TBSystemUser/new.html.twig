@@ -31,38 +31,63 @@
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.Salt) }}</th>
+                    <th scope="row">{{ form_label(form.TBSystemUser.DisplayName) }}</th>
                     <td>
                         <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.Salt) }}
+                            {{ form_errors(form.TBSystemUser.DisplayName) }}
                         </div>
-                            {{ form_widget(form.TBSystemUser.Salt) }}
+                        {{ form_widget(form.TBSystemUser.DisplayName) }}
                         <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.Salt.vars.name }}</span>
+                        <span class="input_notes">{{ form.TBSystemUser.DisplayName.vars.name }}</span>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.Password) }}</th>
+                    <th scope="row">{{ form_label(form.TBSystemUser.DisplayNameKana) }}</th>
                     <td>
                         <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.Password) }}
+                            {{ form_errors(form.TBSystemUser.DisplayNameKana) }}
                         </div>
-                            {{ form_widget(form.TBSystemUser.Password) }}
+                        {{ form_widget(form.TBSystemUser.DisplayNameKana) }}
                         <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.Password.vars.name }}</span>
+                        <span class="input_notes">{{ form.TBSystemUser.DisplayNameKana.vars.name }}</span>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.Active) }}</th>
+                    <th scope="row">{{ form_label(form.TBSystemUser.NickName) }}</th>
                     <td>
                         <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.Active) }}
+                            {{ form_errors(form.TBSystemUser.NickName) }}
                         </div>
-                            {{ form_widget(form.TBSystemUser.Active) }}
+                        {{ form_widget(form.TBSystemUser.NickName) }}
                         <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.Active.vars.name }}</span>
+                        <span class="input_notes">{{ form.TBSystemUser.NickName.vars.name }}</span>
                     </td>
                 </tr>
+
+                <tr>
+                    <th scope="row">{{ form_label(form.TBSystemUser.TBDepartmentDepartmentId) }}</th>
+                    <td>
+                        <div class="error_validation_inline">
+                            {{ form_errors(form.TBSystemUser.TBDepartmentDepartmentId) }}
+                        </div>
+                        {{ form_widget(form.TBSystemUser.TBDepartmentDepartmentId) }}
+                        <br/>
+                        <span class="input_notes">{{ form.TBSystemUser.TBDepartmentDepartmentId.vars.name }}</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th scope="row">{{ form_label(form.TBSystemUser.MailAddress) }}</th>
+                    <td>
+                        <div class="error_validation_inline">
+                            {{ form_errors(form.TBSystemUser.MailAddress) }}
+                        </div>
+                        {{ form_widget(form.TBSystemUser.MailAddress) }}
+                        <br/>
+                        <span class="input_notes">{{ form.TBSystemUser.MailAddress.vars.name }}</span>
+                    </td>
+                </tr>
+
                 <tr>
                     <th scope="row">{{ form_label(form.TBSystemUser.SystemRoleId) }}</th>
                     <td>
@@ -74,160 +99,21 @@
                         <span class="input_notes">{{ form.TBSystemUser.SystemRoleId.vars.name }}</span>
                     </td>
                 </tr>
+
                 <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.DisplayName) }}</th>
+                    <th scope="row">{{ form_label(form.TBSystemUser.Active) }}</th>
                     <td>
                         <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.DisplayName) }}
+                            {{ form_errors(form.TBSystemUser.Active) }}
                         </div>
-                            {{ form_widget(form.TBSystemUser.DisplayName) }}
+                        {{ form_widget(form.TBSystemUser.Active) }}
                         <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.DisplayName.vars.name }}</span>
+                        <span class="input_notes">{{ form.TBSystemUser.Active.vars.name }}</span>
                     </td>
                 </tr>
-                <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.DisplayNameKana) }}</th>
-                    <td>
-                        <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.DisplayNameKana) }}
-                        </div>
-                            {{ form_widget(form.TBSystemUser.DisplayNameKana) }}
-                        <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.DisplayNameKana.vars.name }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.NickName) }}</th>
-                    <td>
-                        <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.NickName) }}
-                        </div>
-                            {{ form_widget(form.TBSystemUser.NickName) }}
-                        <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.NickName.vars.name }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.MailAddress) }}</th>
-                    <td>
-                        <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.MailAddress) }}
-                        </div>
-                            {{ form_widget(form.TBSystemUser.MailAddress) }}
-                        <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.MailAddress.vars.name }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.DepartmentId) }}</th>
-                    <td>
-                        <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.DepartmentId) }}
-                        </div>
-                            {{ form_widget(form.TBSystemUser.DepartmentId) }}
-                        <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.DepartmentId.vars.name }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.LastLoginDatetime) }}</th>
-                    <td>
-                        <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.LastLoginDatetime) }}
-                        </div>
-                            {{ form_widget(form.TBSystemUser.LastLoginDatetime) }}
-                        <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.LastLoginDatetime.vars.name }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.DeleteFlag) }}</th>
-                    <td>
-                        <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.DeleteFlag) }}
-                        </div>
-                            {{ form_widget(form.TBSystemUser.DeleteFlag) }}
-                        <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.DeleteFlag.vars.name }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.CreatedUserId) }}</th>
-                    <td>
-                        <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.CreatedUserId) }}
-                        </div>
-                            {{ form_widget(form.TBSystemUser.CreatedUserId) }}
-                        <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.CreatedUserId.vars.name }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.CreatedDatetime) }}</th>
-                    <td>
-                        <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.CreatedDatetime) }}
-                        </div>
-                            {{ form_widget(form.TBSystemUser.CreatedDatetime) }}
-                        <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.CreatedDatetime.vars.name }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.UpdatedUserId) }}</th>
-                    <td>
-                        <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.UpdatedUserId) }}
-                        </div>
-                            {{ form_widget(form.TBSystemUser.UpdatedUserId) }}
-                        <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.UpdatedUserId.vars.name }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.UpdatedDatetime) }}</th>
-                    <td>
-                        <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.UpdatedDatetime) }}
-                        </div>
-                            {{ form_widget(form.TBSystemUser.UpdatedDatetime) }}
-                        <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.UpdatedDatetime.vars.name }}</span>
-                    </td>
-                </tr>
-                    <tr>
-                        <th scope="row">{{ form_label(form.TBSystemUser.TBDepartmentDepartmentId) }}</th>
-                        <td>
-                            <div class="error_validation_inline">
-                                {{ form_errors(form.TBSystemUser.TBDepartmentDepartmentId) }}
-                            </div>
-                            {{ form_widget(form.TBSystemUser.TBDepartmentDepartmentId) }}
-                            <br/>
-                            <span class="input_notes">{{ form.TBSystemUser.TBDepartmentDepartmentId.vars.name }}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">{{ form_label(form.TBSystemUser.TBSystemUserUpdatedUserId) }}</th>
-                        <td>
-                            <div class="error_validation_inline">
-                                {{ form_errors(form.TBSystemUser.TBSystemUserUpdatedUserId) }}
-                            </div>
-                            {{ form_widget(form.TBSystemUser.TBSystemUserUpdatedUserId) }}
-                            <br/>
-                            <span class="input_notes">{{ form.TBSystemUser.TBSystemUserUpdatedUserId.vars.name }}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">{{ form_label(form.TBSystemUser.TBSystemUserCreatedUserId) }}</th>
-                        <td>
-                            <div class="error_validation_inline">
-                                {{ form_errors(form.TBSystemUser.TBSystemUserCreatedUserId) }}
-                            </div>
-                            {{ form_widget(form.TBSystemUser.TBSystemUserCreatedUserId) }}
-                            <br/>
-                            <span class="input_notes">{{ form.TBSystemUser.TBSystemUserCreatedUserId.vars.name }}</span>
-                        </td>
-                    </tr>
+
+
+
             </table>
             <div class="submit_box">
                 {% if mode == 'input' %}

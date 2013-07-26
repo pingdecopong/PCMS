@@ -29,8 +29,7 @@ class LoadSystemUserData implements FixtureInterface {
         $tbDepartment = new TBDepartment();
         $tbDepartment->setName('部署01');
         $tbDepartment->setSortNo(1);
-        $tbDepartment->setDeleteFlug(false);
-        $tbDepartment->setCreatedDatetime(new \DateTime("2012-01-01 0:0:0"));
+        $tbDepartment->setDeleteFlag(false);
         $manager->persist($tbDepartment);
         $manager->flush();
         $departments[] = $tbDepartment;
@@ -39,8 +38,7 @@ class LoadSystemUserData implements FixtureInterface {
         $tbDepartment = new TBDepartment();
         $tbDepartment->setName('部署02');
         $tbDepartment->setSortNo(2);
-        $tbDepartment->setDeleteFlug(true);
-        $tbDepartment->setCreatedDatetime(new \DateTime("2012-01-02 0:0:0"));
+        $tbDepartment->setDeleteFlag(true);
         $manager->persist($tbDepartment);
         $manager->flush();
         $departments[] = $tbDepartment;
@@ -49,8 +47,7 @@ class LoadSystemUserData implements FixtureInterface {
         $tbDepartment = new TBDepartment();
         $tbDepartment->setName('部署03');
         $tbDepartment->setSortNo(3);
-        $tbDepartment->setDeleteFlug(false);
-        $tbDepartment->setCreatedDatetime(new \DateTime("2012-01-03 0:0:0"));
+        $tbDepartment->setDeleteFlag(false);
         $manager->persist($tbDepartment);
         $manager->flush();
         $departments[] = $tbDepartment;
@@ -61,8 +58,7 @@ class LoadSystemUserData implements FixtureInterface {
             $tbDepartment = new TBDepartment();
             $tbDepartment->setName('部署'.sprintf('%02d', $i));
             $tbDepartment->setSortNo($i);
-            $tbDepartment->setDeleteFlug(false);
-            $tbDepartment->setCreatedDatetime($createdDateTime);
+            $tbDepartment->setDeleteFlag(false);
 
             $manager->persist($tbDepartment);
             $manager->flush();
@@ -84,10 +80,9 @@ class LoadSystemUserData implements FixtureInterface {
         $tbSystemUser->setDisplayNameKana('テスト001');
         $tbSystemUser->setNickName('t001');
         $tbSystemUser->setMailAddress('test001@test.com');
-        $tbSystemUser->setTbdepartment($departments[0]);
+        $tbSystemUser->setTBDepartmentDepartmentId($departments[0]);
         $tbSystemUser->setLastLoginDatetime(new \DateTime("2012-07-01 0:0:0"));
-        $tbSystemUser->setDeleteFlug(false);
-        $tbSystemUser->setCreatedDatetime(new \DateTime("2012-01-01 0:0:0"));
+        $tbSystemUser->setDeleteFlag(false);
         $manager->persist($tbSystemUser);
         $manager->flush();
 
@@ -102,10 +97,9 @@ class LoadSystemUserData implements FixtureInterface {
         $tbSystemUser->setDisplayNameKana('テスト002');
         $tbSystemUser->setNickName('t002');
         $tbSystemUser->setMailAddress('test002@test.com');
-        $tbSystemUser->setTbdepartment($departments[0]);
+        $tbSystemUser->setTBDepartmentDepartmentId($departments[0]);
         $tbSystemUser->setLastLoginDatetime(new \DateTime("2012-07-02 0:0:0"));
-        $tbSystemUser->setDeleteFlug(true);
-        $tbSystemUser->setCreatedDatetime(new \DateTime("2012-01-02 0:0:0"));
+        $tbSystemUser->setDeleteFlag(true);
         $manager->persist($tbSystemUser);
         $manager->flush();
 
@@ -120,16 +114,15 @@ class LoadSystemUserData implements FixtureInterface {
         $tbSystemUser->setDisplayNameKana('テスト003');
         $tbSystemUser->setNickName('t003');
         $tbSystemUser->setMailAddress('test003@test.com');
-        $tbSystemUser->setTbdepartment($departments[0]);
+        $tbSystemUser->setTBDepartmentDepartmentId($departments[0]);
         $tbSystemUser->setLastLoginDatetime(new \DateTime("2012-07-03 0:0:0"));
-        $tbSystemUser->setDeleteFlug(false);
-        $tbSystemUser->setCreatedDatetime(new \DateTime("2012-01-03 0:0:0"));
+        $tbSystemUser->setDeleteFlag(false);
         $manager->persist($tbSystemUser);
         $manager->flush();
 
         $lastLoginDateTime = new \DateTime("2013-07-04 0:0:0");
         $createdDateTime = new \DateTime("2012-01-04 0:0:0");
-        for($i=4; $i<=10; $i++)
+        for($i=4; $i<=1000; $i++)
         {
             $tbSystemUser = new TBSystemUser();
             $tbSystemUser->setLoginId('test'.sprintf('%03d', $i));
@@ -141,10 +134,9 @@ class LoadSystemUserData implements FixtureInterface {
             $tbSystemUser->setDisplayNameKana('テスト'.sprintf('%03d', $i));
             $tbSystemUser->setNickName('t'.sprintf('%03d', $i));
             $tbSystemUser->setMailAddress('test'.sprintf('%03d', $i).'@test.com');
-            $tbSystemUser->setTbdepartment($departments[0]);
+            $tbSystemUser->setTBDepartmentDepartmentId($departments[0]);
             $tbSystemUser->setLastLoginDatetime($lastLoginDateTime);
-            $tbSystemUser->setDeleteFlug(false);
-            $tbSystemUser->setCreatedDatetime($createdDateTime);
+            $tbSystemUser->setDeleteFlag(false);
 
             $manager->persist($tbSystemUser);
             $manager->flush();

@@ -2,6 +2,7 @@
 
 namespace Arte\PCMS\AdminBundle\Form;
 
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
@@ -12,80 +13,53 @@ class TBSystemUserType extends AbstractType
     {
         $builder
             ->add('LoginId', 'text', array(
-                'label'     => 'LoginId',
-                'required'  => false,
-            ))
-            ->add('Salt', 'text', array(
-                'label'     => 'Salt',
-                'required'  => false,
-            ))
-            ->add('Password', 'text', array(
-                'label'     => 'Password',
+                'label'     => 'ログインID',
                 'required'  => false,
             ))
             ->add('Active', 'checkbox', array(
-                'label'     => 'Active',
+                'label'     => '有効状態',
                 'required'  => false,
             ))
             ->add('SystemRoleId', 'text', array(
-                'label'     => 'SystemRoleId',
+                'label'     => '権限',
                 'required'  => false,
             ))
             ->add('DisplayName', 'text', array(
-                'label'     => 'DisplayName',
+                'label'     => 'ユーザー名',
                 'required'  => false,
             ))
             ->add('DisplayNameKana', 'text', array(
-                'label'     => 'DisplayNameKana',
+                'label'     => 'ユーザ名（カナ）',
                 'required'  => false,
             ))
             ->add('NickName', 'text', array(
-                'label'     => 'NickName',
+                'label'     => '略称',
                 'required'  => false,
             ))
             ->add('MailAddress', 'text', array(
-                'label'     => 'MailAddress',
+                'label'     => 'メールアドレス',
                 'required'  => false,
             ))
-            ->add('DepartmentId', 'text', array(
-                'label'     => 'DepartmentId',
-                'required'  => false,
+            ->add('TBDepartmentDepartmentId', 'entity', array(
+                'label' => '部署',
+                'required' => false,
+                'empty_value' => '----',
+                'class' => 'ArtePCMSBizlogicBundle:TBDepartment',
+                'property' => 'Name',
+                'query_builder' => function(EntityRepository $er) {
+                    return $er->createQueryBuilder('d')
+                        ->andWhere('d.DeleteFlag = :DeleteFlag')
+                        ->orderBy('d.SortNo', 'ASC')
+                        ->setParameter('DeleteFlag', false);
+                },
             ))
-                ->add('LastLoginDatetime', 'datetime', array(
-                'label'     => 'LastLoginDatetime',
-                'required'  => false,
-                ))
-            ->add('DeleteFlag', 'checkbox', array(
-                'label'     => 'DeleteFlag',
-                'required'  => false,
-            ))
-            ->add('CreatedUserId', 'text', array(
-                'label'     => 'CreatedUserId',
-                'required'  => false,
-            ))
-                ->add('CreatedDatetime', 'datetime', array(
-                'label'     => 'CreatedDatetime',
-                'required'  => false,
-                ))
-            ->add('UpdatedUserId', 'text', array(
-                'label'     => 'UpdatedUserId',
-                'required'  => false,
-            ))
-                ->add('UpdatedDatetime', 'datetime', array(
-                'label'     => 'UpdatedDatetime',
-                'required'  => false,
-                ))
-        
-            ->add('TBDepartmentDepartmentId')
-            ->add('TBSystemUserUpdatedUserId')
-            ->add('TBSystemUserCreatedUserId')
         ;
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Arte\PCMS\AdminBundle\Entity\TBSystemUser'
+            'data_class' => 'Arte\PCMS\BizlogicBundle\Entity\TBSystemUser'
         ));
     }
 

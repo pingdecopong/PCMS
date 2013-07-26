@@ -1,0 +1,27 @@
+Arte\PCMS\BizlogicBundle\Entity\TBProductionCost:
+    type: entity
+    indexes: {  }
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        ProjectCostMasterId:
+            type: integer
+            nullable: false
+        Cost:
+            type: integer
+            nullable: true
+        Note:
+            type: text
+            nullable: true
+    oneToMany: {  }
+    manyToOne:
+        TBProjectCostMasterProjectCostMasterId:
+            targetEntity: TBProjectCostMaster
+            inversedBy: TBProductionCostsProjectCostMasterId
+            joinColumns:
+                ProjectCostMasterId:
+                    referencedColumnName: id
+    manyToMany: {  }

@@ -1,0 +1,33 @@
+Arte\PCMS\BizlogicBundle\Entity\TBProjectUser:
+    type: entity
+    indexes: {  }
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        SystemUserId:
+            type: integer
+            nullable: false
+        ProjectMasterId:
+            type: integer
+            nullable: false
+        RoleNo:
+            type: integer
+            nullable: false
+    oneToMany: {  }
+    manyToOne:
+        TBSystemUserSystemUserId:
+            targetEntity: TBSystemUser
+            inversedBy: TBProjectUsersSystemUserId
+            joinColumns:
+                SystemUserId:
+                    referencedColumnName: id
+        TBProjectMasterProjectMasterId:
+            targetEntity: TBProjectMaster
+            inversedBy: TBProjectUsersProjectMasterId
+            joinColumns:
+                ProjectMasterId:
+                    referencedColumnName: id
+    manyToMany: {  }

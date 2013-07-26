@@ -16,6 +16,9 @@ class TBSystemUserSearchType extends AbstractType
                 'label'     => 'ログインID',
                 'required'  => false,
                 'max_length' => 50,
+//                'attr'      => array(
+//                    'style' => "width: 33%;",
+//                ),
             ))
 //            ->add('Salt', 'text', array(
 //                'label'     => 'Salt',
@@ -37,7 +40,7 @@ class TBSystemUserSearchType extends AbstractType
 //                'required'  => false,
 //            ))
             ->add('DisplayName', 'text', array(
-                'label'     => 'ユーザ名',
+                'label'     => '名前',
                 'required'  => false,
                 'max_length' => 50,
             ))

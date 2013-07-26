@@ -13,86 +13,46 @@
             </ul>
         </div>
         <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
-                <tr>
-                    <th scope="row">Id</th>
-                        <td>{{ entity.id }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Loginid</th>
-                        <td>{{ entity.LoginId }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Salt</th>
-                        <td>{{ entity.Salt }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Password</th>
-                        <td>{{ entity.Password }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Active</th>
-                        <td>{{ entity.Active }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Systemroleid</th>
-                        <td>{{ entity.SystemRoleId }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Displayname</th>
-                        <td>{{ entity.DisplayName }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Displaynamekana</th>
-                        <td>{{ entity.DisplayNameKana }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Nickname</th>
-                        <td>{{ entity.NickName }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Mailaddress</th>
-                        <td>{{ entity.MailAddress }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Departmentid</th>
-                        <td>{{ entity.DepartmentId }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Lastlogindatetime</th>
-                        <td>{{ entity.LastLoginDatetime|date('Y-m-d H:i:s') }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Deleteflag</th>
-                        <td>{{ entity.DeleteFlag }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Createduserid</th>
-                        <td>{{ entity.CreatedUserId }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Createddatetime</th>
-                        <td>{{ entity.CreatedDatetime|date('Y-m-d H:i:s') }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Updateduserid</th>
-                        <td>{{ entity.UpdatedUserId }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Updateddatetime</th>
-                        <td>{{ entity.UpdatedDatetime|date('Y-m-d H:i:s') }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Tbdepartmentdepartmentid</th>
-                    <td>{{ entity.TBDepartmentDepartmentId }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Tbsystemuserupdateduserid</th>
-                    <td>{{ entity.TBSystemUserUpdatedUserId }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Tbsystemusercreateduserid</th>
-                    <td>{{ entity.TBSystemUserCreatedUserId }}</td>
-                </tr>
+            <tr>
+                <th scope="row">Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th scope="row">ログインID</th>
+                <td>{{ entity.LoginId }}</td>
+            </tr>
+            <tr>
+                <th scope="row">ユーザー名</th>
+                <td>{{ entity.DisplayName }}</td>
+            </tr>
+            <tr>
+                <th scope="row">ユーザ名（カナ）</th>
+                <td>{{ entity.DisplayNameKana }}</td>
+            </tr>
+            <tr>
+                <th scope="row">略称</th>
+                <td>{{ entity.NickName }}</td>
+            </tr>
+            <tr>
+                <th scope="row">部署</th>
+                <td>{{ entity.TBDepartmentDepartmentId is null ? "" : entity.TBDepartmentDepartmentId.Name }}</td>
+            </tr>
+            <tr>
+                <th scope="row">権限</th>
+                <td>{{ entity.SystemRoleId }}</td>
+            </tr>
+            <tr>
+                <th scope="row">メールアドレス</th>
+                <td>{{ entity.MailAddress }}</td>
+            </tr>
+            <tr>
+                <th scope="row">有効状態</th>
+                <td>{{ entity.Active  ? "有効" : "無効" }}</td>
+            </tr>
+            <tr>
+                <th scope="row">最終ログイン日時</th>
+                <td>{% if entity.LastLoginDatetime %}{{ entity.LastLoginDatetime|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
         </table>
         <form action="{{ path('systemuser_delete', { 'id': entity.id }) }}" novalidate method="post" {{ form_enctype(form) }} name="systemuser_delete_form">
 

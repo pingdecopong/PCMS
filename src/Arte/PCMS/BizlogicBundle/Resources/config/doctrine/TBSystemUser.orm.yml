@@ -50,48 +50,15 @@ Arte\PCMS\BizlogicBundle\Entity\TBSystemUser:
         DeleteFlag:
             type: boolean
             nullable: true
-        CreatedUserId:
-            type: integer
-            nullable: true
-        CreatedDatetime:
-            type: datetime
-            nullable: true
-        UpdatedUserId:
-            type: integer
-            nullable: true
-        UpdatedDatetime:
-            type: datetime
-            nullable: true
     oneToMany:
-        TBSystemUsersUpdatedUserId:
-            targetEntity: TBSystemUser
-            mappedBy: TBSystemUserUpdatedUserId
-        TBSystemUsersCreatedUserId:
-            targetEntity: TBSystemUser
-            mappedBy: TBSystemUserCreatedUserId
-        TBDepartmentsUpdatedUserId:
-            targetEntity: TBDepartment
-            mappedBy: TBSystemUserUpdatedUserId
-        TBDepartmentsCreatedUserId:
-            targetEntity: TBDepartment
-            mappedBy: TBSystemUserCreatedUserId
+        TBProjectUsersSystemUserId:
+            targetEntity: TBProjectUser
+            mappedBy: TBSystemUserSystemUserId
     manyToOne:
         TBDepartmentDepartmentId:
             targetEntity: TBDepartment
             inversedBy: TBSystemUsersDepartmentId
             joinColumns:
                 DepartmentId:
-                    referencedColumnName: id
-        TBSystemUserUpdatedUserId:
-            targetEntity: TBSystemUser
-            inversedBy: TBSystemUsersUpdatedUserId
-            joinColumns:
-                UpdatedUserId:
-                    referencedColumnName: id
-        TBSystemUserCreatedUserId:
-            targetEntity: TBSystemUser
-            inversedBy: TBSystemUsersCreatedUserId
-            joinColumns:
-                CreatedUserId:
                     referencedColumnName: id
     manyToMany: {  }

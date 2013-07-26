@@ -20,21 +20,26 @@
             <table cellspacing="0">
                 <tbody>
                     <tr>
-                        <th>{{ form_label(form.search.Active) }}</th>
-                        <td>
-                            <div class="error_validation_inline">
-                                {{ form_errors(form.search.Active) }}
-                            </div>
-                            {{ form_widget(form.search.Active) }}
-                        </td>
-                    </tr>
-                    <tr>
                         <th>{{ form_label(form.search.LoginId) }}</th>
                         <td>
                             <div class="error_validation_inline">
                                 {{ form_errors(form.search.LoginId) }}
                             </div>
                             {{ form_widget(form.search.LoginId) }}
+                        </td>
+                        <th>{{ form_label(form.search.MailAddress) }}</th>
+                        <td>
+                            <div class="error_validation_inline">
+                                {{ form_errors(form.search.MailAddress) }}
+                            </div>
+                            {{ form_widget(form.search.MailAddress) }}
+                        </td>
+                        <th>{{ form_label(form.search.TBDepartmentDepartmentId) }}</th>
+                        <td>
+                            <div class="error_validation_inline">
+                                {{ form_errors(form.search.TBDepartmentDepartmentId) }}
+                            </div>
+                            {{ form_widget(form.search.TBDepartmentDepartmentId) }}
                         </td>
                     </tr>
                     <tr>
@@ -45,23 +50,12 @@
                             </div>
                             {{ form_widget(form.search.DisplayName) }}
                         </td>
-                    </tr>
-                    <tr>
-                        <th>{{ form_label(form.search.MailAddress) }}</th>
+                        <th>{{ form_label(form.search.Active) }}</th>
                         <td>
                             <div class="error_validation_inline">
-                                {{ form_errors(form.search.MailAddress) }}
+                                {{ form_errors(form.search.Active) }}
                             </div>
-                            {{ form_widget(form.search.MailAddress) }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>{{ form_label(form.search.TBDepartmentDepartmentId) }}</th>
-                        <td>
-                            <div class="error_validation_inline">
-                                {{ form_errors(form.search.TBDepartmentDepartmentId) }}
-                            </div>
-                            {{ form_widget(form.search.TBDepartmentDepartmentId) }}
+                            {{ form_widget(form.search.Active) }}
                         </td>
                     </tr>
 
@@ -129,8 +123,8 @@
                     <td>{{ entity.Active  ? "有効" : "無効" }}</td>
                     <td>{{ entity.DisplayName }}</td>
                     <td>{{ entity.MailAddress }}</td>
-                    <td>{% if entity.LastLoginDatetime %}{{ entity.LastLoginDatetime|date('Y-m-d H:i:s') }}{% endif %}</td>
                     <td>{{ entity.TBDepartmentDepartmentId is null ? "" : entity.TBDepartmentDepartmentId.Name }}</td>
+                    <td>{% if entity.LastLoginDatetime %}{{ entity.LastLoginDatetime|date('Y-m-d H:i:s') }}{% endif %}</td>
 
                     <td class="function_icon_cell">
                         <a href="{{ path('systemuser_show', { 'id': entity.id, ret: returnUrlParam }) }}"><img src="{{ asset('bundles/pingdecopongpdpgenerator/img/table.png') }}" width="16" height="16"></a>

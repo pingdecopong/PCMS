@@ -10,7 +10,7 @@ use pingdecopong\PDPGeneratorBundle\Lib\SubFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Arte\PCMS\AdminBundle\Entity\TBSystemUser;
+use Arte\PCMS\BizlogicBundle\Entity\TBSystemUser;
 use Arte\PCMS\AdminBundle\Form\TBSystemUserType;
 use Arte\PCMS\AdminBundle\Form\TBSystemUserSearchType;
 
@@ -252,6 +252,11 @@ class TBSystemUserController extends Controller
                         //登録実行
                         try{
                             $em = $this->getDoctrine()->getManager();
+
+                            $formModel->setSalt('aaa');
+                            $formModel->setPassword('bbb');
+                            $formModel->setDeleteFlag(false);
+
                             $em->persist($formModel);
                             $em->flush();
 
@@ -291,7 +296,7 @@ class TBSystemUserController extends Controller
         $request = $this->getRequest();
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ArtePCMSAdminBundle:TBSystemUser')->find($id);
+        $entity = $em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find TBSystemUser entity.');
@@ -325,7 +330,7 @@ class TBSystemUserController extends Controller
         $subFormModel->setReturnAddress($request->get('ret'));
 
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ArtePCMSAdminBundle:TBSystemUser')->find($id);
+        $entity = $em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find($id);
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find SystemUser entity.');
         }
@@ -411,7 +416,7 @@ class TBSystemUserController extends Controller
             ->getForm();
 
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ArtePCMSAdminBundle:TBSystemUser')->find($id);
+        $entity = $em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find TBSystemUser entity.');
@@ -423,7 +428,10 @@ class TBSystemUserController extends Controller
             if ($form->isValid()) {
 
                 try{
-                    $em->remove($entity);
+
+                    $entity->setDeleteFlag(true);
+
+                    $em->persist($entity);
                     $em->flush();
 
                 }catch (\Exception $e){
@@ -432,7 +440,7 @@ class TBSystemUserController extends Controller
                 $data = $form->getData();
                 //returnUrlデコード
                 $returnUrlQueryString = urldecode($data['returnAddress']);
-                return $this->redirect($this->generateUrl('watertank').'?'.$returnUrlQueryString);
+                return $this->redirect($this->generateUrl('systemuser').'?'.$returnUrlQueryString);
             }
         }
 
