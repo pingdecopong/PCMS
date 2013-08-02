@@ -1,5 +1,6 @@
 Arte\PCMS\BizlogicBundle\Entity\TBSystemUser:
     type: entity
+    repositoryClass: Arte\PCMS\BizlogicBundle\Entity\TBSystemUserRepository
     indexes: {  }
     id:
         id:
@@ -7,14 +8,14 @@ Arte\PCMS\BizlogicBundle\Entity\TBSystemUser:
             generator:
                 strategy: AUTO
     fields:
-        LoginId:
+        Username:
             type: string
             length: 40
             nullable: false
         Salt:
             type: string
             length: 40
-            nullable: false
+            nullable: true
         Password:
             type: string
             length: 40
@@ -54,6 +55,9 @@ Arte\PCMS\BizlogicBundle\Entity\TBSystemUser:
         TBProjectUsersSystemUserId:
             targetEntity: TBProjectUser
             mappedBy: TBSystemUserSystemUserId
+        TBProjectMastersManagerId:
+            targetEntity: TBProjectMaster
+            mappedBy: TBSystemUserManagerId
     manyToOne:
         TBDepartmentDepartmentId:
             targetEntity: TBDepartment

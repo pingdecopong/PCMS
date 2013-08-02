@@ -23,6 +23,7 @@ class AppKernel extends Kernel
             new Arte\PCMS\BizlogicBundle\ArtePCMSBizlogicBundle(),
             new Arte\PCMS\AdminBundle\ArtePCMSAdminBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            new Arte\PCMS\PublicBundle\ArtePCMSPublicBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

@@ -1,3 +1,21 @@
+# ログイン
+auth_login:
+    pattern: /login
+    defaults: { _controller: ArtePCMSPublicBundle:Login:login }
+
+# ログインチェック
+auth_login_check:
+    pattern: /login_check
+
+# ログアウト
+auth_logout:
+    pattern: /logout
+
+arte_pcms_public:
+    resource: "@ArtePCMSPublicBundle/Controller/"
+    type:     annotation
+    prefix:   /public
+
 arte_pcms_admin:
     resource: "@ArtePCMSAdminBundle/Controller/"
     type:     annotation

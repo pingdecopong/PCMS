@@ -24,7 +24,19 @@ class TBCustomer
      */
     private $DeleteFlag;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $TBProjectMastersCustomerId;
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->TBProjectMastersCustomerId = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
     /**
      * Get id
      *
@@ -79,5 +91,38 @@ class TBCustomer
     public function getDeleteFlag()
     {
         return $this->DeleteFlag;
+    }
+
+    /**
+     * Add TBProjectMastersCustomerId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMastersCustomerId
+     * @return TBCustomer
+     */
+    public function addTBProjectMastersCustomerId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMastersCustomerId)
+    {
+        $this->TBProjectMastersCustomerId[] = $tBProjectMastersCustomerId;
+    
+        return $this;
+    }
+
+    /**
+     * Remove TBProjectMastersCustomerId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMastersCustomerId
+     */
+    public function removeTBProjectMastersCustomerId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMastersCustomerId)
+    {
+        $this->TBProjectMastersCustomerId->removeElement($tBProjectMastersCustomerId);
+    }
+
+    /**
+     * Get TBProjectMastersCustomerId
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTBProjectMastersCustomerId()
+    {
+        return $this->TBProjectMastersCustomerId;
     }
 }

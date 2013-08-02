@@ -24,6 +24,21 @@ Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster:
         DeleteFlag:
             type: boolean
             nullable: true
+        PeriodStart:
+            type: date
+            nullable: true
+        PeriodEnd:
+            type: date
+            nullable: true
+        ManagerId:
+            type: integer
+            nullable: true
+        EstimateFilePath:
+            type: string
+            nullable: true
+        ScheduleFilePath:
+            type: string
+            nullable: true
     oneToMany:
         TBProjectUsersProjectMasterId:
             targetEntity: TBProjectUser
@@ -37,5 +52,11 @@ Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster:
             inversedBy: TBProjectMastersCustomerId
             joinColumns:
                 CustomerId:
+                    referencedColumnName: id
+        TBSystemUserManagerId:
+            targetEntity: TBSystemUser
+            inversedBy: TBProjectMastersManagerId
+            joinColumns:
+                ManagerId:
                     referencedColumnName: id
     manyToMany: {  }

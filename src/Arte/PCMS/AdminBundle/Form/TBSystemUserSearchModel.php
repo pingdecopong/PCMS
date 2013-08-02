@@ -17,7 +17,7 @@ class TBSystemUserSearchModel
      *      max = "50"
      * )
      */
-    private $LoginId;
+    private $Username;
 
     /**
      * @var boolean
@@ -86,19 +86,19 @@ class TBSystemUserSearchModel
     }
 
     /**
-     * @param string $LoginId
+     * @param string $Username
      */
-    public function setLoginId($LoginId)
+    public function setUsername($Username)
     {
-        $this->LoginId = $LoginId;
+        $this->Username = $Username;
     }
 
     /**
      * @return string
      */
-    public function getLoginId()
+    public function getUsername()
     {
-        return $this->LoginId;
+        return $this->Username;
     }
 
     /**

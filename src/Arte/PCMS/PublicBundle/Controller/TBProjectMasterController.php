@@ -1,6 +1,6 @@
 <?php
 
-namespace Arte\PCMS\AdminBundle\Controller;
+namespace Arte\PCMS\PublicBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -10,22 +10,22 @@ use pingdecopong\PDPGeneratorBundle\Lib\SubFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Arte\PCMS\BizlogicBundle\Entity\TBSystemUser;
-use Arte\PCMS\AdminBundle\Form\TBSystemUserType;
-use Arte\PCMS\AdminBundle\Form\TBSystemUserSearchType;
+use Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster;
+use Arte\PCMS\PublicBundle\Form\TBProjectMasterType;
+use Arte\PCMS\PublicBundle\Form\TBProjectMasterSearchType;
 
 /**
- * TBSystemUser controller.
+ * TBProjectMaster controller.
  *
- * @Route("/systemuser")
+ * @Route("/project")
  */
-class TBSystemUserController extends Controller
+class TBProjectMasterController extends Controller
 {
 
     /**
-     * Lists all TBSystemUser entities.
+     * Lists all TBProjectMaster entities.
      *
-     * @Route("/", name="systemuser")
+     * @Route("/", name="project")
      * @Method({"GET", "POST"})
      * @Template()
      */
@@ -38,41 +38,52 @@ class TBSystemUserController extends Controller
 
         //pager setting
         $pager
-            ->addColumn('1', array(
-                'label' => 'ログインID',
+            ->addColumn('Name', array(
+                'label' => '案件名',
                 'sort_enable' => true,
-                'db_column_name' => 'Username',
+                'db_column_name' => 'Name',
             ))
-            ->addColumn('2', array(
+            ->addColumn('CustomerId', array(
+                'label' => '顧客',
+                'sort_enable' => true,
+                'db_column_name' => 'CustomerId',
+            ))
+            ->addColumn('PeriodStart', array(
+                'label' => '開始日',
+                'sort_enable' => true,
+                'db_column_name' => 'PeriodStart',
+            ))
+            ->addColumn('PeriodEnd', array(
+                'label' => '終了日',
+                'sort_enable' => true,
+                'db_column_name' => 'PeriodEnd',
+            ))
+            ->addColumn('ManagerId', array(
+                'label' => '管理者',
+                'sort_enable' => true,
+                'db_column_name' => 'ManagerId',
+            ))
+            ->addColumn('Status', array(
                 'label' => '状態',
                 'sort_enable' => true,
-                'db_column_name' => 'Active',
+                'db_column_name' => 'Status',
             ))
-            ->addColumn('3', array(
-                'label' => '名前',
+            ->addColumn('EstimateTotal', array(
+                'label' => '見積工数',
                 'sort_enable' => true,
-                'db_column_name' => 'DisplayName',
+                'db_column_name' => 'Status',
             ))
-            ->addColumn('4', array(
-                'label' => 'メール',
+            ->addColumn('ProductionCostTotal', array(
+                'label' => '実工数',
                 'sort_enable' => true,
-                'db_column_name' => 'MailAddress',
-            ))
-            ->addColumn('5', array(
-                'label' => '部署名',
-                'sort_enable' => true,
-            ))
-            ->addColumn('6', array(
-                'label' => '最終ログイン',
-                'sort_enable' => true,
-                'db_column_name' => 'LastLoginDatetime',
+                'db_column_name' => 'Status',
             ))
         ;
 
         /* @var $form \Symfony\Component\Form\Form */
         $form = $formFactory->createNamedBuilder('f', 'form', null, array('csrf_protection' => false))
             ->add($pager->getFormBuilder())
-            ->add('search', new TBSystemUserSearchType())
+            ->add('search', new TBProjectMasterSearchType())
             ->getForm();
         $form->bind($request);
 
@@ -99,58 +110,68 @@ class TBSystemUserController extends Controller
         //db
         /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
         $queryBuilder = $this->getDoctrine()
-            ->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')
-            ->createQueryBuilder('u')
-            ->leftJoin('u.TBDepartmentDepartmentId', 'd')
-            ->select(array('u', 'd'))
-            ->andWhere('u.DeleteFlag = :DeleteFlag')
+            ->getRepository('ArtePCMSBizlogicBundle:TBProjectMaster')
+            ->createQueryBuilder('p')
+            ->leftJoin('p.TBCustomerCustomerId', 'c')
+            ->leftJoin('p.TBSystemUserManagerId', 'u')
+            ->leftJoin('p.TBProjectCostMastersProjectMasterId', 'pcm')
+            ->select(array('p', 'c', 'u', 'SUM(pcm.Cost)'))
+            ->groupBy('p.id')
+            ->andWhere('p.DeleteFlag = :DeleteFlag')
             ->setParameter('DeleteFlag', false);
 
         //検索
         $data = $form->getData();
-        /** @var $searchParam TBSystemUser */
+        /** @var $searchParam TBProjectMaster */
         $searchParam = $data['search'];
-        //Username
-        $searchUsername = $searchParam->getUsername();
-        if(isset($searchUsername) && $form['search']['Username']->isValid())
+        //Name
+        $searchName = $searchParam->getName();
+        if(isset($searchName) && $form['search']['Name']->isValid())
         {
-            $queryBuilder = $queryBuilder->andWhere('u.Username LIKE :Username')
-                ->setParameter('Username', '%'.$searchUsername.'%');
+            $queryBuilder = $queryBuilder->andWhere('p.Name LIKE :Name')
+                ->setParameter('Name', '%'.$searchName.'%');
         }
-        //Active
-        $searchActive = $searchParam->getActive();
-        if(isset($searchActive) && $form['search']['Active']->isValid())
+        //Status
+        $searchStatus = $searchParam->getStatus();
+        if(isset($searchStatus) && $form['search']['Status']->isValid())
         {
-            $queryBuilder = $queryBuilder->andWhere('u.Active LIKE :Active')
-                ->setParameter('Active', '%'.$searchActive.'%');
+            $queryBuilder = $queryBuilder->andWhere('p.Status = :Status')
+                ->setParameter('Status', $searchStatus);
         }
-        //DisplayName
-        $searchDisplayname = $searchParam->getDisplayname();
-        if(isset($searchDisplayname) && $form['search']['DisplayName']->isValid())
+        //PeriodStart
+        $searchPeriodstart = $searchParam->getPeriodstart();
+        if(isset($searchPeriodstart) && $form['search']['PeriodStart']->isValid())
         {
-            $queryBuilder = $queryBuilder->andWhere('u.DisplayName LIKE :Displayname')
-                ->setParameter('Displayname', '%'.$searchDisplayname.'%');
+            $queryBuilder = $queryBuilder->andWhere('p.PeriodStart = :Periodstart')
+                ->setParameter('Periodstart', $searchPeriodstart);
         }
-        //MailAddress
-        $searchMailaddress = $searchParam->getMailaddress();
-        if(isset($searchMailaddress) && $form['search']['MailAddress']->isValid())
+        //PeriodEnd
+        $searchPeriodend = $searchParam->getPeriodend();
+        if(isset($searchPeriodend) && $form['search']['PeriodEnd']->isValid())
         {
-            $queryBuilder = $queryBuilder->andWhere('u.MailAddress LIKE :Mailaddress')
-                ->setParameter('Mailaddress', '%'.$searchMailaddress.'%');
+            $queryBuilder = $queryBuilder->andWhere('p.PeriodEnd = :Periodend')
+                ->setParameter('Periodend', $searchPeriodend);
         }
 
         //relation 検索
-        //TBDepartmentDepartmentId
-        $searchTbdepartmentdepartmentid = $searchParam->getTbdepartmentdepartmentid();
-        if(isset($searchTbdepartmentdepartmentid) && $form['search']['TBDepartmentDepartmentId']->isValid())
+        //TBCustomerCustomerId
+        $searchTbcustomercustomerid = $searchParam->getTbcustomercustomerid();
+        if(isset($searchTbcustomercustomerid) && $form['search']['TBCustomerCustomerId']->isValid())
         {
-            $queryBuilder = $queryBuilder->andWhere('u.TBDepartmentDepartmentId = :Tbdepartmentdepartmentid')
-                ->setParameter('Tbdepartmentdepartmentid', $searchTbdepartmentdepartmentid);
+            $queryBuilder = $queryBuilder->andWhere('p.TBCustomerCustomerId = :Tbcustomercustomerid')
+                ->setParameter('Tbcustomercustomerid', $searchTbcustomercustomerid);
+        }
+        //TBSystemUserManagerId
+        $searchTbsystemusermanagerid = $searchParam->getTbsystemusermanagerid();
+        if(isset($searchTbsystemusermanagerid) && $form['search']['TBSystemUserManagerId']->isValid())
+        {
+            $queryBuilder = $queryBuilder->andWhere('p.TBSystemUserManagerId = :Tbsystemusermanagerid')
+                ->setParameter('Tbsystemusermanagerid', $searchTbsystemusermanagerid);
         }
 
         //全件数取得
         $queryBuilderCount = clone $queryBuilder;
-        $queryBuilderCount = $queryBuilderCount->select('count(u.id)');
+        $queryBuilderCount = $queryBuilderCount->select('count(p.id)');
         $queryCount = $queryBuilderCount->getQuery();
         $allCount = $queryCount->getSingleScalarResult();
         $pager->setAllCount($allCount);
@@ -162,12 +183,9 @@ class TBSystemUserController extends Controller
         {
             switch($pageSortName)
             {
-                case '5':
-                    $queryBuilder = $queryBuilder->orderBy('d.Name', $pageSortType);
-                    break;
                 default:
                     $sortColumn = $pager->getColumn($pageSortName);
-                    $queryBuilder = $queryBuilder->orderBy('u.'.$sortColumn['db_column_name'], $pageSortType);
+                    $queryBuilder = $queryBuilder->orderBy('p.'.$sortColumn['db_column_name'], $pageSortType);
                     break;
             }
         }
@@ -197,9 +215,9 @@ class TBSystemUserController extends Controller
     }
 
     /**
-     * TBSystemUser新規作成
+     * TBProjectMaster新規作成
      *
-     * @Route("/new", name="systemuser_new")
+     * @Route("/new", name="project_new")
      * @Method({"GET", "POST"})
      * @Template()
      */
@@ -209,8 +227,8 @@ class TBSystemUserController extends Controller
         $request = $this->getRequest();
         $formFactory = $this->get('form.factory');
 
-        $formModel = new TBSystemUser();
-        $formType = new TBSystemUserType();
+        $formModel = new TBProjectMaster();
+        $formType = new TBProjectMasterType();
         $subFormModel = new SubFormModel();
         $subFormType = new SubFormType();
         $subFormModel->setReturnAddress($request->get('ret'));
@@ -252,18 +270,13 @@ class TBSystemUserController extends Controller
                         //登録実行
                         try{
                             $em = $this->getDoctrine()->getManager();
-
-                            $formModel->setSalt('aaa');
-                            $formModel->setPassword('bbb');
-                            $formModel->setDeleteFlag(false);
-
                             $em->persist($formModel);
                             $em->flush();
 
                         }catch (\Exception $e){
                             throw $e;
                         }
-                            return $this->redirect($this->generateUrl('systemuser_show', array('id' => $formModel->getId(), 'ret' => $subFormModel->getReturnAddress())));
+                            return $this->redirect($this->generateUrl('project_show', array('id' => $formModel->getId(), 'ret' => $subFormModel->getReturnAddress())));
                     }
                 }
             }else
@@ -285,9 +298,9 @@ class TBSystemUserController extends Controller
     }
 
     /**
-     * TBSystemUser詳細
+     * TBProjectMaster詳細
      *
-     * @Route("/{id}", name="systemuser_show")
+     * @Route("/{id}", name="project_show")
      * @Method("GET")
      * @Template()
      */
@@ -296,10 +309,10 @@ class TBSystemUserController extends Controller
         $request = $this->getRequest();
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find($id);
+        $entity = $em->getRepository('ArtePCMSPublicBundle:TBProjectMaster')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find TBSystemUser entity.');
+            throw $this->createNotFoundException('Unable to find TBProjectMaster entity.');
         }
 
         //returnUrlデコード
@@ -312,9 +325,9 @@ class TBSystemUserController extends Controller
     }
 
     /**
-     * TBSystemUser編集
+     * TBProjectMaster編集
      *
-     * @Route("/edit/{id}", name="systemuser_edit")
+     * @Route("/edit/{id}", name="project_edit")
      * @Method({"GET", "POST"})
      * @Template()
      */
@@ -324,13 +337,13 @@ class TBSystemUserController extends Controller
         $request = $this->getRequest();
         $formFactory = $this->get('form.factory');
 
-        $formType = new TBSystemUserType();
+        $formType = new TBProjectMasterType();
         $subFormModel = new SubFormModel();
         $subFormType = new SubFormType();
         $subFormModel->setReturnAddress($request->get('ret'));
 
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find($id);
+        $entity = $em->getRepository('ArtePCMSPublicBundle:TBProjectMaster')->find($id);
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find SystemUser entity.');
         }
@@ -377,7 +390,7 @@ class TBSystemUserController extends Controller
                         }catch (\Exception $e){
                             throw $e;
                         }
-                        return $this->redirect($this->generateUrl('systemuser_show', array('id' => $entity->getId(), 'ret' => $subFormModel->getReturnAddress())));
+                        return $this->redirect($this->generateUrl('project_show', array('id' => $entity->getId(), 'ret' => $subFormModel->getReturnAddress())));
                     }
                 }
             }else
@@ -397,9 +410,9 @@ class TBSystemUserController extends Controller
         );
     }
     /**
-     * TBSystemUser削除
+     * TBProjectMaster削除
      *
-     * @Route("/delete/{id}", name="systemuser_delete")
+     * @Route("/delete/{id}", name="project_delete")
      * @Method({"GET", "POST"})
      * @Template()
      */
@@ -416,10 +429,10 @@ class TBSystemUserController extends Controller
             ->getForm();
 
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find($id);
+        $entity = $em->getRepository('ArtePCMSPublicBundle:TBProjectMaster')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find TBSystemUser entity.');
+            throw $this->createNotFoundException('Unable to find TBProjectMaster entity.');
         }
 
         if($request->isMethod('POST'))
@@ -428,10 +441,7 @@ class TBSystemUserController extends Controller
             if ($form->isValid()) {
 
                 try{
-
-                    $entity->setDeleteFlag(true);
-
-                    $em->persist($entity);
+                    $em->remove($entity);
                     $em->flush();
 
                 }catch (\Exception $e){
@@ -440,7 +450,7 @@ class TBSystemUserController extends Controller
                 $data = $form->getData();
                 //returnUrlデコード
                 $returnUrlQueryString = urldecode($data['returnAddress']);
-                return $this->redirect($this->generateUrl('systemuser').'?'.$returnUrlQueryString);
+                return $this->redirect($this->generateUrl('watertank').'?'.$returnUrlQueryString);
             }
         }
 

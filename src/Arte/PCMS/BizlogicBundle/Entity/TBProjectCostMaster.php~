@@ -32,17 +32,17 @@ class TBProjectCostMaster
     /**
      * @var integer
      */
-    private $TypeNo;
-
-    /**
-     * @var integer
-     */
     private $SortNo;
 
     /**
      * @var boolean
      */
     private $DeleteFlag;
+
+    /**
+     * @var string
+     */
+    private $HierarchyPath;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -142,29 +142,6 @@ class TBProjectCostMaster
     }
 
     /**
-     * Set TypeNo
-     *
-     * @param integer $typeNo
-     * @return TBProjectCostMaster
-     */
-    public function setTypeNo($typeNo)
-    {
-        $this->TypeNo = $typeNo;
-    
-        return $this;
-    }
-
-    /**
-     * Get TypeNo
-     *
-     * @return integer 
-     */
-    public function getTypeNo()
-    {
-        return $this->TypeNo;
-    }
-
-    /**
      * Set SortNo
      *
      * @param integer $sortNo
@@ -208,6 +185,29 @@ class TBProjectCostMaster
     public function getDeleteFlag()
     {
         return $this->DeleteFlag;
+    }
+
+    /**
+     * Set HierarchyPath
+     *
+     * @param string $hierarchyPath
+     * @return TBProjectCostMaster
+     */
+    public function setHierarchyPath($hierarchyPath)
+    {
+        $this->HierarchyPath = $hierarchyPath;
+    
+        return $this;
+    }
+
+    /**
+     * Get HierarchyPath
+     *
+     * @return string 
+     */
+    public function getHierarchyPath()
+    {
+        return $this->HierarchyPath;
     }
 
     /**

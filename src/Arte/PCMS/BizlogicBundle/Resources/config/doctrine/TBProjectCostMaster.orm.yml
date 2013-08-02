@@ -17,14 +17,15 @@ Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster:
         Cost:
             type: integer
             nullable: true
-        TypeNo:
-            type: integer
-            nullable: true
         SortNo:
             type: integer
             nullable: true
         DeleteFlag:
             type: boolean
+            nullable: true
+        HierarchyPath:
+            type: string
+            length: 255
             nullable: true
     oneToMany:
         TBProductionCostsProjectCostMasterId:

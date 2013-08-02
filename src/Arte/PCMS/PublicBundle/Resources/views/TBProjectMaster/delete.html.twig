@@ -1,0 +1,78 @@
+{% extends 'ArtePCMSPublicBundle:TBProjectMaster:layout.html.twig' %}
+
+{% block body -%}
+    <header>
+        <h1>TBProjectMaster削除</h1>
+    </header>
+
+    <section class="section">
+        <h1 class="caption"><span id="selectFolderName">TBProjectMaster詳細</span></h1>
+        <div class="functionListArea">
+            <ul class="functionList clearfix">
+                <li class="home"><a href="{{ path('project') }}?{{ returnUrlParam|raw }}">一覧へもどる</a></li>
+            </ul>
+        </div>
+        <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
+                <tr>
+                    <th scope="row">Id</th>
+                        <td>{{ entity.id }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Name</th>
+                        <td>{{ entity.Name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Status</th>
+                        <td>{{ entity.Status }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Explanation</th>
+                        <td>{{ entity.Explanation }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Customerid</th>
+                        <td>{{ entity.CustomerId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Deleteflag</th>
+                        <td>{{ entity.DeleteFlag }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Periodstart</th>
+                        <td>{{ entity.PeriodStart|date('Y-m-d H:i:s') }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Periodend</th>
+                        <td>{{ entity.PeriodEnd|date('Y-m-d H:i:s') }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Managerid</th>
+                        <td>{{ entity.ManagerId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Estimatefilepath</th>
+                        <td>{{ entity.EstimateFilePath }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Schedulefilepath</th>
+                        <td>{{ entity.ScheduleFilePath }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tbcustomercustomerid</th>
+                    <td>{{ entity.TBCustomerCustomerId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tbsystemusermanagerid</th>
+                    <td>{{ entity.TBSystemUserManagerId }}</td>
+                </tr>
+        </table>
+        <form action="{{ path('project_delete', { 'id': entity.id }) }}" novalidate method="post" {{ form_enctype(form) }} name="project_delete_form">
+
+            <div class="submit_box">
+                <input type="submit" value="削除" style="width:100px;"/>
+            </div>
+
+            {{ form_end(form) }}
+    </section>
+
+{% endblock %}

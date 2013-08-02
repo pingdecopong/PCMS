@@ -24,7 +24,19 @@ class TBCustomer
      */
     private $DeleteFlag;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $TBProjectMastersCustomerId;
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->TBProjectMastersCustomerId = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
     /**
      * Get id
      *
@@ -80,19 +92,7 @@ class TBCustomer
     {
         return $this->DeleteFlag;
     }
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $TBProjectMastersCustomerId;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->TBProjectMastersCustomerId = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-    
     /**
      * Add TBProjectMastersCustomerId
      *

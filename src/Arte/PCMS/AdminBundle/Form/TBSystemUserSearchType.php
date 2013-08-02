@@ -12,7 +12,7 @@ class TBSystemUserSearchType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('LoginId', 'text', array(
+            ->add('Username', 'text', array(
                 'label'     => 'ログインID',
                 'required'  => false,
                 'max_length' => 50,

@@ -3,11 +3,12 @@
 namespace Arte\PCMS\BizlogicBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * TBSystemUser
  */
-class TBSystemUser
+class TBSystemUser implements UserInterface, \Serializable
 {
     /**
      * @var integer
@@ -17,7 +18,7 @@ class TBSystemUser
     /**
      * @var string
      */
-    private $LoginId;
+    private $Username;
 
     /**
      * @var string
@@ -80,6 +81,11 @@ class TBSystemUser
     private $TBProjectUsersSystemUserId;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $TBProjectMastersManagerId;
+
+    /**
      * @var \Arte\PCMS\BizlogicBundle\Entity\TBDepartment
      */
     private $TBDepartmentDepartmentId;
@@ -90,6 +96,7 @@ class TBSystemUser
     public function __construct()
     {
         $this->TBProjectUsersSystemUserId = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->TBProjectMastersManagerId = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -103,26 +110,26 @@ class TBSystemUser
     }
 
     /**
-     * Set LoginId
+     * Set Username
      *
-     * @param string $loginId
+     * @param string $username
      * @return TBSystemUser
      */
-    public function setLoginId($loginId)
+    public function setUsername($username)
     {
-        $this->LoginId = $loginId;
+        $this->Username = $username;
     
         return $this;
     }
 
     /**
-     * Get LoginId
+     * Get Username
      *
      * @return string 
      */
-    public function getLoginId()
+    public function getUsername()
     {
-        return $this->LoginId;
+        return $this->Username;
     }
 
     /**
@@ -412,6 +419,39 @@ class TBSystemUser
     }
 
     /**
+     * Add TBProjectMastersManagerId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMastersManagerId
+     * @return TBSystemUser
+     */
+    public function addTBProjectMastersManagerId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMastersManagerId)
+    {
+        $this->TBProjectMastersManagerId[] = $tBProjectMastersManagerId;
+    
+        return $this;
+    }
+
+    /**
+     * Remove TBProjectMastersManagerId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMastersManagerId
+     */
+    public function removeTBProjectMastersManagerId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMastersManagerId)
+    {
+        $this->TBProjectMastersManagerId->removeElement($tBProjectMastersManagerId);
+    }
+
+    /**
+     * Get TBProjectMastersManagerId
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTBProjectMastersManagerId()
+    {
+        return $this->TBProjectMastersManagerId;
+    }
+
+    /**
      * Set TBDepartmentDepartmentId
      *
      * @param \Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tBDepartmentDepartmentId
@@ -432,5 +472,37 @@ class TBSystemUser
     public function getTBDepartmentDepartmentId()
     {
         return $this->TBDepartmentDepartmentId;
+    }
+
+    public function getRoles()
+    {
+        return array('ROLE_USER');
+    }
+    public function eraseCredentials()
+    {
+    }
+    /**
+     * @see \Serializable::serialize()
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+        ));
+    }
+
+    /**
+     * @see \Serializable::unserialize()
+     */
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+            ) = unserialize($serialized);
+    }
+
+    public function getName()
+    {
+        return $this->DisplayName;
     }
 }

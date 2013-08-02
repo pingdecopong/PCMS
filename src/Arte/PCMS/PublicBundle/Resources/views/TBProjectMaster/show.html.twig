@@ -1,0 +1,72 @@
+{% extends 'ArtePCMSPublicBundle:TBProjectMaster:layout.html.twig' %}
+
+{% block body -%}
+    <header>
+        <h1>TBProjectMaster詳細</h1>
+    </header>
+    <section class="section">
+        <h1 class="caption"><span id="selectFolderName">TBProjectMaster詳細</span></h1>
+        <div class="functionListArea">
+            <ul class="functionList clearfix">
+                <li class="home"><a href="{{ path('project') }}?{{ returnUrlParam|raw }}">一覧へもどる</a></li>
+                <li class="home"><a href="{{ path('project_edit', { 'id': entity.id }) }}?ret={{ app.request.get('ret')|raw }}">編集</a></li>
+                <li class="home"><a href="{{ path('project_delete', { 'id': entity.id }) }}?ret={{ app.request.get('ret')|raw }}">削除</a></li>
+            </ul>
+        </div>
+        <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
+                <tr>
+                    <th scope="row">Id</th>
+                        <td>{{ entity.id }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Name</th>
+                        <td>{{ entity.Name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Status</th>
+                        <td>{{ entity.Status }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Explanation</th>
+                        <td>{{ entity.Explanation }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Customerid</th>
+                        <td>{{ entity.CustomerId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Deleteflag</th>
+                        <td>{{ entity.DeleteFlag }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Periodstart</th>
+                        <td>{% if entity.PeriodStart %}{{ entity.PeriodStart|date('Y-m-d') }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Periodend</th>
+                        <td>{% if entity.PeriodEnd %}{{ entity.PeriodEnd|date('Y-m-d') }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Managerid</th>
+                        <td>{{ entity.ManagerId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Estimatefilepath</th>
+                        <td>{{ entity.EstimateFilePath }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Schedulefilepath</th>
+                        <td>{{ entity.ScheduleFilePath }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tbcustomercustomerid</th>
+                    <td>{{ entity.TBCustomerCustomerId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tbsystemusermanagerid</th>
+                    <td>{{ entity.TBSystemUserManagerId }}</td>
+                </tr>
+        </table>
+    </section>
+
+{% endblock %}
