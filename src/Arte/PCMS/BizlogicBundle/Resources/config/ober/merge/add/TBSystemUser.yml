@@ -1,0 +1,2 @@
+Arte\PCMS\BizlogicBundle\Entity\TBSystemUser:
+    repositoryClass: Arte\PCMS\BizlogicBundle\Entity\TBSystemUserRepository

@@ -5,9 +5,9 @@ namespace Arte\PCMS\BizlogicBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * TBProjectUser
+ * VProjectUser
  */
-class TBProjectUser
+class VProjectUser
 {
     /**
      * @var integer
@@ -35,9 +35,9 @@ class TBProjectUser
     private $TBSystemUserSystemUserId;
 
     /**
-     * @var \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster
+     * @var \Arte\PCMS\BizlogicBundle\Entity\VProjectView
      */
-    private $TBProjectMasterProjectMasterId;
+    private $VProjectViewProjectMasterId;
 
 
     /**
@@ -54,7 +54,7 @@ class TBProjectUser
      * Set SystemUserId
      *
      * @param integer $systemUserId
-     * @return TBProjectUser
+     * @return VProjectUser
      */
     public function setSystemUserId($systemUserId)
     {
@@ -77,7 +77,7 @@ class TBProjectUser
      * Set ProjectMasterId
      *
      * @param integer $projectMasterId
-     * @return TBProjectUser
+     * @return VProjectUser
      */
     public function setProjectMasterId($projectMasterId)
     {
@@ -100,7 +100,7 @@ class TBProjectUser
      * Set RoleNo
      *
      * @param integer $roleNo
-     * @return TBProjectUser
+     * @return VProjectUser
      */
     public function setRoleNo($roleNo)
     {
@@ -123,7 +123,7 @@ class TBProjectUser
      * Set TBSystemUserSystemUserId
      *
      * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUserSystemUserId
-     * @return TBProjectUser
+     * @return VProjectUser
      */
     public function setTBSystemUserSystemUserId(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUserSystemUserId = null)
     {
@@ -143,25 +143,25 @@ class TBProjectUser
     }
 
     /**
-     * Set TBProjectMasterProjectMasterId
+     * Set VProjectViewProjectMasterId
      *
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMasterProjectMasterId
-     * @return TBProjectUser
+     * @param \Arte\PCMS\BizlogicBundle\Entity\VProjectView $vProjectViewProjectMasterId
+     * @return VProjectUser
      */
-    public function setTBProjectMasterProjectMasterId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMasterProjectMasterId = null)
+    public function setVProjectViewProjectMasterId(\Arte\PCMS\BizlogicBundle\Entity\VProjectView $vProjectViewProjectMasterId = null)
     {
-        $this->TBProjectMasterProjectMasterId = $tBProjectMasterProjectMasterId;
+        $this->VProjectViewProjectMasterId = $vProjectViewProjectMasterId;
     
         return $this;
     }
 
     /**
-     * Get TBProjectMasterProjectMasterId
+     * Get VProjectViewProjectMasterId
      *
-     * @return \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster 
+     * @return \Arte\PCMS\BizlogicBundle\Entity\VProjectView 
      */
-    public function getTBProjectMasterProjectMasterId()
+    public function getVProjectViewProjectMasterId()
     {
-        return $this->TBProjectMasterProjectMasterId;
+        return $this->VProjectViewProjectMasterId;
     }
 }

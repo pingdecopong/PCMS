@@ -18,5 +18,8 @@ Arte\PCMS\BizlogicBundle\Entity\TBCustomer:
         TBProjectMastersCustomerId:
             targetEntity: TBProjectMaster
             mappedBy: TBCustomerCustomerId
+        VProjectViewsCustomerId:
+            targetEntity: VProjectView
+            mappedBy: TBCustomerCustomerId
     manyToOne: {  }
     manyToMany: {  }

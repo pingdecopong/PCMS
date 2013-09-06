@@ -1,0 +1,34 @@
+Arte\PCMS\BizlogicBundle\Entity\VProjectUser:
+    indexes: {  }
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        SystemUserId:
+            type: integer
+            nullable: false
+        ProjectMasterId:
+            type: integer
+            nullable: false
+        RoleNo:
+            type: integer
+            nullable: false
+    oneToMany: {  }
+    manyToOne:
+        TBSystemUserSystemUserId:
+            targetEntity: TBSystemUser
+            inversedBy: VProjectUsersSystemUserId
+            joinColumns:
+                SystemUserId:
+                    referencedColumnName: id
+        VProjectViewProjectMasterId:
+            targetEntity: VProjectView
+            inversedBy: VProjectUsersProjectMasterId
+            joinColumns:
+                ProjectMasterId:
+                    referencedColumnName: id
+    manyToMany: {  }
+    type: mappedSuperclass
+    readOnly: true

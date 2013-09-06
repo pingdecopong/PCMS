@@ -145,9 +145,13 @@
                     <td>{% if entity.PeriodEnd %}{{ entity.PeriodEnd|date('Y-m-d') }}{% endif %}</td>
                     <td>{{ entity.TBSystemUserManagerId is null ? "" : entity.TBSystemUserManagerId.Name }}</td>
                     <td>{{ entity.Status }}</td>
-                    <td>a</td>
-                    <td>b</td>
 
+                    <td>{{ entity.ProjectTotalCost }}</td>
+                    <td>{{ entity.ProductionTotalCost }}</td>
+{#
+                    <td>{% if pcmTotal[entity.id] is defined %}{{ pcmTotal[entity.id] }}{% endif %}</td>
+                    <td>{% if pcTotal[entity.id] is defined %}{{ pcTotal[entity.id] }}{% endif %}</td>
+#}
                     <td class="function_icon_cell">
                         <a href="{{ path('project_show', { 'id': entity.id, ret: returnUrlParam }) }}"><img src="{{ asset('bundles/pingdecopongpdpgenerator/img/table.png') }}" width="16" height="16"></a>
                     </td>

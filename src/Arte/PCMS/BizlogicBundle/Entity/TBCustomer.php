@@ -30,11 +30,17 @@ class TBCustomer
     private $TBProjectMastersCustomerId;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $VProjectViewsCustomerId;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->TBProjectMastersCustomerId = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->VProjectViewsCustomerId = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -124,5 +130,38 @@ class TBCustomer
     public function getTBProjectMastersCustomerId()
     {
         return $this->TBProjectMastersCustomerId;
+    }
+
+    /**
+     * Add VProjectViewsCustomerId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\VProjectView $vProjectViewsCustomerId
+     * @return TBCustomer
+     */
+    public function addVProjectViewsCustomerId(\Arte\PCMS\BizlogicBundle\Entity\VProjectView $vProjectViewsCustomerId)
+    {
+        $this->VProjectViewsCustomerId[] = $vProjectViewsCustomerId;
+    
+        return $this;
+    }
+
+    /**
+     * Remove VProjectViewsCustomerId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\VProjectView $vProjectViewsCustomerId
+     */
+    public function removeVProjectViewsCustomerId(\Arte\PCMS\BizlogicBundle\Entity\VProjectView $vProjectViewsCustomerId)
+    {
+        $this->VProjectViewsCustomerId->removeElement($vProjectViewsCustomerId);
+    }
+
+    /**
+     * Get VProjectViewsCustomerId
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getVProjectViewsCustomerId()
+    {
+        return $this->VProjectViewsCustomerId;
     }
 }

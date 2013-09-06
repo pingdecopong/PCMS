@@ -1,7 +1,9 @@
 Arte\PCMS\BizlogicBundle\Entity\TBSystemUser:
     type: entity
-    repositoryClass: Arte\PCMS\BizlogicBundle\Entity\TBSystemUserRepository
-    indexes: {  }
+    indexes:
+        IX_TBSystemUser:
+            columns:
+                - Username
     id:
         id:
             type: integer
@@ -58,6 +60,15 @@ Arte\PCMS\BizlogicBundle\Entity\TBSystemUser:
         TBProjectMastersManagerId:
             targetEntity: TBProjectMaster
             mappedBy: TBSystemUserManagerId
+        VProjectUsersSystemUserId:
+            targetEntity: VProjectUser
+            mappedBy: TBSystemUserSystemUserId
+        VProjectViewsManagerId:
+            targetEntity: VProjectView
+            mappedBy: TBSystemUserManagerId
+        TBProductionCostsSystemUserId:
+            targetEntity: TBProductionCost
+            mappedBy: TBSystemUserSystemUserId
     manyToOne:
         TBDepartmentDepartmentId:
             targetEntity: TBDepartment
@@ -66,3 +77,4 @@ Arte\PCMS\BizlogicBundle\Entity\TBSystemUser:
                 DepartmentId:
                     referencedColumnName: id
     manyToMany: {  }
+    repositoryClass: Arte\PCMS\BizlogicBundle\Entity\TBSystemUserRepository

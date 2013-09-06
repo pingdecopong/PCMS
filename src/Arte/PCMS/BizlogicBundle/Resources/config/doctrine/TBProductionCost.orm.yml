@@ -10,12 +10,21 @@ Arte\PCMS\BizlogicBundle\Entity\TBProductionCost:
         ProjectCostMasterId:
             type: integer
             nullable: false
+        SystemUserId:
+            type: integer
+            nullable: false
+        WorkDate:
+            type: date
+            nullable: false
         Cost:
             type: integer
-            nullable: true
+            nullable: false
         Note:
             type: text
             nullable: true
+        DeleteFlag:
+            type: boolean
+            nullable: false
     oneToMany: {  }
     manyToOne:
         TBProjectCostMasterProjectCostMasterId:
@@ -23,5 +32,11 @@ Arte\PCMS\BizlogicBundle\Entity\TBProductionCost:
             inversedBy: TBProductionCostsProjectCostMasterId
             joinColumns:
                 ProjectCostMasterId:
+                    referencedColumnName: id
+        TBSystemUserSystemUserId:
+            targetEntity: TBSystemUser
+            inversedBy: TBProductionCostsSystemUserId
+            joinColumns:
+                SystemUserId:
                     referencedColumnName: id
     manyToMany: {  }

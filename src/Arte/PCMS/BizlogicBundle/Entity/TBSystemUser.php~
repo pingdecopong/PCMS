@@ -86,6 +86,21 @@ class TBSystemUser implements UserInterface, \Serializable
     private $TBProjectMastersManagerId;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $VProjectUsersSystemUserId;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $VProjectViewsManagerId;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $TBProductionCostsSystemUserId;
+
+    /**
      * @var \Arte\PCMS\BizlogicBundle\Entity\TBDepartment
      */
     private $TBDepartmentDepartmentId;
@@ -97,8 +112,43 @@ class TBSystemUser implements UserInterface, \Serializable
     {
         $this->TBProjectUsersSystemUserId = new \Doctrine\Common\Collections\ArrayCollection();
         $this->TBProjectMastersManagerId = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->VProjectUsersSystemUserId = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->VProjectViewsManagerId = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->TBProductionCostsSystemUserId = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
+    public function getRoles()
+    {
+        return array('ROLE_USER');
+    }
+    public function eraseCredentials()
+    {
+    }
+    /**
+     * @see \Serializable::serialize()
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+        ));
+    }
+
+    /**
+     * @see \Serializable::unserialize()
+     */
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+            ) = unserialize($serialized);
+    }
+
+    public function getName()
+    {
+        return $this->DisplayName;
+    }
+
     /**
      * Get id
      *
@@ -452,6 +502,105 @@ class TBSystemUser implements UserInterface, \Serializable
     }
 
     /**
+     * Add VProjectUsersSystemUserId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\VProjectUser $vProjectUsersSystemUserId
+     * @return TBSystemUser
+     */
+    public function addVProjectUsersSystemUserId(\Arte\PCMS\BizlogicBundle\Entity\VProjectUser $vProjectUsersSystemUserId)
+    {
+        $this->VProjectUsersSystemUserId[] = $vProjectUsersSystemUserId;
+    
+        return $this;
+    }
+
+    /**
+     * Remove VProjectUsersSystemUserId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\VProjectUser $vProjectUsersSystemUserId
+     */
+    public function removeVProjectUsersSystemUserId(\Arte\PCMS\BizlogicBundle\Entity\VProjectUser $vProjectUsersSystemUserId)
+    {
+        $this->VProjectUsersSystemUserId->removeElement($vProjectUsersSystemUserId);
+    }
+
+    /**
+     * Get VProjectUsersSystemUserId
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getVProjectUsersSystemUserId()
+    {
+        return $this->VProjectUsersSystemUserId;
+    }
+
+    /**
+     * Add VProjectViewsManagerId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\VProjectView $vProjectViewsManagerId
+     * @return TBSystemUser
+     */
+    public function addVProjectViewsManagerId(\Arte\PCMS\BizlogicBundle\Entity\VProjectView $vProjectViewsManagerId)
+    {
+        $this->VProjectViewsManagerId[] = $vProjectViewsManagerId;
+    
+        return $this;
+    }
+
+    /**
+     * Remove VProjectViewsManagerId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\VProjectView $vProjectViewsManagerId
+     */
+    public function removeVProjectViewsManagerId(\Arte\PCMS\BizlogicBundle\Entity\VProjectView $vProjectViewsManagerId)
+    {
+        $this->VProjectViewsManagerId->removeElement($vProjectViewsManagerId);
+    }
+
+    /**
+     * Get VProjectViewsManagerId
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getVProjectViewsManagerId()
+    {
+        return $this->VProjectViewsManagerId;
+    }
+
+    /**
+     * Add TBProductionCostsSystemUserId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProductionCost $tBProductionCostsSystemUserId
+     * @return TBSystemUser
+     */
+    public function addTBProductionCostsSystemUserId(\Arte\PCMS\BizlogicBundle\Entity\TBProductionCost $tBProductionCostsSystemUserId)
+    {
+        $this->TBProductionCostsSystemUserId[] = $tBProductionCostsSystemUserId;
+    
+        return $this;
+    }
+
+    /**
+     * Remove TBProductionCostsSystemUserId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProductionCost $tBProductionCostsSystemUserId
+     */
+    public function removeTBProductionCostsSystemUserId(\Arte\PCMS\BizlogicBundle\Entity\TBProductionCost $tBProductionCostsSystemUserId)
+    {
+        $this->TBProductionCostsSystemUserId->removeElement($tBProductionCostsSystemUserId);
+    }
+
+    /**
+     * Get TBProductionCostsSystemUserId
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTBProductionCostsSystemUserId()
+    {
+        return $this->TBProductionCostsSystemUserId;
+    }
+
+    /**
      * Set TBDepartmentDepartmentId
      *
      * @param \Arte\PCMS\BizlogicBundle\Entity\TBDepartment $tBDepartmentDepartmentId
@@ -472,32 +621,5 @@ class TBSystemUser implements UserInterface, \Serializable
     public function getTBDepartmentDepartmentId()
     {
         return $this->TBDepartmentDepartmentId;
-    }
-
-    public function getRoles()
-    {
-        return array('ROLE_USER');
-    }
-    public function eraseCredentials()
-    {
-    }
-    /**
-     * @see \Serializable::serialize()
-     */
-    public function serialize()
-    {
-        return serialize(array(
-            $this->id,
-        ));
-    }
-
-    /**
-     * @see \Serializable::unserialize()
-     */
-    public function unserialize($serialized)
-    {
-        list (
-            $this->id,
-            ) = unserialize($serialized);
     }
 }

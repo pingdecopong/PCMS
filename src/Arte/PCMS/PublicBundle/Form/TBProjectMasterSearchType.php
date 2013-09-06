@@ -58,6 +58,7 @@ class TBProjectMasterSearchType extends AbstractType
         
 //            ->add('TBCustomerCustomerId')
 //            ->add('TBSystemUserManagerId')
+
             ->add('TBCustomerCustomerId', 'entity', array(
                 'label' => '顧客',
                 'required' => false,
@@ -66,10 +67,12 @@ class TBProjectMasterSearchType extends AbstractType
                 'property' => 'Name',
                 'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('d')
+                        ->select('partial d.{id, Name}')
                         ->andWhere('d.DeleteFlag = :DeleteFlag')
                         ->setParameter('DeleteFlag', false);
                 },
             ))
+
             ->add('TBSystemUserManagerId', 'entity', array(
                 'label' => '管理者',
                 'required' => false,
@@ -78,6 +81,7 @@ class TBProjectMasterSearchType extends AbstractType
                 'property' => 'Name',
                 'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('d')
+                        ->select('partial d.{id, DisplayName}')
                         ->andWhere('d.DeleteFlag = :DeleteFlag')
                         ->setParameter('DeleteFlag', false);
                 },

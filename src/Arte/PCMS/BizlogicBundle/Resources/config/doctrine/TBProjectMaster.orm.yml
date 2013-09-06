@@ -46,6 +46,9 @@ Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster:
         TBProjectCostMastersProjectMasterId:
             targetEntity: TBProjectCostMaster
             mappedBy: TBProjectMasterProjectMasterId
+        TBProjectCostHierarchyMastersTBProjectMasterId:
+            targetEntity: TBProjectCostHierarchyMaster
+            mappedBy: TBProjectMasterTBProjectMasterId
     manyToOne:
         TBCustomerCustomerId:
             targetEntity: TBCustomer

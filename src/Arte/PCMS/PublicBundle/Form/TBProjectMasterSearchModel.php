@@ -75,12 +75,12 @@ class TBProjectMasterSearchModel
     private $TBProjectCostMastersProjectMasterId;
 
     /**
-     * @var \Arte\PCMS\PublicBundle\Entity\TBCustomer
+     * @var \Arte\PCMS\BizlogicBundle\Entity\TBCustomer
      */
     private $TBCustomerCustomerId;
 
     /**
-     * @var \Arte\PCMS\PublicBundle\Entity\TBSystemUser
+     * @var \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser
      */
     private $TBSystemUserManagerId;
 
@@ -336,10 +336,10 @@ class TBProjectMasterSearchModel
     /**
      * Add TBProjectUsersProjectMasterId
      *
-     * @param \Arte\PCMS\PublicBundle\Entity\TBProjectUser $tBProjectUsersProjectMasterId
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectUser $tBProjectUsersProjectMasterId
      * @return TBProjectMasterSearchModel
      */
-    public function addTBProjectUsersProjectMasterId(\Arte\PCMS\PublicBundle\Entity\TBProjectUser $tBProjectUsersProjectMasterId)
+    public function addTBProjectUsersProjectMasterId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectUser $tBProjectUsersProjectMasterId)
     {
         $this->TBProjectUsersProjectMasterId[] = $tBProjectUsersProjectMasterId;
     
@@ -349,9 +349,9 @@ class TBProjectMasterSearchModel
     /**
      * Remove TBProjectUsersProjectMasterId
      *
-     * @param \Arte\PCMS\PublicBundle\Entity\TBProjectUser $tBProjectUsersProjectMasterId
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectUser $tBProjectUsersProjectMasterId
      */
-    public function removeTBProjectUsersProjectMasterId(\Arte\PCMS\PublicBundle\Entity\TBProjectUser $tBProjectUsersProjectMasterId)
+    public function removeTBProjectUsersProjectMasterId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectUser $tBProjectUsersProjectMasterId)
     {
         $this->TBProjectUsersProjectMasterId->removeElement($tBProjectUsersProjectMasterId);
     }
@@ -369,10 +369,10 @@ class TBProjectMasterSearchModel
     /**
      * Add TBProjectCostMastersProjectMasterId
      *
-     * @param \Arte\PCMS\PublicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersProjectMasterId
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersProjectMasterId
      * @return TBProjectMasterSearchModel
      */
-    public function addTBProjectCostMastersProjectMasterId(\Arte\PCMS\PublicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersProjectMasterId)
+    public function addTBProjectCostMastersProjectMasterId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersProjectMasterId)
     {
         $this->TBProjectCostMastersProjectMasterId[] = $tBProjectCostMastersProjectMasterId;
     
@@ -382,9 +382,9 @@ class TBProjectMasterSearchModel
     /**
      * Remove TBProjectCostMastersProjectMasterId
      *
-     * @param \Arte\PCMS\PublicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersProjectMasterId
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersProjectMasterId
      */
-    public function removeTBProjectCostMastersProjectMasterId(\Arte\PCMS\PublicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersProjectMasterId)
+    public function removeTBProjectCostMastersProjectMasterId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersProjectMasterId)
     {
         $this->TBProjectCostMastersProjectMasterId->removeElement($tBProjectCostMastersProjectMasterId);
     }
@@ -402,10 +402,10 @@ class TBProjectMasterSearchModel
     /**
      * Set TBCustomerCustomerId
      *
-     * @param \Arte\PCMS\PublicBundle\Entity\TBCustomer $tBCustomerCustomerId
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBCustomer $tBCustomerCustomerId
      * @return TBProjectMasterSearchModel
      */
-    public function setTBCustomerCustomerId(\Arte\PCMS\PublicBundle\Entity\TBCustomer $tBCustomerCustomerId = null)
+    public function setTBCustomerCustomerId(\Arte\PCMS\BizlogicBundle\Entity\TBCustomer $tBCustomerCustomerId = null)
     {
         $this->TBCustomerCustomerId = $tBCustomerCustomerId;
     
@@ -415,7 +415,7 @@ class TBProjectMasterSearchModel
     /**
      * Get TBCustomerCustomerId
      *
-     * @return \Arte\PCMS\PublicBundle\Entity\TBCustomer 
+     * @return \Arte\PCMS\BizlogicBundle\Entity\TBCustomer
      */
     public function getTBCustomerCustomerId()
     {
@@ -425,10 +425,10 @@ class TBProjectMasterSearchModel
     /**
      * Set TBSystemUserManagerId
      *
-     * @param \Arte\PCMS\PublicBundle\Entity\TBSystemUser $tBSystemUserManagerId
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUserManagerId
      * @return TBProjectMasterSearchModel
      */
-    public function setTBSystemUserManagerId(\Arte\PCMS\PublicBundle\Entity\TBSystemUser $tBSystemUserManagerId = null)
+    public function setTBSystemUserManagerId(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUserManagerId = null)
     {
         $this->TBSystemUserManagerId = $tBSystemUserManagerId;
     
@@ -438,7 +438,7 @@ class TBProjectMasterSearchModel
     /**
      * Get TBSystemUserManagerId
      *
-     * @return \Arte\PCMS\PublicBundle\Entity\TBSystemUser 
+     * @return \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser
      */
     public function getTBSystemUserManagerId()
     {

@@ -265,4 +265,60 @@ class TBProjectCostMaster
     {
         return $this->TBProjectMasterProjectMasterId;
     }
+    /**
+     * @var integer
+     */
+    private $TBProjectCostHierarchyMasterId;
+
+    /**
+     * @var \Arte\PCMS\BizlogicBundle\Entity\TBProjectCostHierarchyMaster
+     */
+    private $TBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId;
+
+
+    /**
+     * Set TBProjectCostHierarchyMasterId
+     *
+     * @param integer $tBProjectCostHierarchyMasterId
+     * @return TBProjectCostMaster
+     */
+    public function setTBProjectCostHierarchyMasterId($tBProjectCostHierarchyMasterId)
+    {
+        $this->TBProjectCostHierarchyMasterId = $tBProjectCostHierarchyMasterId;
+    
+        return $this;
+    }
+
+    /**
+     * Get TBProjectCostHierarchyMasterId
+     *
+     * @return integer 
+     */
+    public function getTBProjectCostHierarchyMasterId()
+    {
+        return $this->TBProjectCostHierarchyMasterId;
+    }
+
+    /**
+     * Set TBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectCostHierarchyMaster $tBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId
+     * @return TBProjectCostMaster
+     */
+    public function setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectCostHierarchyMaster $tBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId = null)
+    {
+        $this->TBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId = $tBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId;
+    
+        return $this;
+    }
+
+    /**
+     * Get TBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId
+     *
+     * @return \Arte\PCMS\BizlogicBundle\Entity\TBProjectCostHierarchyMaster 
+     */
+    public function getTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId()
+    {
+        return $this->TBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId;
+    }
 }

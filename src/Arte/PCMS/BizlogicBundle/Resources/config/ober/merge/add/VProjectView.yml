@@ -1,0 +1,3 @@
+Arte\PCMS\BizlogicBundle\Entity\VProjectView:
+    type: mappedSuperclass
+    readOnly: true

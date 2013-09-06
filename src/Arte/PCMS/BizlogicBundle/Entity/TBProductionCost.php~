@@ -22,6 +22,16 @@ class TBProductionCost
     /**
      * @var integer
      */
+    private $SystemUserId;
+
+    /**
+     * @var \DateTime
+     */
+    private $WorkDate;
+
+    /**
+     * @var integer
+     */
     private $Cost;
 
     /**
@@ -30,9 +40,19 @@ class TBProductionCost
     private $Note;
 
     /**
+     * @var boolean
+     */
+    private $DeleteFlag;
+
+    /**
      * @var \Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster
      */
     private $TBProjectCostMasterProjectCostMasterId;
+
+    /**
+     * @var \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser
+     */
+    private $TBSystemUserSystemUserId;
 
 
     /**
@@ -66,6 +86,52 @@ class TBProductionCost
     public function getProjectCostMasterId()
     {
         return $this->ProjectCostMasterId;
+    }
+
+    /**
+     * Set SystemUserId
+     *
+     * @param integer $systemUserId
+     * @return TBProductionCost
+     */
+    public function setSystemUserId($systemUserId)
+    {
+        $this->SystemUserId = $systemUserId;
+    
+        return $this;
+    }
+
+    /**
+     * Get SystemUserId
+     *
+     * @return integer 
+     */
+    public function getSystemUserId()
+    {
+        return $this->SystemUserId;
+    }
+
+    /**
+     * Set WorkDate
+     *
+     * @param \DateTime $workDate
+     * @return TBProductionCost
+     */
+    public function setWorkDate($workDate)
+    {
+        $this->WorkDate = $workDate;
+    
+        return $this;
+    }
+
+    /**
+     * Get WorkDate
+     *
+     * @return \DateTime 
+     */
+    public function getWorkDate()
+    {
+        return $this->WorkDate;
     }
 
     /**
@@ -115,6 +181,29 @@ class TBProductionCost
     }
 
     /**
+     * Set DeleteFlag
+     *
+     * @param boolean $deleteFlag
+     * @return TBProductionCost
+     */
+    public function setDeleteFlag($deleteFlag)
+    {
+        $this->DeleteFlag = $deleteFlag;
+    
+        return $this;
+    }
+
+    /**
+     * Get DeleteFlag
+     *
+     * @return boolean 
+     */
+    public function getDeleteFlag()
+    {
+        return $this->DeleteFlag;
+    }
+
+    /**
      * Set TBProjectCostMasterProjectCostMasterId
      *
      * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster $tBProjectCostMasterProjectCostMasterId
@@ -135,5 +224,28 @@ class TBProductionCost
     public function getTBProjectCostMasterProjectCostMasterId()
     {
         return $this->TBProjectCostMasterProjectCostMasterId;
+    }
+
+    /**
+     * Set TBSystemUserSystemUserId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUserSystemUserId
+     * @return TBProductionCost
+     */
+    public function setTBSystemUserSystemUserId(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUserSystemUserId = null)
+    {
+        $this->TBSystemUserSystemUserId = $tBSystemUserSystemUserId;
+    
+        return $this;
+    }
+
+    /**
+     * Get TBSystemUserSystemUserId
+     *
+     * @return \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser 
+     */
+    public function getTBSystemUserSystemUserId()
+    {
+        return $this->TBSystemUserSystemUserId;
     }
 }

@@ -3,6 +3,7 @@
 namespace Arte\PCMS\BizlogicBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * TBProjectMaster
@@ -16,11 +17,15 @@ class TBProjectMaster
 
     /**
      * @var string
+     *
+     * @Assert\NotBlank()
      */
     private $Name;
 
     /**
      * @var integer
+     *
+     * @Assert\NotBlank()
      */
     private $Status;
 
@@ -443,5 +448,48 @@ class TBProjectMaster
     public function getTBSystemUserManagerId()
     {
         return $this->TBSystemUserManagerId;
+    }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $TBProjectCostHierarchyMastersTBProjectMasterId;
+
+
+    /**
+     * Add TBProjectCostHierarchyMastersTBProjectMasterId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectCostHierarchyMaster $tBProjectCostHierarchyMastersTBProjectMasterId
+     * @return TBProjectMaster
+     */
+    public function addTBProjectCostHierarchyMastersTBProjectMasterId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectCostHierarchyMaster $tBProjectCostHierarchyMastersTBProjectMasterId)
+    {
+        $this->TBProjectCostHierarchyMastersTBProjectMasterId[] = $tBProjectCostHierarchyMastersTBProjectMasterId;
+    
+        return $this;
+    }
+
+    /**
+     * Remove TBProjectCostHierarchyMastersTBProjectMasterId
+     *
+     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectCostHierarchyMaster $tBProjectCostHierarchyMastersTBProjectMasterId
+     */
+    public function removeTBProjectCostHierarchyMastersTBProjectMasterId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectCostHierarchyMaster $tBProjectCostHierarchyMastersTBProjectMasterId)
+    {
+        $this->TBProjectCostHierarchyMastersTBProjectMasterId->removeElement($tBProjectCostHierarchyMastersTBProjectMasterId);
+    }
+
+    /**
+     * Get TBProjectCostHierarchyMastersTBProjectMasterId
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTBProjectCostHierarchyMastersTBProjectMasterId()
+    {
+        return $this->TBProjectCostHierarchyMastersTBProjectMasterId;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 }

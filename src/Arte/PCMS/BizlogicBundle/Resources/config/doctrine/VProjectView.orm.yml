@@ -1,0 +1,53 @@
+Arte\PCMS\BizlogicBundle\Entity\VProjectView:
+    indexes: {  }
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        Name:
+            type: string
+            length: 255
+            nullable: false
+        Status:
+            type: integer
+            nullable: false
+        CustomerId:
+            type: integer
+            nullable: false
+        PeriodStart:
+            type: date
+            nullable: true
+        PeriodEnd:
+            type: date
+            nullable: true
+        ManagerId:
+            type: integer
+            nullable: true
+        ProjectTotalCost:
+            type: integer
+            nullable: true
+        ProductionTotalCost:
+            type: integer
+            nullable: true
+    oneToMany:
+        VProjectUsersProjectMasterId:
+            targetEntity: VProjectUser
+            mappedBy: VProjectViewProjectMasterId
+    manyToOne:
+        TBSystemUserManagerId:
+            targetEntity: TBSystemUser
+            inversedBy: VProjectViewsManagerId
+            joinColumns:
+                ManagerId:
+                    referencedColumnName: id
+        TBCustomerCustomerId:
+            targetEntity: TBCustomer
+            inversedBy: VProjectViewsCustomerId
+            joinColumns:
+                CustomerId:
+                    referencedColumnName: id
+    manyToMany: {  }
+    type: mappedSuperclass
+    readOnly: true
