@@ -9,7 +9,8 @@
         <div class="functionListArea" style="margin: 10px 0;">
             <ul class="functionList clearfix">
                 <li class="home"><a href="{{ path('project') }}?{{ returnUrlParam|raw }}">一覧へもどる</a></li>
-                <li class="home"><a href="{{ path('project_edit', { 'id': project.id }) }}?ret={{ app.request.get('ret')|raw }}">編集</a></li>
+                <li class="home"><a href="{{ path('project_edit', { 'id': project.id }) }}?ret={{ app.request.get('ret')|raw }}">案件編集</a></li>
+                <li class="home"><a href="{{ path('project_worker_edit', { 'id': project.id }) }}">担当者編集</a></li>
                 <li class="home"><a href="{{ path('project_delete', { 'id': project.id }) }}?ret={{ app.request.get('ret')|raw }}">削除</a></li>
             </ul>
         </div>
@@ -70,6 +71,39 @@
                 <td colspan="3">{{ project.ScheduleFilePath }}</td>
             </tr>
         </table>
+
+        <h1 class="caption"><span id="selectFolderName">担当者一覧</span></h1>
+        <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
+            <tr>
+                <th scope="row" style="border-right: 1px solid #CCCCCC;">管理者権限</th>
+                <th scope="row" style="border-right: 1px solid #CCCCCC;">一般権限</th>
+                <th scope="row">表示のみ権限</th>
+            </tr>
+            <tr>
+                <td  style="border-right: 1px solid #CCCCCC;">
+                    {% for value in users %}
+                        {% if value.RoleNo == 1 %}
+                            {{ value.TBSystemUserSystemUserId.DisplayName }}<br>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td  style="border-right: 1px solid #CCCCCC;">
+                    {% for value in users %}
+                        {% if value.RoleNo == 2 %}
+                            {{ value.TBSystemUserSystemUserId.DisplayName }}<br>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for value in users %}
+                        {% if value.RoleNo == 3 %}
+                            {{ value.TBSystemUserSystemUserId.DisplayName }}<br>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+
 
         <h1 class="caption"><span id="selectFolderName">項目一覧</span></h1>
         <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">

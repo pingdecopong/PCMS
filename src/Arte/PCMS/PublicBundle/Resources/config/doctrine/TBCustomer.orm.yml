@@ -1,0 +1,25 @@
+Arte\PCMS\PublicBundle\Entity\TBCustomer:
+    type: entity
+    indexes: {  }
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        Name:
+            type: string
+            length: 255
+            nullable: false
+        DeleteFlag:
+            type: boolean
+            nullable: true
+    oneToMany:
+        TBProjectMastersCustomerId:
+            targetEntity: TBProjectMaster
+            mappedBy: TBCustomerCustomerId
+        VProjectViewsCustomerId:
+            targetEntity: VProjectView
+            mappedBy: TBCustomerCustomerId
+    manyToOne: {  }
+    manyToMany: {  }

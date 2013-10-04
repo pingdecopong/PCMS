@@ -11,8 +11,11 @@ use Arte\PCMS\BizlogicBundle\Entity\TBProductionCost;
 use Arte\PCMS\BizlogicBundle\Entity\TBProjectCostHierarchyMaster;
 use Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster;
 use Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster;
+use Arte\PCMS\BizlogicBundle\Entity\TBProjectUser;
 use Arte\PCMS\BizlogicBundle\Entity\TBSystemUser;
 use Arte\PCMS\BizlogicBundle\Entity\VProjectView;
+use Arte\PCMS\PublicBundle\Form\TBProductionCostSearchModel;
+use Arte\PCMS\PublicBundle\Form\TBProjectMasterSearchModel;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
@@ -28,6 +31,266 @@ class ProjectManager {
     function __construct(EntityManager $em)
     {
         $this->em = $em;
+    }
+
+    /**
+     * プロジェクト一覧取得
+     * @param $pageNo
+     * @param $pageSize
+     * @param null $sortName
+     * @param null $sortType
+     * @param TBProjectMasterSearchModel $search
+     * @return array
+     */
+    public function getProjectList($pageNo, $pageSize, $sortName = null, $sortType = null, TBProjectMasterSearchModel $search = null)
+    {
+        /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
+        $queryBuilder = $this->em
+            ->getRepository('ArtePCMSBizlogicBundle:VProjectView')
+            ->createQueryBuilder('vp')
+            ->leftJoin('vp.TBCustomerCustomerId', 'c')
+            ->leftJoin('vp.TBSystemUserManagerId', 'u')
+            ->select(array(
+                'vp',
+                'partial c.{id, Name}',
+                'partial u.{id, DisplayName}',
+            ))
+        ;
+
+        //検索
+        if($search == null){
+            $search = new TBProjectMasterSearchModel();
+        }
+        //Name
+        $searchName = $search->getName();
+        if(isset($searchName))
+        {
+            $queryBuilder = $queryBuilder->andWhere('vp.Name LIKE :Name')
+                ->setParameter('Name', '%'.$searchName.'%');
+        }
+        //Status
+        $searchStatus = $search->getStatus();
+        if(isset($searchStatus))
+        {
+            $queryBuilder = $queryBuilder->andWhere('vp.Status = :Status')
+                ->setParameter('Status', $searchStatus);
+        }
+        //PeriodStart
+        $searchPeriodstart = $search->getPeriodstart();
+        if(isset($searchPeriodstart))
+        {
+            $queryBuilder = $queryBuilder->andWhere('vp.PeriodEnd >= :Periodstart')
+                ->setParameter('Periodstart', $searchPeriodstart);
+        }
+        //PeriodEnd
+        $searchPeriodend = $search->getPeriodend();
+        if(isset($searchPeriodend))
+        {
+            $queryBuilder = $queryBuilder->andWhere('vp.PeriodStart <= :Periodend')
+                ->setParameter('Periodend', $searchPeriodend);
+        }
+
+        //relation 検索
+        //TBCustomerCustomerId
+        $searchTbcustomercustomerid = $search->getTbcustomercustomerid();
+        if(isset($searchTbcustomercustomerid))
+        {
+            $queryBuilder = $queryBuilder->andWhere('vp.TBCustomerCustomerId = :Tbcustomercustomerid')
+                ->setParameter('Tbcustomercustomerid', $searchTbcustomercustomerid);
+        }
+        //TBSystemUserManagerId
+        $searchTbsystemusermanagerid = $search->getTbsystemusermanagerid();
+        if(isset($searchTbsystemusermanagerid))
+        {
+            $queryBuilder = $queryBuilder->andWhere('vp.TBSystemUserManagerId = :Tbsystemusermanagerid')
+                ->setParameter('Tbsystemusermanagerid', $searchTbsystemusermanagerid);
+        }
+
+        //全件数取得
+        $queryBuilderCount = clone $queryBuilder;
+        $queryBuilderCount = $queryBuilderCount->select('count(vp.id)');
+        $queryCount = $queryBuilderCount->getQuery();
+        $allCount = $queryCount->getSingleScalarResult();
+
+        //ソート
+        if($sortName != null && $sortType != null)
+        {
+            switch($sortName)
+            {
+                case 'Name'://案件名
+                    $queryBuilder = $queryBuilder->orderBy('vp.Name', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('vp.id', 'DESC');
+                    break;
+                case 'CustomerName'://顧客
+                    $queryBuilder = $queryBuilder->orderBy('c.Name', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('vp.id', 'DESC');
+                    break;
+                case 'PeriodStart'://開始日
+                    $queryBuilder = $queryBuilder->orderBy('vp.PeriodStart', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('vp.id', 'DESC');
+                    break;
+                case 'PeriodEnd'://終了日
+                    $queryBuilder = $queryBuilder->orderBy('vp.PeriodEnd', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('vp.id', 'DESC');
+                    break;
+                case 'ManagerName'://管理者
+                    $queryBuilder = $queryBuilder->orderBy('u.DisplayName', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('vp.id', 'DESC');
+                    break;
+                case 'Status'://状態
+                    $queryBuilder = $queryBuilder->orderBy('vp.Status', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('vp.id', 'DESC');
+                    break;
+                case 'ProjectTotalCost'://見積工数
+                    $queryBuilder = $queryBuilder->orderBy('vp.ProjectTotalCost', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('vp.id', 'DESC');
+                    break;
+                case 'ProductionTotalCost'://実工数
+                    $queryBuilder = $queryBuilder->orderBy('vp.ProductionTotalCost', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('vp.id', 'DESC');
+                    break;
+
+
+                default:
+//                    $sortColumn = $pager->getColumn($sortName);
+//                    $queryBuilder = $queryBuilder->orderBy('vp.'.$sortColumn['db_column_name'], $sortType);
+                    break;
+            }
+        }
+
+        $queryBuilder = $queryBuilder->setFirstResult($pageSize*($pageNo-1))
+            ->setMaxResults($pageSize);
+
+        //クエリー実行
+        $entities = $queryBuilder->getQuery()->getResult();
+
+        $result = array();
+        $result['count'] = $allCount;
+        $result['result'] = $entities;
+
+        return $result;
+    }
+
+    public function getCostList($pageNo, $pageSize, $sortName = null, $sortType = null, TBProductionCostSearchModel $search = null)
+    {
+        $this->em->clear();
+        /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
+        $queryBuilder = $this->em
+            ->getRepository('ArtePCMSBizlogicBundle:TBProductionCost')
+            ->createQueryBuilder('c')
+            ->join('c.TBSystemUserSystemUserId', 'u')
+            ->join('c.TBProjectCostMasterProjectCostMasterId', 'pc')
+            ->join('pc.TBProjectMasterProjectMasterId', 'p')
+            ->andWhere('u.DeleteFlag = false')
+            ->andWhere('c.DeleteFlag = false')
+            ->andWhere('pc.DeleteFlag = false')
+            ->andWhere('p.DeleteFlag = false')
+            ->select(array(
+                'u',
+                'c',
+                'pc',
+                'p',
+//                'partial u.{id, DisplayName}',
+//                'partial c.{id, Cost, WorkDate}',
+//                'partial pc.{id, Name}',
+//                'partial p.{id, Name, Status}',
+            ))
+        ;
+
+        //検索
+        if($search == null){
+            $search = new TBProductionCostSearchModel();
+        }
+        //TBProjectMaster
+        $searchTBProjectMaster = $search->getTBProjectMaster();
+        if(isset($searchTBProjectMaster))
+        {
+            $queryBuilder = $queryBuilder->andWhere('p = :TBProjectMaster')
+                ->setParameter('TBProjectMaster', $searchTBProjectMaster);
+        }
+        //Status
+        $searchStatus = $search->getStatus();
+        if(isset($searchStatus))
+        {
+            $queryBuilder = $queryBuilder->andWhere('p.Status = :Status')
+                ->setParameter('Status', $searchStatus);
+        }
+        //PeriodStart
+        $searchPeriodstart = $search->getPeriodstart();
+        if(isset($searchPeriodstart))
+        {
+            $queryBuilder = $queryBuilder->andWhere('c.WorkDate >= :Periodstart')
+                ->setParameter('Periodstart', $searchPeriodstart);
+        }
+        //PeriodEnd
+        $searchPeriodend = $search->getPeriodend();
+        if(isset($searchPeriodend))
+        {
+            $queryBuilder = $queryBuilder->andWhere('c.WorkDate <= :Periodend')
+                ->setParameter('Periodend', $searchPeriodend);
+        }
+        //TBSystemUser
+        $searchTBSystemUser = $search->getTBSystemUser();
+        if(isset($searchTBSystemUser))
+        {
+            $queryBuilder = $queryBuilder->andWhere('u = :TBSystemUser')
+                ->setParameter('TBSystemUser', $searchTBSystemUser);
+        }
+
+        //全件数取得
+        $queryBuilderCount = clone $queryBuilder;
+        $queryBuilderCount = $queryBuilderCount->select('count(c.id)');
+        $queryCount = $queryBuilderCount->getQuery();
+        $allCount = $queryCount->getSingleScalarResult();
+
+        //ソート
+        if($sortName != null && $sortType != null && ($sortType == 'asc' || $sortType == 'desc'))
+        {
+            switch($sortName)
+            {
+                case 'TBProjectMaster'://案件名
+                    $queryBuilder = $queryBuilder->orderBy('p.Name', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('c.id', 'DESC');
+                    break;
+                case 'ProjectCostName'://作業項目名
+                    $queryBuilder = $queryBuilder->orderBy('pc.Name', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('c.id', 'DESC');
+                    break;
+                case 'Status'://状態
+                    $queryBuilder = $queryBuilder->orderBy('p.Status', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('c.id', 'DESC');
+                    break;
+                case 'WorkDate'://作業日
+                    $queryBuilder = $queryBuilder->orderBy('c.WorkDate', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('c.id', 'DESC');
+                    break;
+                case 'TBSystemUser'://作業者
+                    $queryBuilder = $queryBuilder->orderBy('c.TBSystemUserSystemUserId', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('c.id', 'DESC');
+                    break;
+                case 'Cost'://作業工数
+                    $queryBuilder = $queryBuilder->orderBy('c.Cost', $sortType);
+                    $queryBuilder = $queryBuilder->addOrderBy('c.id', 'DESC');
+                    break;
+
+                default:
+//                    $sortColumn = $pager->getColumn($sortName);
+//                    $queryBuilder = $queryBuilder->orderBy('vp.'.$sortColumn['db_column_name'], $sortType);
+                    break;
+            }
+        }
+
+        $queryBuilder = $queryBuilder->setFirstResult($pageSize*($pageNo-1))
+            ->setMaxResults($pageSize);
+
+        //クエリー実行
+        $entities = $queryBuilder->getQuery()->getResult();
+
+        $result = array();
+        $result['count'] = $allCount;
+        $result['result'] = $entities;
+
+        return $result;
     }
 
     /**
@@ -71,6 +334,16 @@ class ProjectManager {
 
             //子コスト登録
             $this->createNewCosts($project->getCosts(), $tbProjectMaster, $tbProjectCostHierarchyMaster);
+
+            //管理者登録
+            $tbProjectUser = new TBProjectUser();
+            $tbProjectUser->setTBSystemUserSystemUserId($project->getManager());
+            $tbProjectUser->setSystemUserId($project->getManager()->getId());
+            $tbProjectUser->setTBProjectMasterProjectMasterId($tbProjectMaster);
+            $tbProjectUser->setProjectMasterId($tbProjectMaster->getId());
+            $tbProjectUser->setRoleNo(TBProjectUser::ROLE_MANAGER);
+            $this->em->persist($tbProjectUser);
+            $this->em->flush();
 
             $this->em->getConnection()->commit();
 
@@ -709,7 +982,11 @@ class ProjectManager {
             ->getRepository('ArtePCMSBizlogicBundle:TBProjectCostMaster')
             ->createQueryBuilder('pcm')
             ->innerJoin('pcm.TBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId', 'pchm')
-            ->leftJoin('pcm.TBProductionCostsProjectCostMasterId', 'pc')
+//            ->leftJoin('pcm.TBProductionCostsProjectCostMasterId', 'pc')
+
+            ->leftJoin('pcm.TBProductionCostsProjectCostMasterId', 'pc', 'WITH', 'pc.DeleteFlag = FALSE')
+        //$qb->expr()->eq('p.area_code', 55)
+
 //            ->select(array(
 //                'partial pcm.{id, Name, Cost}',
 //                'sum(pc.Cost)',
@@ -1112,7 +1389,8 @@ class ProjectManager {
         $queryBuilder = $this->em
             ->getRepository('ArtePCMSBizlogicBundle:TBProjectCostMaster')
             ->createQueryBuilder('pcm')
-            ->leftJoin('pcm.TBProductionCostsProjectCostMasterId', 'pc')
+//            ->leftJoin('pcm.TBProductionCostsProjectCostMasterId', 'pc')
+            ->leftJoin('pcm.TBProductionCostsProjectCostMasterId', 'pc', 'WITH', 'pc.DeleteFlag = FALSE')
             ->leftJoin('pc.TBSystemUserSystemUserId', 'u')
             ->select(array(
                 'pcm',
@@ -1298,6 +1576,161 @@ class ProjectManager {
             $this->em->close();
             throw $e;
         }
+    }
+
+    /**
+     * プロジェクトに所属するユーザー一覧取得
+     * @param $projectId
+     * @return array
+     */
+    public function getProjectUsers($projectId)
+    {
+        //プロジェクトユーザー
+        /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
+        $queryBuilder = $this->em
+            ->getRepository('ArtePCMSBizlogicBundle:TBProjectUser')
+            ->createQueryBuilder('pu')
+            ->Join('pu.TBSystemUserSystemUserId', 'u')
+            ->select(array(
+                'pu',
+                'u',
+            ))
+            ->andWhere('pu.ProjectMasterId = :ProjectMasterId')
+            ->andWhere('u.DeleteFlag = false')
+            ->setParameter('ProjectMasterId', $projectId)
+        ;
+        $tbProjectUsers = $queryBuilder->getQuery()->getResult();
+
+        return $tbProjectUsers;
+    }
+
+    /**
+     * プロジェクトに所属するユーザーを設定
+     * @param $projectId
+     * @param $users $users['user']登録するTBSystemUser $users['role']ロール番号
+     * @throws \Exception
+     */
+    public function createProjectUsers($projectId, $users)
+    {
+//        $ret = array();
+        $this->em->getConnection()->beginTransaction();
+        try {
+
+            //プロジェクトユーザー
+            /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
+            $queryBuilder = $this->em
+                ->getRepository('ArtePCMSBizlogicBundle:TBProjectMaster')
+                ->createQueryBuilder('p')
+                ->leftJoin('p.TBSystemUserManagerId', 'm')
+                ->leftJoin('p.TBProjectUsersProjectMasterId', 'pu')
+                ->leftJoin('pu.TBSystemUserSystemUserId', 'u')
+                ->select(array(
+                    'p',
+                    'm',
+                    'pu',
+                    'u',
+                ))
+                ->andWhere('p.id = :id')
+                ->andWhere('p.DeleteFlag = false')
+                ->setParameter('id', $projectId)
+            ;
+            /** @var $tbProject TBProjectMaster */
+            $tbProject = $queryBuilder->getQuery()->getSingleResult();
+
+            //全削除
+            foreach($tbProject->getTBProjectUsersProjectMasterId() as $value)
+            {
+                /** @var $value TBProjectUser */
+//                //プロジェクトオーナーは削除しない
+//                if($value->getTBSystemUserSystemUserId() == $tbProject->getTBSystemUserManagerId()){
+//                    continue;
+//                }
+                $this->em->remove($value);
+                $this->em->flush();
+            }
+
+//            //プロジェクトユーザー
+//            $userIds = array_keys($users);
+//            /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
+//            $queryBuilder = $this->em
+//                ->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')
+//                ->createQueryBuilder('u')
+//                ->select(array(
+//                    'u',
+//                ))
+//                ->andWhere('u.DeleteFlag = false')
+//                ->andWhere('u.id in (:ids)')
+//                ->setParameter('ids', $userIds)
+//            ;
+//            $tbSystemUsers = $queryBuilder->getQuery()->getResult();
+
+            //登録
+
+            //プロジェクト管理者登録
+            $tbProjectUser = new TBProjectUser();
+            $tbProjectUser->setTBSystemUserSystemUserId($tbProject->getTBSystemUserManagerId());
+            $tbProjectUser->setSystemUserId($tbProject->getTBSystemUserManagerId()->getId());
+            $tbProjectUser->setTBProjectMasterProjectMasterId($tbProject);
+            $tbProjectUser->setProjectMasterId($tbProject->getId());
+            $tbProjectUser->setRoleNo(TBProjectUser::ROLE_MANAGER);//管理者権限
+            $this->em->persist($tbProjectUser);
+            $this->em->flush();
+
+            foreach($users as $value)
+            {
+                /** @var $user TBSystemUser */
+                $user = $value['user'];
+                $role = $value['role'];
+                //プロジェクトオーナーの場合はすでに登録されてあるので除外する
+                if($user == $tbProject->getTBSystemUserManagerId()){
+                    continue;
+                }
+
+                $tbProjectUser = new TBProjectUser();
+                $tbProjectUser->setTBSystemUserSystemUserId($user);
+                $tbProjectUser->setSystemUserId($user->getId());
+                $tbProjectUser->setTBProjectMasterProjectMasterId($tbProject);
+                $tbProjectUser->setProjectMasterId($tbProject->getId());
+                $tbProjectUser->setRoleNo($role);
+                $this->em->persist($tbProjectUser);
+                $this->em->flush();
+
+//                $ret[] = $tbProjectUser;
+            }
+
+            $this->em->getConnection()->commit();
+        }catch (\Exception $e){
+            $this->em->getConnection()->rollBack();
+            $this->em->close();
+            throw $e;
+        }
+
+//        return $ret;
+    }
+
+    /**
+     * プロジェクトコストマスタ　取得
+     * @param $projectCostId
+     * @return mixed
+     */
+    public function getProjectCost($projectCostId)
+    {
+        /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
+        $queryBuilder = $this->em
+            ->getRepository('ArtePCMSBizlogicBundle:TBProjectCostMaster')
+            ->createQueryBuilder('pcm')
+            ->Join('pcm.TBProjectMasterProjectMasterId', 'pm')
+            ->select(array(
+                'pcm',
+                'pm',
+            ))
+            ->andWhere('pcm.ProjectMasterId = :ProjectCostId')
+            ->andWhere('pcm.DeleteFlag = false')
+            ->setParameter('ProjectCostId', $projectCostId)
+        ;
+        $tbProjectCostMaster = $queryBuilder->getQuery()->getSingleResult();
+
+        return $tbProjectCostMaster;
     }
 }
 

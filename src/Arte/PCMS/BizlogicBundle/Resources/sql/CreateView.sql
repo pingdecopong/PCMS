@@ -1,8 +1,8 @@
 DROP TABLE IF EXISTS VProjectUser;
 DROP VIEW IF EXISTS VProjectUser;
 CREATE VIEW VProjectUser AS SELECT
-	id AS id,
 	SystemUserId AS SystemUserId,
+	ProjectMasterId AS ProjectMasterId,
 	RoleNo AS RoleNo
 FROM
 	TBProjectUser AS pu;
@@ -32,11 +32,13 @@ CREATE VIEW VProjectView AS SELECT
 			ifnull(sum(tpc.Cost), 0) AS cost
 		FROM
 			TBProjectCostMaster tpcm
-		LEFT JOIN TBProductionCost tpc ON tpcm.id = tpc.ProjectCostMasterId
+		LEFT JOIN TBProductionCost tpc ON tpcm.id = tpc.ProjectCostMasterId AND tpc.DeleteFlag = FALSE
 		WHERE
-			tp.id = tpcm.ProjectMasterId
+			tp.id = tpcm.ProjectMasterId AND tpcm.DeleteFlag = FALSE
 		GROUP BY
 			tpcm.ProjectMasterId
 	) AS ProductionTotalCost
 FROM
-	TBProjectMaster tp;
+	TBProjectMaster tp
+WHERE
+	tp.DeleteFlag = FALSE;

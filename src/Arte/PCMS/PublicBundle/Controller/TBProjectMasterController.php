@@ -2,16 +2,25 @@
 
 namespace Arte\PCMS\PublicBundle\Controller;
 
+use Arte\PCMS\BizlogicBundle\Entity\TBProjectUser;
+use Arte\PCMS\BizlogicBundle\Entity\TBSystemUser;
 use Arte\PCMS\BizlogicBundle\Lib\ProjectManager;
 use Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProject;
 use Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost;
+use Arte\PCMS\BizlogicBundle\Lib\SystemUserManager;
 use Arte\PCMS\PublicBundle\Form\TBProjectMasterFormModel;
 use Arte\PCMS\PublicBundle\Form\TBProjectMasterFormType;
-use Arte\PCMS\PublicBundle\Form\TBProjectMasterSubEndFormModel;
 use Arte\PCMS\PublicBundle\Form\TBProjectMasterSubFormModel;
+use Arte\PCMS\PublicBundle\Form\TestFormModel;
+use Arte\PCMS\PublicBundle\Form\TestFormType;
 use Arte\PCMS\PublicBundle\Form\TestMainFormModel;
 use Arte\PCMS\PublicBundle\Form\TestMainFormType;
 use Arte\PCMS\PublicBundle\Form\TestSubFormModel;
+use Arte\PCMS\PublicBundle\Form\WorkerEdit2FormModel;
+use Arte\PCMS\PublicBundle\Form\WorkerEdit2FormType;
+use Arte\PCMS\PublicBundle\Form\WorkerEditFormModel;
+use Arte\PCMS\PublicBundle\Form\WorkerEditFormType;
+use Arte\PCMS\PublicBundle\Form\WorkerEditRoleFormModel;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\AST\Join;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -59,7 +68,7 @@ class TBProjectMasterController extends Controller
             ->addColumn('cn', array(
                 'label' => '顧客',
                 'sort_enable' => true,
-//                'db_column_name' => 'CustomerId',
+                'db_column_name' => 'CustomerName',
             ))
             ->addColumn('ps', array(
                 'label' => '開始日',
@@ -74,7 +83,7 @@ class TBProjectMasterController extends Controller
             ->addColumn('mn', array(
                 'label' => '管理者',
                 'sort_enable' => true,
-//                'db_column_name' => 'ManagerId',
+                'db_column_name' => 'ManagerName',
             ))
             ->addColumn('st', array(
                 'label' => '状態',
@@ -84,7 +93,7 @@ class TBProjectMasterController extends Controller
             ->addColumn('et', array(
                 'label' => '見積工数',
                 'sort_enable' => true,
-                'db_column_name' => 'ProductionTotalCost',
+                'db_column_name' => 'ProjectTotalCost',
             ))
             ->addColumn('pct', array(
                 'label' => '実工数',
@@ -120,186 +129,29 @@ class TBProjectMasterController extends Controller
             return $this->redirect($this->generateUrl($request->get('_route')));
         }
 
-
-        //db
-        /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
-        $queryBuilder = $this->getDoctrine()
-            ->getRepository('ArtePCMSBizlogicBundle:VProjectView')
-            ->createQueryBuilder('vp')
-            ->leftJoin('vp.TBCustomerCustomerId', 'c')
-            ->leftJoin('vp.TBSystemUserManagerId', 'u')
-//            ->leftJoin('p.TBProjectCostMastersProjectMasterId', 'pcm', Join::)
-//            ->leftJoin($queryBuilderx->getDQL(), 'pcm')
-//            ->leftJoin('p.TBProjectCostMastersProjectMasterId', 'pcm')
-//            ->select(array('p', 'c', 'u', 'SUM(pcm.Cost) as aaa'))
-//            ->select(array('vp', 'c', 'u'))
-//            ->select('vp, partial c.{id, Name}, partial u.{id, DisplayName}')
-            ->select(array(
-                'vp',
-                'partial c.{id, Name}',
-                'partial u.{id, DisplayName}',
-            ))
-//            ->groupBy('p.id')
-//            ->andWhere('p.DeleteFlag = :DeleteFlag')
-//            ->setParameter('DeleteFlag', false)
-        ;
-
         //検索
         $data = $form->getData();
-        /** @var $searchParam TBProjectMaster */
+        /** @var $searchParam \Arte\PCMS\PublicBundle\Form\TBProjectMasterSearchModel */
         $searchParam = $data['search'];
-        //Name
-        $searchName = $searchParam->getName();
-        if(isset($searchName) && $form['search']['Name']->isValid())
-        {
-            $queryBuilder = $queryBuilder->andWhere('vp.Name LIKE :Name')
-                ->setParameter('Name', '%'.$searchName.'%');
-        }
-        //Status
-        $searchStatus = $searchParam->getStatus();
-        if(isset($searchStatus) && $form['search']['Status']->isValid())
-        {
-            $queryBuilder = $queryBuilder->andWhere('vp.Status = :Status')
-                ->setParameter('Status', $searchStatus);
-        }
-        //PeriodStart
-        $searchPeriodstart = $searchParam->getPeriodstart();
-        if(isset($searchPeriodstart) && $form['search']['PeriodStart']->isValid())
-        {
-            $queryBuilder = $queryBuilder->andWhere('vp.PeriodEnd >= :Periodstart')
-                ->setParameter('Periodstart', $searchPeriodstart);
-        }
-        //PeriodEnd
-        $searchPeriodend = $searchParam->getPeriodend();
-        if(isset($searchPeriodend) && $form['search']['PeriodEnd']->isValid())
-        {
-            $queryBuilder = $queryBuilder->andWhere('vp.PeriodStart <= :Periodend')
-                ->setParameter('Periodend', $searchPeriodend);
-        }
-
-        //relation 検索
-        //TBCustomerCustomerId
-        $searchTbcustomercustomerid = $searchParam->getTbcustomercustomerid();
-        if(isset($searchTbcustomercustomerid) && $form['search']['TBCustomerCustomerId']->isValid())
-        {
-            $queryBuilder = $queryBuilder->andWhere('vp.TBCustomerCustomerId = :Tbcustomercustomerid')
-                ->setParameter('Tbcustomercustomerid', $searchTbcustomercustomerid);
-        }
-        //TBSystemUserManagerId
-        $searchTbsystemusermanagerid = $searchParam->getTbsystemusermanagerid();
-        if(isset($searchTbsystemusermanagerid) && $form['search']['TBSystemUserManagerId']->isValid())
-        {
-            $queryBuilder = $queryBuilder->andWhere('vp.TBSystemUserManagerId = :Tbsystemusermanagerid')
-                ->setParameter('Tbsystemusermanagerid', $searchTbsystemusermanagerid);
-        }
-
-        //全件数取得
-        $queryBuilderCount = clone $queryBuilder;
-        $queryBuilderCount = $queryBuilderCount->select('count(vp.id)');
-        $queryCount = $queryBuilderCount->getQuery();
-        $allCount = $queryCount->getSingleScalarResult();
-        $pager->setAllCount($allCount);
 
         //ソート
         $pageSortName = $pager->getSortName();
         $pageSortType = $pager->getSortType();
-        if($pageSortName != null && $pageSortType != null)
-        {
-            switch($pageSortName)
-            {
-                case 'cn'://顧客
-                    $queryBuilder = $queryBuilder->orderBy('c.Name', $pageSortType);
-                    break;
-                case 'mn'://管理者
-                    $queryBuilder = $queryBuilder->orderBy('u.DisplayName', $pageSortType);
-                    break;
-                default:
-                    $sortColumn = $pager->getColumn($pageSortName);
-                    $queryBuilder = $queryBuilder->orderBy('vp.'.$sortColumn['db_column_name'], $pageSortType);
-                    break;
-            }
-        }
 
         //ページング
         $pageSize = $pager->getPageSize();
         $pageNo = $pager->getPageNo();
+
+        //
+        $em = $this->getDoctrine()->getManager();
+        $projectManager = new ProjectManager($em);
+        $sortColumn = $pager->getColumn($pageSortName);
+        $projects = $projectManager->getProjectList($pageNo, $pageSize, $sortColumn['db_column_name'], $pageSortType, $searchParam);
+        $pager->setAllCount($projects['count']);
         if($pager->getMaxPageNum() < $pageNo){
             return $this->redirect($request->get('_route'));
         }
-        $queryBuilder = $queryBuilder->setFirstResult($pageSize*($pageNo-1))
-            ->setMaxResults($pageSize);
-
-        //クエリー実行
-        $entities = $queryBuilder->getQuery()->getResult();
-/*
-        //projectCostMaster cost count
-        $ids = array();
-        foreach($entities as $entity)
-        {
-            $ids[] = $entity->getId();
-        }
-        $queryBuilder = $this->getDoctrine()
-            ->getRepository('ArtePCMSBizlogicBundle:TBProjectMaster')
-            ->createQueryBuilder('p')
-            ->leftJoin('p.TBProjectCostMastersProjectMasterId', 'pcm')
-            ->select(array('p.id', 'SUM(pcm.Cost) as pcm_total'))
-            ->andWhere('p.DeleteFlag = :DeleteFlag')
-            ->andWhere('pcm.DeleteFlag = :PCMDeleteFlag')
-            ->andWhere('p.id IN (:ids)')
-            ->groupBy('p.id')
-            ->setParameter('DeleteFlag', false)
-            ->setParameter('PCMDeleteFlag', false)
-            ->setParameter('ids', $ids);
-        $pcmTotals = $queryBuilder->getQuery()->getScalarResult();
-
-        //productionCost count
-        $queryBuilder = $this->getDoctrine()
-            ->getRepository('ArtePCMSBizlogicBundle:TBProjectCostMaster')
-            ->createQueryBuilder('pcm')
-            ->leftJoin('pcm.TBProductionCostsProjectCostMasterId', 'pc')
-            ->select(array('pcm.ProjectMasterId', 'SUM(pc.Cost) as pc_total'))
-            ->andWhere('pcm.DeleteFlag = :DeleteFlag')
-//            ->andWhere('pc.DeleteFlag = :PCDeleteFlag')
-            ->andWhere('pcm.ProjectMasterId IN (:ids)')
-            ->groupBy('pcm.ProjectMasterId')
-            ->setParameter('DeleteFlag', false)
-//            ->setParameter('PCDeleteFlag', false)
-            ->setParameter('ids', $ids);
-        $pcTotals = $queryBuilder->getQuery()->getScalarResult();
-
-        //
-        $pcmTotalEntities = array();
-        $pcTotalEntities = array();
-        foreach($entities as $entity)
-        {
-            $id = $entity->getId();
-
-            foreach($pcmTotals as $pcmTotal)
-            {
-                if($pcmTotal['id'] == $id){
-                    $pcmTotalEntities[$id] = $pcmTotal['pcm_total'];
-                }
-            }
-            foreach($pcTotals as $pcTotal)
-            {
-                if($pcTotal['ProjectMasterId'] == $id){
-                    $pcTotalEntities[$id] = $pcTotal['pc_total'];
-                }
-            }
-        }
-*/
-/*
-        //native test
-        $rsm = new ResultSetMapping();
-        $rsm->addEntityResult('Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster', 'pm');
-        $rsm->addFieldResult('pm', 'id', 'id');
-        $rsm->addFieldResult('pm', 'Name', 'name');
-
-        $sql = "SELECT id, name FROM TBProjectMaster";
-        $em = $this->getDoctrine()->getManager();
-        $query = $em->createNativeQuery($sql, $rsm);
-        $TBProjectMasters = $query->getResult();
-*/
+        $entities = $projects['result'];
 
         //returnURL生成
         $returnUrlQueryDataArray = $pager->getAllFormQueryStrings();
@@ -310,52 +162,9 @@ class TBProjectMasterController extends Controller
             'pager' => $pager->createView(),
             'entities' => $entities,
             'returnUrlParam' => $returnUrlQueryString,
-//            'pcTotal' => $pcTotalEntities,
-//            'pcmTotal' => $pcmTotalEntities,
         );
     }
 
-    /**
-     * TBProjectMaster新規作成
-     *
-     * @Route("/new2", name="project_new2")
-     * @Method({"GET", "POST"})
-     * @Template()
-     */
-    public function new2Action()
-    {
-        $request = $this->getRequest();
-
-        /** @var  $formFactory \Symfony\Component\Form\FormFactory */
-        $formFactory = $this->get('form.factory');
-
-//        $formModel = new TBProjectMasterFormModel();
-//        $formType = new TBProjectMasterFormType();
-//        $form = $this->createForm($formType, $formModel);
-
-        $formModel = new TBProjectMasterFormModel();
-        $formType = new TBProjectMasterFormType();
-        $subFormModel = new SubFormModel();
-        $subFormType = new SubFormType();
-
-        /* @var $builder \Symfony\Component\Form\FormBuilderInterface */
-        $builder =$formFactory->createBuilder('form', null, array('cascade_validation' => true));
-        $mainFormBuilder = $formFactory->createBuilder($formType, $formModel, array('cascade_validation' => true));
-        $subFormBuilder = $formFactory->createBuilder($subFormType, $subFormModel, array('cascade_validation' => true));
-        $form = $builder->add($mainFormBuilder)
-            ->add($subFormBuilder)
-            ->getForm();
-
-
-        if($request->isMethod('POST'))
-        {
-            $form->bind($request);
-        }
-
-        return array(
-            'form' => $form->createView(),
-        );
-    }
     /**
      * TBProjectMaster新規作成
      *
@@ -379,9 +188,7 @@ class TBProjectMasterController extends Controller
         $builder =$formFactory->createBuilder('form', null, array('cascade_validation' => true));
         $mainFormBuilder = $formFactory->createBuilder($formType, $formModel);
         $subFormBuilder = $formFactory->createBuilder($subFormType, $subFormModel);
-//        $form = $builder->add($mainFormBuilder)
-//            ->add($subFormBuilder)
-//            ->getForm();
+
         $form = $builder->add($mainFormBuilder)
             ->add($subFormBuilder)
             ->add('AddSubForm', 'submit', array(
@@ -404,9 +211,6 @@ class TBProjectMasterController extends Controller
             $data = $form->getData();
 
             //button_action
-//            $buttonAction = $subFormModel->getButtonAction();
-//$form->get('AddSubForm')->isClicked()
-//            if($buttonAction == "confirm" || $buttonAction == "submit")
             if($form->get('Confirm')->isClicked() || $form->get('Submit')->isClicked())
             {
                 if($form->isValid())
@@ -428,9 +232,6 @@ class TBProjectMasterController extends Controller
                     {
                         //登録実行
                         try{
-//                            $em = $this->getDoctrine()->getManager();
-//                            $em->persist($formModel);
-//                            $em->flush();
 
                             $em = $this->getDoctrine()->getManager();
                             $projectManager = new ProjectManager($em);
@@ -447,7 +248,6 @@ class TBProjectMasterController extends Controller
                             $newProject->setManager($formModel->getTBSystemUserManagerId());
 
                             $this->exchangeFormModelToDataModel($formModel->getSubForms(), $newProject->getCosts());
-//                            $this->exchangeFormModelToDataModel($formModel->getSubForms(), $newProject);
 
                             $newProject = $projectManager->createProject($newProject);
 
@@ -468,47 +268,14 @@ class TBProjectMasterController extends Controller
                 }else{
 
                     $projectMasterSubForms = $form->get('TBProjectMaster')->get('SubForms');
-                    /** @var  $subForms \Symfony\Component\Form\Form*/
-                    $subForms = $projectMasterSubForms->all();
-                    $subFormModels = $projectMasterSubForms->getData();
-
-//                    $sortCount = 0;
-//                    $this->setSubFormSortNo($projectMasterSubForms, $sortCount);
                     $this->checkProjectSubForm($projectMasterSubForms, $projectMasterSubForms);
                 }
 
-
-
-                //移動上
-//                foreach($subForms as $value)
-//                {
-//                    /** @var  $value \Symfony\Component\Form\Form*/
-//                    if($value->get('Up')->isClicked())
-//                    {
-//                        $index = $subFormModels->indexOf($value->getData());
-//                        if($index != 0)
-//                        {
-//                            $temp = $subFormModels->get($index-1);
-//                            $subFormModels->set($index-1, $value->getData());
-//                            $subFormModels->set($index, $temp);
-//                        }
-//                    }
-//                }
-
-//                if($data['other_action'] == 'add')
-//                {
-//                    $projectMasterSubForm = new TBProjectMasterSubFormModel();
-//                    $formModel->getProjectMasterSubs()->add($projectMasterSubForm);
-//                }
                 //ドロップダウンなどのポストバック
                 $builder->setAttribute('novalidation', true);
                 $form = $builder->getForm();
             }
         }
-
-//        $formView = $form->createView();
-//        $formView->children['Return']->setRendered(true);
-//        $formView->children['Submit']->setRendered(true);
 
         return array(
             'mode' => "input",
@@ -539,55 +306,6 @@ class TBProjectMasterController extends Controller
             $costs->add($cost);
         }
     }
-
-//    private function setSubFormLast($forms, $form)
-//    {
-//        $subForms = $forms->all();
-//        $subFormModels = $forms->getData();
-//        $subFormsReverse = array_reverse($subForms);
-//        foreach($subFormsReverse as $value)
-//        {
-//            if($value->getData()->getSortNo() == $cnt)
-//            {
-//                $form = $value;
-//            }
-//            if($value->has('SubForms'))
-//            {
-//                $this->setSubFormLast($value->get('SubForms'), $form);
-//            }
-//        }
-//    }
-
-//    private function searchSubForm($forms, $cnt, &$form)
-//    {
-//        $subForms = $forms->all();
-//        $subFormModels = $forms->getData();
-//        foreach($subForms as $value)
-//        {
-//            if($value->getData()->getSortNo() == $cnt)
-//            {
-//                $form = $value;
-//            }
-//            if($value->has('SubForms'))
-//            {
-//                $this->searchSubForm($value->get('SubForms'), $cnt, $form);
-//            }
-//        }
-//    }
-//    private function setSubFormSortNo($forms, &$cnt)
-//    {
-//        $subForms = $forms->all();
-//        $subFormModels = $forms->getData();
-//        foreach($subForms as $value)
-//        {
-//            $cnt++;
-//            $value->getData()->setSortNo($cnt);
-//            if($value->has('SubForms'))
-//            {
-//                $this->setSubFormSortNo($value->get('SubForms'), $cnt);
-//            }
-//        }
-//    }
 
     private function searchLastSubForm($form, $setForm)
     {
@@ -682,17 +400,6 @@ class TBProjectMasterController extends Controller
                 $value->getData()->setGroupFlag(!$flag);
                 $value->getData()->setCost("");
 
-//                $flag = $value->getData()->getGroupFlag();
-//                $value->getData()->setGroupFlag(!$flag);
-//                $value->getData()->setCost("");
-//
-//                //子のリストを親のリストに移動
-//                foreach($value->getData()->getSubForms() as $valueSub)
-//                {
-//                    $value->getParent()->getParent()->getData()->addSubForm($valueSub);
-//                }
-//                $value->getData()->getSubForms()->clear();
-
             }
 
             if($value->get('Down')->isClicked())
@@ -738,11 +445,6 @@ class TBProjectMasterController extends Controller
 
                 }
 
-//                $count = $value->getParent()->getParent()->getData()->getSubForms()->count();
-//                if($count == 1)
-//                {
-//
-//                }
             }
 
             if($value->get('Up')->isClicked())
@@ -788,11 +490,6 @@ class TBProjectMasterController extends Controller
                     $arrayKeys = $value->getParent()->getParent()->getData()->getSubForms()->getKeys();
                     $keyNo = array_search($index, $arrayKeys);
 
-                    if($keyNo == 0)
-                    {
-
-                    }
-
 //                    $keyTarget = $arrayKeys[$keyNo-1];
                     $temp = $value->getParent()->getParent()->getData()->getSubForms()->get($arrayKeys[$keyNo-1]);//一つ上のデータを取得
                     //同じ階層の１つ上のリストがグループの場合
@@ -808,154 +505,9 @@ class TBProjectMasterController extends Controller
 
                 }
             }
-/*
-            if($value->get('Up')->isClicked())
-            {
-                $index = $value->getParent()->getParent()->getData()->getSubForms()->indexOf($value->getData());
-                if($index == 0)
-                {
-                    $parent = $value->getParent()->getParent();
-                    //rootの場合は処理しない
-                    if($parent->getData() instanceof TBProjectMasterFormModel){
-                        break;
-                    }
-                    $index = $parent->getParent()->getParent()->getData()->getSubForms()->indexOf($parent->getData());
-                    if($index == 0)
-                    {
-                        $temp = clone $parent->getParent()->getParent()->getData()->getSubForms();
-                        $parent->getParent()->getParent()->getData()->getSubForms()->clear();
-                        $parent->getParent()->getParent()->getData()->getSubForms()->add($value->getData());
-                        foreach($temp as $loopValue)
-                        {
-                            $parent->getParent()->getParent()->getData()->getSubForms()->add($loopValue);
-                        }
-                        $value->getParent()->getParent()->getData()->getSubForms()->removeElement($value->getData());
-                    }else{
-                        $temp = clone $parent->getParent()->getParent()->getData()->getSubForms();
-                        $parent->getParent()->getParent()->getData()->getSubForms()->clear();
-                        foreach($temp as $key => $loopValue)
-                        {
-                            if($key == $index){
-                                $parent->getParent()->getParent()->getData()->getSubForms()->add($value->getData());
-                            }
-                            $parent->getParent()->getParent()->getData()->getSubForms()->add($loopValue);
 
-                        }
-                        $value->getParent()->getParent()->getData()->getSubForms()->removeElement($value->getData());
-
-
-//                        $temp = $parent->getParent()->getParent()->getData()->getSubForms()->get($index-1);
-//                        $parent->getParent()->getParent()->getData()->getSubForms()->set($index-1, $value->getData());
-//                        $parent->getParent()->getParent()->getData()->getSubForms()->set($index, $temp);
-                    }
-
-
-                }else{
-                    $temp = $value->getParent()->getParent()->getData()->getSubForms()->get($index-1);
-                    //同じ階層の１つ上のリストがグループの場合
-                    if($temp->getGroupFlag())
-                    {
-                        $lastForm = $temp->getSubForms()->last();
-
-                        if($lastForm == false){
-                            //リストが無い
-                            $temp->getSubForms()->add($value->getData());
-                        }else if($lastForm->getGroupFlag()){
-                            //リストの最後がグループの場合
-                            $lastForm->getSubForms()->add($value->getData());
-                        }else{
-                            $temp->getSubForms()->add($value->getData());
-                        }
-
-//                        //リストが無い　又は、リストの最後がグループの場合
-//                        if($lastForm == false || $lastForm->getGroupFlag())
-//                        {
-//                            $lastForm->getSubForms()->add($value->getData());
-//                        }else{
-//                            $temp->getSubForms()->add($value->getData());
-//                        }
-
-                        $value->getParent()->getParent()->getData()->getSubForms()->removeElement($value->getData());
-
-                    }else{
-                        $value->getParent()->getParent()->getData()->getSubForms()->set($index-1, $value->getData());
-                        $value->getParent()->getParent()->getData()->getSubForms()->set($index, $temp);
-                    }
-                }
-
-
-
-//                $sortNo = $value->getData()->getSortNo();
-//                if($sortNo != 1)
-//                {
-//                    $targetForm = null;
-//                    $this->searchSubForm($rootForm, $sortNo-1, $targetForm);
-//
-//                    if($targetForm->getParent()->getParent()->getData() === $value->getParent()->getParent()->getData())
-//                    {
-//                        $index = $value->getParent()->getParent()->getData()->getSubForms()->indexOf($value->getData());
-//                        $temp = $value->getParent()->getParent()->getData()->getSubForms()->get($index-1);
-//                        $value->getParent()->getParent()->getData()->getSubForms()->set($index-1, $value->getData());
-//                        $value->getParent()->getParent()->getData()->getSubForms()->set($index, $temp);
-//                    }else{
-//                        $targetForm->getParent()->getParent()->getData()->getSubForms()->add($value->getData());
-//                        $value->getParent()->getParent()->getData()->getSubForms()->removeElement($value->getData());
-//                    }
-//
-//                }
-
-//                $index = $value->getParent()->getParent()->getData()->getSubForms()->indexOf($value->getData());
-//                if($index == 0)
-//                {
-//                    $sortNo = $value->getData()->getSortNo();
-//                    if($sortNo != 1)
-//                    {
-//                        $targetForm = null;
-//                        $this->searchSubForm($rootForm, $sortNo-1, $targetForm);
-//                        $targetForm->getParent()->getParent()->getData()->getSubForms()->add($value->getData());
-//                    }
-//
-////                    $parentIndex = $value->getParent()->getParent()->getParent()->getParent()->getData()->getSubForms()->indexOf($value->getParent()->getParent()->getData());
-//
-//                }else{
-//                    $temp = $value->getParent()->getParent()->getData()->getSubForms()->get($index-1);
-//                    $value->getParent()->getParent()->getData()->getSubForms()->set($index-1, $value->getData());
-//                    $value->getParent()->getParent()->getData()->getSubForms()->set($index, $temp);
-//                }
-            }
-*/
             if($value->get('Delete')->isClicked())
             {
-//                if($value->getData()->getGroupFlag())
-//                {
-//                    $index = $value->getParent()->getParent()->getData()->getSubForms()->indexOf($value->getData());
-//                    $temp = clone $value->getParent()->getParent()->getData()->getSubForms();//コピー
-//                    $value->getParent()->getParent()->getData()->getSubForms()->clear();//クリア
-//                    foreach($temp as $key => $loopValue)
-//                    {
-//                        if($key == $index){
-//                            //挿入
-//                            foreach($value->getData()->getSubForms() as $loopValue2)
-//                            {
-//                                $value->getParent()->getParent()->getData()->getSubForms()->add($loopValue2);
-//                            }
-//
-//                        }else{
-//                            $value->getParent()->getParent()->getData()->getSubForms()->add($loopValue);
-//                        }
-//
-//                    }
-//                }else{
-//                    $value->getData()->getSubForms()->clear();
-//                    $value->getParent()->getParent()->getData()->getSubForms()->removeElement($value->getData());
-//                }
-
-//                //子のリストを親のリストに移動
-//                foreach($value->getData()->getSubForms() as $valueSub)
-//                {
-//                    $value->getParent()->getParent()->getData()->addSubForm($valueSub);
-//                }
-
                 $value->getData()->getSubForms()->clear();
                 $value->getParent()->getParent()->getData()->getSubForms()->removeElement($value->getData());
             }
@@ -972,60 +524,7 @@ class TBProjectMasterController extends Controller
     /**
      * TBProjectMaster詳細
      *
-     * @Route("/test", name="test")
-     * @Method({"GET", "POST"})
-     * @Template()
-     */
-    public function testAction()
-    {
-        $request = $this->getRequest();
-        $formFactory = $this->get('form.factory');
-
-        $formData = new TestMainFormModel();
-        $formType = new TestMainFormType();
-
-        if($request->isMethod('GET'))
-        {
-//            $data = new TestMainFormModel();
-            $sub1_1 = new TestSubFormModel();
-            $sub1_2 = new TestSubFormModel();
-            $sub1_2_1 = new TestSubFormModel();
-            $sub1_2_1_1 = new TestSubFormModel();
-
-            $sub1_2_1->getSubForms()->add($sub1_2_1_1);
-            $sub1_2->getSubForms()->add($sub1_2_1);
-
-            $formData->getSubForms()->add($sub1_1);
-            $formData->getSubForms()->add($sub1_2);
-
-
-        }
-
-        /* @var $builder \Symfony\Component\Form\FormBuilderInterface */
-        $builder =$formFactory->createBuilder('form', null, array('cascade_validation' => true));
-//        $builder =$formFactory->createBuilder('form');
-        $mainFormBuilder = $formFactory->createBuilder($formType, $formData);
-        $form = $builder->add($mainFormBuilder)
-            ->getForm();
-
-//        $form = $this->createForm($formType, $formData);
-
-
-        if($request->isMethod('POST'))
-        {
-            $form->handleRequest($request);
-//            $form->bind($request);
-
-        }
-        return array(
-            'form' => $form->createView(),
-        );
-    }
-
-    /**
-     * TBProjectMaster詳細
-     *
-     * @Route("/{id}", name="project_show")
+     * @Route("/show/{id}", name="project_show")
      * @Method("GET")
      * @Template()
      */
@@ -1036,98 +535,20 @@ class TBProjectMasterController extends Controller
         $projectManager = new ProjectManager($em);
 
         $project = $projectManager->readProject($id);
+        $projectUsers = $projectManager->getProjectUsers($id);
 
         //returnUrlデコード
         $returnUrlQueryString = urldecode($request->get('ret'));
 
         return array(
             'project' => $project,
+            'users' => $projectUsers,
 //            'entity'      => $entity,
 //            'ventity'     => $vprojectEntity,
 //            'pcmentities'   => $pcmEntities,
             'returnUrlParam' => $returnUrlQueryString,
         );
     }
-
-//    /**
-//     * TBProjectMaster詳細
-//     *
-//     * @Route("/{id}", name="project_show")
-//     * @Method("GET")
-//     * @Template()
-//     */
-//    public function showAction($id)
-//    {
-//        $request = $this->getRequest();
-////        $em = $this->getDoctrine()->getManager();
-//
-////        $entity = $em->getRepository('ArtePCMSBizlogicBundle:TBProjectMaster')->find($id);
-//
-//        /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
-//        $queryBuilder = $this->getDoctrine()
-//            ->getRepository('ArtePCMSBizlogicBundle:TBProjectMaster')
-//            ->createQueryBuilder('p')
-//            ->leftJoin('p.TBCustomerCustomerId', 'c')
-//            ->leftJoin('p.TBSystemUserManagerId', 'u')
-//            ->select(array(
-//                'p',
-//                'partial c.{id, Name}',
-//                'partial u.{id, DisplayName}',
-//            ))
-//            ->andWhere('p.id = :id')
-//            ->andWhere('p.DeleteFlag = :DeleteFlag')
-//            ->setParameter('id', $id)
-//            ->setParameter('DeleteFlag', false)
-//        ;
-//        $entity = $queryBuilder->getQuery()->getSingleResult();
-//
-//        if (!$entity) {
-//            throw $this->createNotFoundException('Unable to find TBProjectMaster entity.');
-//        }
-//
-//        //
-//        /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
-//        $queryBuilder = $this->getDoctrine()
-//            ->getRepository('ArtePCMSBizlogicBundle:VProjectView')
-//            ->createQueryBuilder('vp')
-//            ->select(array(
-//                'partial vp.{id, ProjectTotalCost, ProductionTotalCost}',
-//            ))
-//            ->andWhere('vp.id = :id')
-//            ->setParameter('id', $id)
-//        ;
-//        $vprojectEntity = $queryBuilder->getQuery()->getSingleResult();
-//
-//        //
-//        /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
-//        $queryBuilder = $this->getDoctrine()
-//            ->getRepository('ArtePCMSBizlogicBundle:TBProjectCostMaster')
-//            ->createQueryBuilder('pcm')
-//            ->leftJoin('pcm.TBProductionCostsProjectCostMasterId', 'pc')
-//            ->select(array(
-//                'partial pcm.{id, Name, Cost}',
-//                'sum(pc.Cost)',
-//            ))
-//            ->groupBy('pcm.id')
-//            ->andWhere('pcm.ProjectMasterId = :ProjectMasterId')
-//            ->andWhere('pcm.DeleteFlag = :pcmDeleteFlag')
-//            ->andWhere('pc.DeleteFlag = :pcDeleteFlag OR pc.DeleteFlag IS NULL')
-//            ->setParameter('ProjectMasterId', $id)
-//            ->setParameter('pcmDeleteFlag', false)
-//            ->setParameter('pcDeleteFlag', false)
-//        ;
-//        $pcmEntities = $queryBuilder->getQuery()->getResult();
-//
-//        //returnUrlデコード
-//        $returnUrlQueryString = urldecode($request->get('ret'));
-//
-//        return array(
-//            'entity'      => $entity,
-//            'ventity'     => $vprojectEntity,
-//            'pcmentities'   => $pcmEntities,
-//            'returnUrlParam' => $returnUrlQueryString,
-//        );
-//    }
 
     /**
      * TBProjectMaster編集
@@ -1142,12 +563,6 @@ class TBProjectMasterController extends Controller
         $request = $this->getRequest();
         $formFactory = $this->get('form.factory');
 
-//        $formModel = new TBProjectMasterFormModel();
-//        $formType = new TBProjectMasterFormType();
-//        $subFormModel = new SubFormModel();
-//        $subFormType = new SubFormType();
-//        $subFormModel->setReturnAddress($request->get('ret'));
-
         $formType = new TBProjectMasterFormType();
 //        $formType = new TBProjectMasterType();
         $subFormModel = new SubFormModel();
@@ -1157,11 +572,6 @@ class TBProjectMasterController extends Controller
         $em = $this->getDoctrine()->getManager();
         $projectManager = new ProjectManager($em);
         $project = $projectManager->readProject($id);
-
-//        $entity = $em->getRepository('ArtePCMSPublicBundle:TBProjectMaster')->find($id);
-//        if (!$entity) {
-//            throw $this->createNotFoundException('Unable to find SystemUser entity.');
-//        }
 
         //
         $formModel = new TBProjectMasterFormModel();
@@ -1184,9 +594,6 @@ class TBProjectMasterController extends Controller
         $builder =$formFactory->createBuilder();
         $mainFormBuilder = $formFactory->createBuilder($formType, $formModel);
         $subFormBuilder = $formFactory->createBuilder($subFormType, $subFormModel);
-//        $form = $builder->add($mainFormBuilder)
-//            ->add($subFormBuilder)
-//            ->getForm();
 
         $form = $builder->add($mainFormBuilder)
             ->add($subFormBuilder)
@@ -1209,9 +616,6 @@ class TBProjectMasterController extends Controller
             $form->bind($request);
 
             //button_action
-//            $buttonAction = $subFormModel->getButtonAction();
-//
-//            if($buttonAction == "confirm" || $buttonAction == "submit")
             if($form->get('Confirm')->isClicked() || $form->get('Submit')->isClicked())
             {
                 if($form->isValid())
@@ -1235,12 +639,6 @@ class TBProjectMasterController extends Controller
                     {
                         //登録実行
                         try{
-//                            $em->persist($entity);
-//                            $em->flush();
-//
-//                            $em = $this->getDoctrine()->getManager();
-//                            $projectManager = new ProjectManager($em);
-//                            $newProject = new ProjectManagerProject();
 
                             $project->setName($formModel->getName());
                             $project->setStatus($formModel->getStatus());
@@ -1335,11 +733,13 @@ class TBProjectMasterController extends Controller
             ->getForm();
 
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ArtePCMSPublicBundle:TBProjectMaster')->find($id);
+//        $entity = $em->getRepository('ArtePCMSPublicBundle:TBProjectMaster')->find($id);
+        $projectManager = new ProjectManager($em);
+        $project = $projectManager->readProject($id);
 
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find TBProjectMaster entity.');
-        }
+//        if (!$entity) {
+//            throw $this->createNotFoundException('Unable to find TBProjectMaster entity.');
+//        }
 
         if($request->isMethod('POST'))
         {
@@ -1347,8 +747,10 @@ class TBProjectMasterController extends Controller
             if ($form->isValid()) {
 
                 try{
-                    $em->remove($entity);
-                    $em->flush();
+
+                    $projectManager->deleteProject($project);
+//                    $em->remove($entity);
+//                    $em->flush();
 
                 }catch (\Exception $e){
                     throw $e;
@@ -1356,16 +758,343 @@ class TBProjectMasterController extends Controller
                 $data = $form->getData();
                 //returnUrlデコード
                 $returnUrlQueryString = urldecode($data['returnAddress']);
-                return $this->redirect($this->generateUrl('watertank').'?'.$returnUrlQueryString);
+                return $this->redirect($this->generateUrl('project').'?'.$returnUrlQueryString);
             }
         }
 
         return array(
-            'entity' => $entity,
+            'project' => $project,
+//            'entity' => $entity,
             'form' => $form->createView(),
             'returnUrlParam' => $returnUrlQueryString,
         );
     }
 
+    /**
+     * TBProjectMaster削除
+     *
+     * @Route("/worker/edit/{id}", name="project_worker_edit")
+     * @Method({"GET", "POST"})
+     * @Template()
+     */
+    public function workerEditAction($id)
+    {
+        $request = $this->getRequest();
+        /* @var $formFactory \Symfony\Component\Form\FormFactory */
+        $formFactory = $this->get('form.factory');
+
+        $formType = new WorkerEditFormType();
+        $formModel = new WorkerEditFormModel();
+        $formType2 = new WorkerEdit2FormType();
+        $formModel2 = new WorkerEdit2FormModel();
+
+        $em = $this->getDoctrine()->getManager();
+        //ユーザー一覧
+        $userManager = new SystemUserManager($em);
+        $users = $userManager->getSystemUsers();
+
+        $choices = array();
+        foreach($users as $value)
+        {
+            /** @var $value TBSystemUser */
+            $choices[$value->getId()] = $value->getDisplayName();
+        }
+        $formType->setChoices($choices);
+
+        //所属ユーザー取得
+        $projectManager = new ProjectManager($em);
+        $projectUsers = $projectManager->getProjectUsers($id);
+        $selected = array();
+        foreach($projectUsers as $value)
+        {
+            /** @var $value TBProjectUser */
+            $selected[] = $value->getSystemUserId();
+        }
+        $formModel->setUsers($selected);
+
+        $form = $this->createWorkerForm($formType, $formModel, $formType2, $formModel2, null, array(2));
+//        $form->get('return')->setData($request->get('ret'));
+
+        if($request->isMethod('POST'))
+        {
+            $form->submit($request);
+
+            //page1to2
+            if($form->get('NextTo2')->isClicked())//ページ１からページ２へ
+            {
+                $form = $this->createWorkerForm($formType, $formModel, $formType2, $formModel2, array(1), array(2));
+                $form->submit($request);
+
+                $templateName = 'ArtePCMSPublicBundle:TBProjectMaster:workeredit.html.twig';
+                if($form->isValid()){
+                    $templateName = 'ArtePCMSPublicBundle:TBProjectMaster:workeredit2.html.twig';
+
+                    $formModel2->getWorkerEditRoleForms()->clear();
+                    foreach($formModel->getUsers() as $value)
+                    {
+                        $role = new WorkerEditRoleFormModel();
+                        $role->setId($value);
+
+                        //すでに権限が設定されてある場合は、値を設定する
+                        foreach($projectUsers as $projectUser)
+                        {
+                            /** @var $projectUser TBProjectUser */
+                            if($projectUser->getSystemUserId() == $value){
+                                $role->setRole($projectUser->getRoleNo());
+                            }
+                        }
+
+                        $formModel2->addWorkerEditRoleForm($role);
+                    }
+                    $form = $this->createWorkerForm($formType, $formModel, $formType2, $formModel2, array(1), array(1));
+//                    $form->submit($request);
+                }
+
+                return $this->render($templateName, array(
+                    'entities' => $users,
+                    'mode' => "input",
+                    'ID' => $id,
+                    'form' => $form->createView(),
+                    'returnUrlParam' => "",
+                ));
+
+            }else if($form->get('Confirm')->isClicked())//ページ２から確認画面へ
+            {
+                $form = $this->createWorkerForm($formType, $formModel, $formType2, $formModel2, array(1, 2), array(1));
+                $form->submit($request);
+
+                $templateName = 'ArtePCMSPublicBundle:TBProjectMaster:workeredit2.html.twig';
+                $mode = 'input';
+                if($form->isValid()){
+                    $templateName = 'ArtePCMSPublicBundle:TBProjectMaster:workereditcfm.html.twig';
+                    $mode = 'confirm';
+
+                    $form = $this->createWorkerForm($formType, $formModel, $formType2, $formModel2, array(1, 2), array(1, 2));
+
+                }
+
+                return $this->render($templateName, array(
+                    'entities' => $users,
+                    'mode' => $mode,
+                    'ID' => $id,
+                    'form' => $form->createView(),
+                    'returnUrlParam' => "",
+                ));
+
+            }else if($form->get('ReturnTo1')->isClicked())//ページ２からページ１へ
+            {
+                $form = $this->createWorkerForm($formType, $formModel, $formType2, $formModel2, null, array(2));
+                $form->submit($request);
+
+                return $this->render('ArtePCMSPublicBundle:TBProjectMaster:workeredit.html.twig', array(
+                    'entities' => $users,
+                    'mode' => "input",
+                    'ID' => $id,
+                    'form' => $form->createView(),
+                    'returnUrlParam' => "",
+                ));
+            }else if($form->get('Submit')->isClicked())//確認画面から登録へ
+            {
+                $form = $this->createWorkerForm($formType, $formModel, $formType2, $formModel2, array(1, 2), array(2));
+                $form->submit($request);
+
+                if($form->isValid()){
+                    //登録実行
+                    $setData = array();
+                    foreach($formModel2->getWorkerEditRoleForms() as $roleModel)
+                    {
+                        $data = array();
+                        /** @var $roleModel WorkerEditRoleFormModel */
+                        foreach($users as $value)
+                        {
+                            /** @var $value TBSystemUser */
+                            if($roleModel->getId() == $value->getId()){
+                                $data['user'] = $value;
+                                $data['role'] = $roleModel->getRole();
+                                break;
+                            }
+                        }
+                        $setData[] = $data;
+                    }
+                    $projectManager->createProjectUsers($id, $setData);
+
+                    return $this->redirect($this->generateUrl('project_show', array('id' => $id, 'ret' => "")));
+//                    return $this->redirect($this->generateUrl('project_show', array('id' => $id, 'ret' => $subFormModel->getReturnAddress())));
+                }
+
+                return $this->render('ArtePCMSPublicBundle:TBProjectMaster:workeredit.html.twig', array(
+                    'entities' => $users,
+                    'mode' => "input",
+                    'ID' => $id,
+                    'form' => $form->createView(),
+                    'returnUrlParam' => "",
+                ));
+
+            }else if($form->get('ReturnTo2')->isClicked())//確認画面からページ２へ
+            {
+                $form = $this->createWorkerForm($formType, $formModel, $formType2, $formModel2, null, array(1));
+                $form->submit($request);
+
+                return $this->render('ArtePCMSPublicBundle:TBProjectMaster:workeredit2.html.twig', array(
+                    'entities' => $users,
+                    'mode' => "input",
+                    'ID' => $id,
+                    'form' => $form->createView(),
+                    'returnUrlParam' => "",
+                ));
+            }
+
+        }
+
+        return array(
+            'entities' => $users,
+            'mode' => "input",
+            'validate' => false,
+            'ID' => $id,
+            'form' => $form->createView(),
+            'returnUrlParam' => "",
+//            'returnUrlParam' => urldecode($form->get('return')->getData()),
+        );
+    }
+
+    private function createWorkerForm($formType1, $formModel1, $formType2, $formModel2, $validationGroups = null, $freezeArray = null)
+    {
+        /* @var $formFactory \Symfony\Component\Form\FormFactory */
+        $formFactory = $this->get('form.factory');
+
+        $setValidationGroups = array();
+        if(is_array($validationGroups)){
+            foreach($validationGroups as $value)
+            {
+                switch($value){
+                    case 1:
+                        $setValidationGroups[] = 'WorkerEditForm';
+                        break;
+                    case 2:
+                        $setValidationGroups[] = 'WorkerEdit2Form';
+                        break;
+                }
+            }
+        }
+
+        $setFreeze1 = false;
+        $setFreeze2 = false;
+        if(is_array($freezeArray)){
+            foreach($freezeArray as $value)
+            {
+                switch($value){
+                    case 1:
+                        $setFreeze1 = true;
+                        break;
+                    case 2:
+                        $setFreeze2 = true;
+                        break;
+                }
+            }
+        }
+
+
+
+        $option = array('cascade_validation' => true);
+        if($validationGroups != null)
+        {
+            $option['validation_groups'] = $setValidationGroups;
+        }
+
+        /* @var $builder \Symfony\Component\Form\FormBuilderInterface */
+        $builder =$formFactory->createBuilder('form', null, $option);
+//        $builder =$formFactory->createBuilder('form', null);
+        $mainFormBuilder = $formFactory->createBuilder($formType1, $formModel1, array('freeze' => $setFreeze1));
+        $main2FormBuilder = $formFactory->createBuilder($formType2, $formModel2, array('freeze' => $setFreeze2));
+
+        /* @var $form \Symfony\Component\Form\Form */
+        $form = $builder->add($mainFormBuilder)
+            ->add($main2FormBuilder)
+            ->add('NextTo2', 'submit', array(
+                'label' => '次へ',
+            ))
+            ->add('ReturnTo1', 'submit', array(
+                'label' => '戻る'
+            ))
+            ->add('Confirm', 'submit', array(
+                'label' => '確認'
+            ))
+            ->add('ReturnTo2', 'submit', array(
+                'label' => '戻る'
+            ))
+            ->add('Submit', 'submit', array(
+                'label' => '登録'
+            ))
+            ->add('return', 'hidden', array(
+            ))
+            ->getForm();
+//        $main2FormBuilder->setAttribute('freeze', true);
+//        $form = $builder->getForm();
+
+        return $form;
+    }
+
+    /**
+     * TBProjectMaster新規作成
+     *
+     * @Route("/new3", name="project_new3")
+     * @Method({"GET", "POST"})
+     * @Template()
+     */
+    public function new3Action()
+    {
+
+        $request = $this->getRequest();
+        $formFactory = $this->get('form.factory');
+
+        $formType = new WorkerEditFormType();
+        $formModel = new WorkerEditFormModel();
+        $formType2 = new TestFormType();
+        $formModel2 = new TestFormModel();
+
+
+//        $builder =$formFactory->createBuilder('form', null, array('cascade_validation' => true, 'validation_groups' => array('aaa')));
+        $builder =$formFactory->createBuilder('form', null, array('cascade_validation' => false, 'validation_groups' => array('TestForm')));
+        $mainFormBuilder = $formFactory->createBuilder($formType, $formModel, array());
+        $main2FormBuilder = $formFactory->createBuilder($formType2, $formModel2, array());
+
+//        $form = $main2FormBuilder->getForm();
+//        $form = $builder->add($main2FormBuilder)->getForm();
+        $form = $builder->add($mainFormBuilder)
+            ->add($main2FormBuilder)
+            ->getForm();
+
+
+        if($request->isMethod('POST'))
+        {
+            $form->bind($request);
+        }
+
+
+//        $form = $builder->add($mainFormBuilder)
+//            ->add($main2FormBuilder)
+//            ->add('pageNo', 'hidden')
+//            ->add('NextTo2', 'submit', array(
+//                'label' => '次へ'
+//            ))
+//            ->add('ReturnTo1', 'submit', array(
+//                'label' => '戻る'
+//            ))
+//            ->add('Confirm', 'submit', array(
+//                'label' => '確認'
+//            ))
+//            ->add('ReturnTo2', 'submit', array(
+//                'label' => '戻る'
+//            ))
+//            ->add('Submit', 'submit', array(
+//                'label' => '登録'
+//            ))
+//            ->getForm();
+
+        return array(
+            'form' => $form->createView(),
+        );
+
+    }
 
 }

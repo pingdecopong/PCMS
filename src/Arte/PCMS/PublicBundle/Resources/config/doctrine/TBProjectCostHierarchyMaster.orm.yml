@@ -1,0 +1,38 @@
+Arte\PCMS\PublicBundle\Entity\TBProjectCostHierarchyMaster:
+    type: entity
+    indexes: {  }
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        TBProjectMasterId:
+            type: integer
+            nullable: false
+        Name:
+            type: string
+            length: 255
+            nullable: false
+        Path:
+            type: string
+            length: 255
+            nullable: false
+        SortNo:
+            type: integer
+            nullable: false
+        DeleteFlag:
+            type: boolean
+            nullable: false
+    oneToMany:
+        TBProjectCostMastersTBProjectCostHierarchyMasterId:
+            targetEntity: TBProjectCostMaster
+            mappedBy: TBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId
+    manyToOne:
+        TBProjectMasterTBProjectMasterId:
+            targetEntity: TBProjectMaster
+            inversedBy: TBProjectCostHierarchyMastersTBProjectMasterId
+            joinColumns:
+                TBProjectMasterId:
+                    referencedColumnName: id
+    manyToMany: {  }

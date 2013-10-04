@@ -1,17 +1,11 @@
 Arte\PCMS\BizlogicBundle\Entity\VProjectUser:
     indexes: {  }
     id:
-        id:
-            type: integer
-            generator:
-                strategy: AUTO
-    fields:
         SystemUserId:
             type: integer
-            nullable: false
         ProjectMasterId:
             type: integer
-            nullable: false
+    fields:
         RoleNo:
             type: integer
             nullable: false

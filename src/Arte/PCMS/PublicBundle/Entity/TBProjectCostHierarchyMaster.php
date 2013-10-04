@@ -1,6 +1,6 @@
 <?php
 
-namespace Arte\PCMS\BizlogicBundle\Entity;
+namespace Arte\PCMS\PublicBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -30,12 +30,22 @@ class TBProjectCostHierarchyMaster
     private $Path;
 
     /**
+     * @var integer
+     */
+    private $SortNo;
+
+    /**
+     * @var boolean
+     */
+    private $DeleteFlag;
+
+    /**
      * @var \Doctrine\Common\Collections\Collection
      */
     private $TBProjectCostMastersTBProjectCostHierarchyMasterId;
 
     /**
-     * @var \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster
+     * @var \Arte\PCMS\PublicBundle\Entity\TBProjectMaster
      */
     private $TBProjectMasterTBProjectMasterId;
 
@@ -127,67 +137,6 @@ class TBProjectCostHierarchyMaster
     }
 
     /**
-     * Add TBProjectCostMastersTBProjectCostHierarchyMasterId
-     *
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersTBProjectCostHierarchyMasterId
-     * @return TBProjectCostHierarchyMaster
-     */
-    public function addTBProjectCostMastersTBProjectCostHierarchyMasterId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersTBProjectCostHierarchyMasterId)
-    {
-        $this->TBProjectCostMastersTBProjectCostHierarchyMasterId[] = $tBProjectCostMastersTBProjectCostHierarchyMasterId;
-    
-        return $this;
-    }
-
-    /**
-     * Remove TBProjectCostMastersTBProjectCostHierarchyMasterId
-     *
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersTBProjectCostHierarchyMasterId
-     */
-    public function removeTBProjectCostMastersTBProjectCostHierarchyMasterId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersTBProjectCostHierarchyMasterId)
-    {
-        $this->TBProjectCostMastersTBProjectCostHierarchyMasterId->removeElement($tBProjectCostMastersTBProjectCostHierarchyMasterId);
-    }
-
-    /**
-     * Get TBProjectCostMastersTBProjectCostHierarchyMasterId
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getTBProjectCostMastersTBProjectCostHierarchyMasterId()
-    {
-        return $this->TBProjectCostMastersTBProjectCostHierarchyMasterId;
-    }
-
-    /**
-     * Set TBProjectMasterTBProjectMasterId
-     *
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMasterTBProjectMasterId
-     * @return TBProjectCostHierarchyMaster
-     */
-    public function setTBProjectMasterTBProjectMasterId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMasterTBProjectMasterId = null)
-    {
-        $this->TBProjectMasterTBProjectMasterId = $tBProjectMasterTBProjectMasterId;
-    
-        return $this;
-    }
-
-    /**
-     * Get TBProjectMasterTBProjectMasterId
-     *
-     * @return \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster 
-     */
-    public function getTBProjectMasterTBProjectMasterId()
-    {
-        return $this->TBProjectMasterTBProjectMasterId;
-    }
-    /**
-     * @var integer
-     */
-    private $SortNo;
-
-
-    /**
      * Set SortNo
      *
      * @param integer $sortNo
@@ -209,11 +158,6 @@ class TBProjectCostHierarchyMaster
     {
         return $this->SortNo;
     }
-    /**
-     * @var boolean
-     */
-    private $DeleteFlag;
-
 
     /**
      * Set DeleteFlag
@@ -236,5 +180,61 @@ class TBProjectCostHierarchyMaster
     public function getDeleteFlag()
     {
         return $this->DeleteFlag;
+    }
+
+    /**
+     * Add TBProjectCostMastersTBProjectCostHierarchyMasterId
+     *
+     * @param \Arte\PCMS\PublicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersTBProjectCostHierarchyMasterId
+     * @return TBProjectCostHierarchyMaster
+     */
+    public function addTBProjectCostMastersTBProjectCostHierarchyMasterId(\Arte\PCMS\PublicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersTBProjectCostHierarchyMasterId)
+    {
+        $this->TBProjectCostMastersTBProjectCostHierarchyMasterId[] = $tBProjectCostMastersTBProjectCostHierarchyMasterId;
+    
+        return $this;
+    }
+
+    /**
+     * Remove TBProjectCostMastersTBProjectCostHierarchyMasterId
+     *
+     * @param \Arte\PCMS\PublicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersTBProjectCostHierarchyMasterId
+     */
+    public function removeTBProjectCostMastersTBProjectCostHierarchyMasterId(\Arte\PCMS\PublicBundle\Entity\TBProjectCostMaster $tBProjectCostMastersTBProjectCostHierarchyMasterId)
+    {
+        $this->TBProjectCostMastersTBProjectCostHierarchyMasterId->removeElement($tBProjectCostMastersTBProjectCostHierarchyMasterId);
+    }
+
+    /**
+     * Get TBProjectCostMastersTBProjectCostHierarchyMasterId
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTBProjectCostMastersTBProjectCostHierarchyMasterId()
+    {
+        return $this->TBProjectCostMastersTBProjectCostHierarchyMasterId;
+    }
+
+    /**
+     * Set TBProjectMasterTBProjectMasterId
+     *
+     * @param \Arte\PCMS\PublicBundle\Entity\TBProjectMaster $tBProjectMasterTBProjectMasterId
+     * @return TBProjectCostHierarchyMaster
+     */
+    public function setTBProjectMasterTBProjectMasterId(\Arte\PCMS\PublicBundle\Entity\TBProjectMaster $tBProjectMasterTBProjectMasterId = null)
+    {
+        $this->TBProjectMasterTBProjectMasterId = $tBProjectMasterTBProjectMasterId;
+    
+        return $this;
+    }
+
+    /**
+     * Get TBProjectMasterTBProjectMasterId
+     *
+     * @return \Arte\PCMS\PublicBundle\Entity\TBProjectMaster 
+     */
+    public function getTBProjectMasterTBProjectMasterId()
+    {
+        return $this->TBProjectMasterTBProjectMasterId;
     }
 }

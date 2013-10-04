@@ -18,6 +18,24 @@ class SystemUserManager {
         $this->em = $em;
     }
 
+    public function getSystemUsers()
+    {
+        /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
+        $queryBuilder = $this->em
+            ->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')
+            ->createQueryBuilder('u')
+            ->Join('u.TBDepartmentDepartmentId', 'd')
+            ->select(array(
+                'u',
+                'd',
+            ))
+            ->andWhere('u.DeleteFlag = false')
+        ;
+        $tbSystemUsers = $queryBuilder->getQuery()->getResult();
+
+        return $tbSystemUsers;
+    }
+
     /**
      * ユーザー取得
      * @param $id

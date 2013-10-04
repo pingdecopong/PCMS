@@ -1,0 +1,156 @@
+<?php
+
+namespace Arte\PCMS\PublicBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * TBDepartment
+ */
+class TBDepartment
+{
+    /**
+     * @var integer
+     */
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $Name;
+
+    /**
+     * @var integer
+     */
+    private $SortNo;
+
+    /**
+     * @var boolean
+     */
+    private $DeleteFlag;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $TBSystemUsersDepartmentId;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->TBSystemUsersDepartmentId = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set Name
+     *
+     * @param string $name
+     * @return TBDepartment
+     */
+    public function setName($name)
+    {
+        $this->Name = $name;
+    
+        return $this;
+    }
+
+    /**
+     * Get Name
+     *
+     * @return string 
+     */
+    public function getName()
+    {
+        return $this->Name;
+    }
+
+    /**
+     * Set SortNo
+     *
+     * @param integer $sortNo
+     * @return TBDepartment
+     */
+    public function setSortNo($sortNo)
+    {
+        $this->SortNo = $sortNo;
+    
+        return $this;
+    }
+
+    /**
+     * Get SortNo
+     *
+     * @return integer 
+     */
+    public function getSortNo()
+    {
+        return $this->SortNo;
+    }
+
+    /**
+     * Set DeleteFlag
+     *
+     * @param boolean $deleteFlag
+     * @return TBDepartment
+     */
+    public function setDeleteFlag($deleteFlag)
+    {
+        $this->DeleteFlag = $deleteFlag;
+    
+        return $this;
+    }
+
+    /**
+     * Get DeleteFlag
+     *
+     * @return boolean 
+     */
+    public function getDeleteFlag()
+    {
+        return $this->DeleteFlag;
+    }
+
+    /**
+     * Add TBSystemUsersDepartmentId
+     *
+     * @param \Arte\PCMS\PublicBundle\Entity\TBSystemUser $tBSystemUsersDepartmentId
+     * @return TBDepartment
+     */
+    public function addTBSystemUsersDepartmentId(\Arte\PCMS\PublicBundle\Entity\TBSystemUser $tBSystemUsersDepartmentId)
+    {
+        $this->TBSystemUsersDepartmentId[] = $tBSystemUsersDepartmentId;
+    
+        return $this;
+    }
+
+    /**
+     * Remove TBSystemUsersDepartmentId
+     *
+     * @param \Arte\PCMS\PublicBundle\Entity\TBSystemUser $tBSystemUsersDepartmentId
+     */
+    public function removeTBSystemUsersDepartmentId(\Arte\PCMS\PublicBundle\Entity\TBSystemUser $tBSystemUsersDepartmentId)
+    {
+        $this->TBSystemUsersDepartmentId->removeElement($tBSystemUsersDepartmentId);
+    }
+
+    /**
+     * Get TBSystemUsersDepartmentId
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTBSystemUsersDepartmentId()
+    {
+        return $this->TBSystemUsersDepartmentId;
+    }
+}

@@ -1,4 +1,4 @@
-Arte\PCMS\BizlogicBundle\Entity\TBProjectUser:
+Arte\PCMS\PublicBundle\Entity\TBProjectUser:
     type: entity
     indexes: {  }
     id:

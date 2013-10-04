@@ -1,0 +1,3 @@
+Arte\PCMS\BizlogicBundle\Entity\VProjectUser:
+    type: mappedSuperclass
+    readOnly: true

@@ -1,4 +1,4 @@
-Arte\PCMS\BizlogicBundle\Entity\TBProjectUser:
+Arte\PCMS\PublicBundle\Entity\VProjectUser:
     type: entity
     indexes: {  }
     id:
@@ -14,14 +14,17 @@ Arte\PCMS\BizlogicBundle\Entity\TBProjectUser:
     manyToOne:
         TBSystemUserSystemUserId:
             targetEntity: TBSystemUser
-            inversedBy: TBProjectUsersSystemUserId
+            inversedBy: VProjectUsersSystemUserId
             joinColumns:
                 SystemUserId:
                     referencedColumnName: id
-        TBProjectMasterProjectMasterId:
-            targetEntity: TBProjectMaster
-            inversedBy: TBProjectUsersProjectMasterId
+        VProjectViewProjectMasterId:
+            targetEntity: VProjectView
+            inversedBy: VProjectUsersProjectMasterId
             joinColumns:
                 ProjectMasterId:
                     referencedColumnName: id
     manyToMany: {  }
+Arte\PCMS\BizlogicBundle\Entity\VProjectUser:
+    type: mappedSuperclass
+    readOnly: true

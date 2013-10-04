@@ -6,10 +6,13 @@ use Arte\PCMS\BizlogicBundle\Entity\TBProductionCost;
 use Arte\PCMS\BizlogicBundle\Entity\TBProjectCostHierarchyMaster;
 use Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster;
 use Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster;
+use Arte\PCMS\BizlogicBundle\Entity\TBProjectUser;
 use Arte\PCMS\BizlogicBundle\Lib\ProjectManager;
 use Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProductionCost;
 use Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProject;
 use Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost;
+use Arte\PCMS\PublicBundle\Form\TBProjectMasterSearchModel;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -463,6 +466,19 @@ class ProjectManagerTest extends WebTestCase {
             $this->em->persist($tbProjectCostMaster5);
             $this->em->flush();
 
+            //担当ユーザー追加
+            $projectUser1 = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(1);
+
+            //1
+            $tbProjectUser1 = new TBProjectUser();
+            $tbProjectUser1->setTBSystemUserSystemUserId($projectUser1);
+            $tbProjectUser1->setSystemUserId($projectUser1->getId());
+            $tbProjectUser1->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectUser1->setProjectMasterId($tbprojectMaster->getId());
+            $tbProjectUser1->setRoleNo(1);
+            $this->em->persist($tbProjectUser1);
+            $this->em->flush();
+
             $this->em->getConnection()->commit();
 
         }catch (\Exception $e){
@@ -671,6 +687,17 @@ class ProjectManagerTest extends WebTestCase {
             $this->em->persist($tbProductionCost2);
             $this->em->flush();
 
+            //実工数２（削除）
+            $tbProductionCost2 = new TBProductionCost();
+            $tbProductionCost2->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster2);
+            $tbProductionCost2->setTBSystemUserSystemUserId($user6);
+            $tbProductionCost2->setWorkDate(new \DateTime("2013-08-2 0:0:0"));
+            $tbProductionCost2->setCost(1);
+            $tbProductionCost2->setNote('実工数２（削除）');
+            $tbProductionCost2->setDeleteFlag(true);
+            $this->em->persist($tbProductionCost2);
+            $this->em->flush();
+
             //実工数３－１
             $tbProductionCost31 = new TBProductionCost();
             $tbProductionCost31->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster3);
@@ -693,6 +720,17 @@ class ProjectManagerTest extends WebTestCase {
             $this->em->persist($tbProductionCost32);
             $this->em->flush();
 
+            //実工数４（削除）
+            $tbProductionCost4 = new TBProductionCost();
+            $tbProductionCost4->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster4);
+            $tbProductionCost4->setTBSystemUserSystemUserId($user6);
+            $tbProductionCost4->setWorkDate(new \DateTime("2013-08-10 0:0:0"));
+            $tbProductionCost4->setCost(24);
+            $tbProductionCost4->setNote('実工数４（削除）');
+            $tbProductionCost4->setDeleteFlag(true);
+            $this->em->persist($tbProductionCost4);
+            $this->em->flush();
+
             //実工数５
             $tbProductionCost5 = new TBProductionCost();
             $tbProductionCost5->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster5);
@@ -702,6 +740,249 @@ class ProjectManagerTest extends WebTestCase {
             $tbProductionCost5->setNote('実工数５');
             $tbProductionCost5->setDeleteFlag(false);
             $this->em->persist($tbProductionCost5);
+            $this->em->flush();
+
+
+
+            //担当ユーザー追加
+            $projectUser1 = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(1);
+            $projectUser2 = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(2);
+            $projectUser3 = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(3);
+
+            //1
+            $tbProjectUser1 = new TBProjectUser();
+            $tbProjectUser1->setTBSystemUserSystemUserId($projectUser1);
+            $tbProjectUser1->setSystemUserId($projectUser1->getId());
+            $tbProjectUser1->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectUser1->setProjectMasterId($tbprojectMaster->getId());
+            $tbProjectUser1->setRoleNo(1);
+            $this->em->persist($tbProjectUser1);
+            $this->em->flush();
+
+            //2
+            $tbProjectUser2 = new TBProjectUser();
+            $tbProjectUser2->setTBSystemUserSystemUserId($projectUser2);
+            $tbProjectUser2->setSystemUserId($projectUser1->getId());
+            $tbProjectUser2->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectUser2->setProjectMasterId($tbprojectMaster->getId());
+            $tbProjectUser2->setRoleNo(2);
+            $this->em->persist($tbProjectUser2);
+            $this->em->flush();
+
+            //3
+            $tbProjectUser3 = new TBProjectUser();
+            $tbProjectUser3->setTBSystemUserSystemUserId($projectUser3);
+            $tbProjectUser3->setSystemUserId($projectUser1->getId());
+            $tbProjectUser3->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectUser3->setProjectMasterId($tbprojectMaster->getId());
+            $tbProjectUser3->setRoleNo(3);
+            $this->em->persist($tbProjectUser3);
+            $this->em->flush();
+
+
+
+            $this->em->getConnection()->commit();
+
+        }catch (\Exception $e){
+            $this->em->getConnection()->rollBack();
+            $this->em->close();
+            throw $e;
+        }
+
+        $this->em->clear();
+
+        return $tbprojectMaster;
+    }
+
+
+    /**
+     * テスト用データ登録　パターン１
+     * @return TBProjectMaster
+     * @throws \Exception
+     */
+    private function createDataPatern1()
+    {
+        $this->em->getConnection()->beginTransaction();
+        try {
+            $customer = $this->em->getRepository('ArtePCMSBizlogicBundle:TBCustomer')->find(1);
+            $manager = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(1);
+
+            //案件マスタ
+            $tbprojectMaster = new TBProjectMaster();
+            $tbprojectMaster->setName('パターン１');
+            $tbprojectMaster->setStatus(1);
+            $tbprojectMaster->setExplanation("パターン１説明\nパターン１説明");
+            $tbprojectMaster->setTBCustomerCustomerId($customer);
+            $tbprojectMaster->setDeleteFlag(false);
+            $tbprojectMaster->setPeriodStart(new \DateTime("2013-08-1 0:0:0"));
+            $tbprojectMaster->setPeriodEnd(new \DateTime("2013-08-7 0:0:0"));
+            $tbprojectMaster->setTBSystemUserManagerId($manager);
+            $tbprojectMaster->setEstimateFilePath('見積ファイルパス');
+            $tbprojectMaster->setScheduleFilePath('スケジュールファイルパス');
+            $this->em->persist($tbprojectMaster);
+            $this->em->flush();
+
+            //root
+            $tbprojectCostHierarchyMasterRoot = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterRoot->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterRoot->setName("\\");
+            $tbprojectCostHierarchyMasterRoot->setSortNo(0);
+            $tbprojectCostHierarchyMasterRoot->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterRoot->setPath("\\");
+            $this->em->persist($tbprojectCostHierarchyMasterRoot);
+            $this->em->flush();
+
+            //グループ１
+            $tbprojectCostHierarchyMasterGroup1 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup1->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup1->setName('グループ１');
+            $tbprojectCostHierarchyMasterGroup1->setSortNo(1);
+            $tbprojectCostHierarchyMasterGroup1->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup1->setPath($tbprojectCostHierarchyMasterRoot->getPath() . $tbprojectCostHierarchyMasterRoot->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup1);
+            $this->em->flush();
+
+            //グループ２
+            $tbprojectCostHierarchyMasterGroup2 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup2->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup2->setName('グループ２');
+            $tbprojectCostHierarchyMasterGroup2->setSortNo(1);
+            $tbprojectCostHierarchyMasterGroup2->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup2->setPath($tbprojectCostHierarchyMasterGroup1->getPath() . $tbprojectCostHierarchyMasterGroup1->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup2);
+            $this->em->flush();
+
+            //グループ３
+            $tbprojectCostHierarchyMasterGroup3 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup3->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup3->setName('グループ３');
+            $tbprojectCostHierarchyMasterGroup3->setSortNo(1);
+            $tbprojectCostHierarchyMasterGroup3->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup3->setPath($tbprojectCostHierarchyMasterGroup2->getPath() . $tbprojectCostHierarchyMasterGroup2->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup3);
+            $this->em->flush();
+
+            //グループ４
+            $tbprojectCostHierarchyMasterGroup4 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup4->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup4->setName('グループ４');
+            $tbprojectCostHierarchyMasterGroup4->setSortNo(2);
+            $tbprojectCostHierarchyMasterGroup4->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup4->setPath($tbprojectCostHierarchyMasterGroup2->getPath() . $tbprojectCostHierarchyMasterGroup2->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup4);
+            $this->em->flush();
+
+            //グループ５
+            $tbprojectCostHierarchyMasterGroup5 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup5->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup5->setName('グループ５');
+            $tbprojectCostHierarchyMasterGroup5->setSortNo(1);
+            $tbprojectCostHierarchyMasterGroup5->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup5->setPath($tbprojectCostHierarchyMasterGroup3->getPath() . $tbprojectCostHierarchyMasterGroup3->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup5);
+            $this->em->flush();
+
+            //グループ６
+            $tbprojectCostHierarchyMasterGroup6 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup6->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup6->setName('グループ６');
+            $tbprojectCostHierarchyMasterGroup6->setSortNo(2);
+            $tbprojectCostHierarchyMasterGroup6->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup6->setPath($tbprojectCostHierarchyMasterGroup4->getPath() . $tbprojectCostHierarchyMasterGroup4->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup6);
+            $this->em->flush();
+
+            //グループ７
+            $tbprojectCostHierarchyMasterGroup7 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup7->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup7->setName('グループ７');
+            $tbprojectCostHierarchyMasterGroup7->setSortNo(1);
+            $tbprojectCostHierarchyMasterGroup7->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup7->setPath($tbprojectCostHierarchyMasterGroup6->getPath() . $tbprojectCostHierarchyMasterGroup6->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup7);
+            $this->em->flush();
+
+            //グループ８
+            $tbprojectCostHierarchyMasterGroup8 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup8->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup8->setName('グループ８');
+            $tbprojectCostHierarchyMasterGroup8->setSortNo(2);
+            $tbprojectCostHierarchyMasterGroup8->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup8->setPath($tbprojectCostHierarchyMasterGroup6->getPath() . $tbprojectCostHierarchyMasterGroup6->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup8);
+            $this->em->flush();
+
+            //コスト１
+            $tbProjectCostMaster1 = new TBProjectCostMaster();
+            $tbProjectCostMaster1->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectCostMaster1->setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId($tbprojectCostHierarchyMasterGroup1);
+            $tbProjectCostMaster1->setName('コスト１');
+            $tbProjectCostMaster1->setCost(1);
+            $tbProjectCostMaster1->setSortNo(2);
+            $tbProjectCostMaster1->setDeleteFlag(false);
+            $tbProjectCostMaster1->setHierarchyPath('');
+            $this->em->persist($tbProjectCostMaster1);
+            $this->em->flush();
+
+            //コスト２
+            $tbProjectCostMaster2 = new TBProjectCostMaster();
+            $tbProjectCostMaster2->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectCostMaster2->setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId($tbprojectCostHierarchyMasterGroup4);
+            $tbProjectCostMaster2->setName('コスト２');
+            $tbProjectCostMaster2->setCost(2);
+            $tbProjectCostMaster2->setSortNo(1);
+            $tbProjectCostMaster2->setDeleteFlag(false);
+            $tbProjectCostMaster2->setHierarchyPath('');
+            $this->em->persist($tbProjectCostMaster2);
+            $this->em->flush();
+
+            //コスト３
+            $tbProjectCostMaster3 = new TBProjectCostMaster();
+            $tbProjectCostMaster3->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectCostMaster3->setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId($tbprojectCostHierarchyMasterGroup5);
+            $tbProjectCostMaster3->setName('コスト３');
+            $tbProjectCostMaster3->setCost(3);
+            $tbProjectCostMaster3->setSortNo(1);
+            $tbProjectCostMaster3->setDeleteFlag(false);
+            $tbProjectCostMaster3->setHierarchyPath('');
+            $this->em->persist($tbProjectCostMaster3);
+            $this->em->flush();
+
+            //コスト４
+            $tbProjectCostMaster4 = new TBProjectCostMaster();
+            $tbProjectCostMaster4->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectCostMaster4->setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId($tbprojectCostHierarchyMasterGroup5);
+            $tbProjectCostMaster4->setName('コスト４');
+            $tbProjectCostMaster4->setCost(4);
+            $tbProjectCostMaster4->setSortNo(2);
+            $tbProjectCostMaster4->setDeleteFlag(false);
+            $tbProjectCostMaster4->setHierarchyPath('');
+            $this->em->persist($tbProjectCostMaster4);
+            $this->em->flush();
+
+            //コスト５
+            $tbProjectCostMaster5 = new TBProjectCostMaster();
+            $tbProjectCostMaster5->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectCostMaster5->setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId($tbprojectCostHierarchyMasterGroup7);
+            $tbProjectCostMaster5->setName('コスト５');
+            $tbProjectCostMaster5->setCost(5);
+            $tbProjectCostMaster5->setSortNo(1);
+            $tbProjectCostMaster5->setDeleteFlag(false);
+            $tbProjectCostMaster5->setHierarchyPath('');
+            $this->em->persist($tbProjectCostMaster5);
+            $this->em->flush();
+
+            //担当ユーザー追加
+            $projectUser1 = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(1);
+
+            //1
+            $tbProjectUser1 = new TBProjectUser();
+            $tbProjectUser1->setTBSystemUserSystemUserId($projectUser1);
+            $tbProjectUser1->setSystemUserId($projectUser1->getId());
+            $tbProjectUser1->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectUser1->setProjectMasterId($tbprojectMaster->getId());
+            $tbProjectUser1->setRoleNo(TBProjectUser::ROLE_MANAGER);
+            $this->em->persist($tbProjectUser1);
             $this->em->flush();
 
             $this->em->getConnection()->commit();
@@ -716,6 +997,541 @@ class ProjectManagerTest extends WebTestCase {
 
         return $tbprojectMaster;
     }
+
+    /**
+     * テスト用データ登録　パターン２
+     * @return TBProjectMaster
+     * @throws \Exception
+     */
+    private function createDataPatern2()
+    {
+        $this->em->getConnection()->beginTransaction();
+        try {
+            $customer = $this->em->getRepository('ArtePCMSBizlogicBundle:TBCustomer')->find(1);
+            $manager = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(1);
+
+            //案件マスタ
+            $tbprojectMaster = new TBProjectMaster();
+            $tbprojectMaster->setName('パターン２');
+            $tbprojectMaster->setStatus(1);
+            $tbprojectMaster->setExplanation("パターン２説明\nパターン２説明");
+            $tbprojectMaster->setTBCustomerCustomerId($customer);
+            $tbprojectMaster->setDeleteFlag(false);
+            $tbprojectMaster->setPeriodStart(new \DateTime("2013-08-1 0:0:0"));
+            $tbprojectMaster->setPeriodEnd(new \DateTime("2013-08-7 0:0:0"));
+            $tbprojectMaster->setTBSystemUserManagerId($manager);
+            $tbprojectMaster->setEstimateFilePath('見積ファイルパス');
+            $tbprojectMaster->setScheduleFilePath('スケジュールファイルパス');
+            $this->em->persist($tbprojectMaster);
+            $this->em->flush();
+
+            //root
+            $tbprojectCostHierarchyMasterRoot = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterRoot->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterRoot->setName("\\");
+            $tbprojectCostHierarchyMasterRoot->setSortNo(0);
+            $tbprojectCostHierarchyMasterRoot->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterRoot->setPath("\\");
+            $this->em->persist($tbprojectCostHierarchyMasterRoot);
+            $this->em->flush();
+
+            //グループ１
+            $tbprojectCostHierarchyMasterGroup1 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup1->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup1->setName('グループ１');
+            $tbprojectCostHierarchyMasterGroup1->setSortNo(1);
+            $tbprojectCostHierarchyMasterGroup1->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup1->setPath($tbprojectCostHierarchyMasterRoot->getPath() . $tbprojectCostHierarchyMasterRoot->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup1);
+            $this->em->flush();
+
+            //グループ２
+            $tbprojectCostHierarchyMasterGroup2 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup2->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup2->setName('グループ２');
+            $tbprojectCostHierarchyMasterGroup2->setSortNo(1);
+            $tbprojectCostHierarchyMasterGroup2->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup2->setPath($tbprojectCostHierarchyMasterGroup1->getPath() . $tbprojectCostHierarchyMasterGroup1->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup2);
+            $this->em->flush();
+
+            //グループ３
+            $tbprojectCostHierarchyMasterGroup3 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup3->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup3->setName('グループ３');
+            $tbprojectCostHierarchyMasterGroup3->setSortNo(1);
+            $tbprojectCostHierarchyMasterGroup3->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup3->setPath($tbprojectCostHierarchyMasterGroup2->getPath() . $tbprojectCostHierarchyMasterGroup2->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup3);
+            $this->em->flush();
+
+            //グループ４
+            $tbprojectCostHierarchyMasterGroup4 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup4->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup4->setName('グループ４');
+            $tbprojectCostHierarchyMasterGroup4->setSortNo(2);
+            $tbprojectCostHierarchyMasterGroup4->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup4->setPath($tbprojectCostHierarchyMasterGroup2->getPath() . $tbprojectCostHierarchyMasterGroup2->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup4);
+            $this->em->flush();
+
+            //グループ５
+            $tbprojectCostHierarchyMasterGroup5 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup5->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup5->setName('グループ５');
+            $tbprojectCostHierarchyMasterGroup5->setSortNo(1);
+            $tbprojectCostHierarchyMasterGroup5->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup5->setPath($tbprojectCostHierarchyMasterGroup3->getPath() . $tbprojectCostHierarchyMasterGroup3->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup5);
+            $this->em->flush();
+
+            //グループ６
+            $tbprojectCostHierarchyMasterGroup6 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup6->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup6->setName('グループ６');
+            $tbprojectCostHierarchyMasterGroup6->setSortNo(2);
+            $tbprojectCostHierarchyMasterGroup6->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup6->setPath($tbprojectCostHierarchyMasterGroup4->getPath() . $tbprojectCostHierarchyMasterGroup4->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup6);
+            $this->em->flush();
+
+            //グループ７
+            $tbprojectCostHierarchyMasterGroup7 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup7->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup7->setName('グループ７');
+            $tbprojectCostHierarchyMasterGroup7->setSortNo(1);
+            $tbprojectCostHierarchyMasterGroup7->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup7->setPath($tbprojectCostHierarchyMasterGroup6->getPath() . $tbprojectCostHierarchyMasterGroup6->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup7);
+            $this->em->flush();
+
+            //グループ８
+            $tbprojectCostHierarchyMasterGroup8 = new TBProjectCostHierarchyMaster();
+            $tbprojectCostHierarchyMasterGroup8->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+            $tbprojectCostHierarchyMasterGroup8->setName('グループ８');
+            $tbprojectCostHierarchyMasterGroup8->setSortNo(2);
+            $tbprojectCostHierarchyMasterGroup8->setDeleteFlag(false);
+            $tbprojectCostHierarchyMasterGroup8->setPath($tbprojectCostHierarchyMasterGroup6->getPath() . $tbprojectCostHierarchyMasterGroup6->getId().'\\');
+            $this->em->persist($tbprojectCostHierarchyMasterGroup8);
+            $this->em->flush();
+
+            //コスト１
+            $tbProjectCostMaster1 = new TBProjectCostMaster();
+            $tbProjectCostMaster1->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectCostMaster1->setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId($tbprojectCostHierarchyMasterGroup1);
+            $tbProjectCostMaster1->setName('コスト１');
+            $tbProjectCostMaster1->setCost(1);
+            $tbProjectCostMaster1->setSortNo(2);
+            $tbProjectCostMaster1->setDeleteFlag(false);
+            $tbProjectCostMaster1->setHierarchyPath('');
+            $this->em->persist($tbProjectCostMaster1);
+            $this->em->flush();
+
+            //コスト２
+            $tbProjectCostMaster2 = new TBProjectCostMaster();
+            $tbProjectCostMaster2->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectCostMaster2->setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId($tbprojectCostHierarchyMasterGroup4);
+            $tbProjectCostMaster2->setName('コスト２');
+            $tbProjectCostMaster2->setCost(2);
+            $tbProjectCostMaster2->setSortNo(1);
+            $tbProjectCostMaster2->setDeleteFlag(false);
+            $tbProjectCostMaster2->setHierarchyPath('');
+            $this->em->persist($tbProjectCostMaster2);
+            $this->em->flush();
+
+            //コスト３
+            $tbProjectCostMaster3 = new TBProjectCostMaster();
+            $tbProjectCostMaster3->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectCostMaster3->setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId($tbprojectCostHierarchyMasterGroup5);
+            $tbProjectCostMaster3->setName('コスト３');
+            $tbProjectCostMaster3->setCost(3);
+            $tbProjectCostMaster3->setSortNo(1);
+            $tbProjectCostMaster3->setDeleteFlag(false);
+            $tbProjectCostMaster3->setHierarchyPath('');
+            $this->em->persist($tbProjectCostMaster3);
+            $this->em->flush();
+
+            //コスト４
+            $tbProjectCostMaster4 = new TBProjectCostMaster();
+            $tbProjectCostMaster4->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectCostMaster4->setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId($tbprojectCostHierarchyMasterGroup5);
+            $tbProjectCostMaster4->setName('コスト４');
+            $tbProjectCostMaster4->setCost(4);
+            $tbProjectCostMaster4->setSortNo(2);
+            $tbProjectCostMaster4->setDeleteFlag(false);
+            $tbProjectCostMaster4->setHierarchyPath('');
+            $this->em->persist($tbProjectCostMaster4);
+            $this->em->flush();
+
+            //コスト５
+            $tbProjectCostMaster5 = new TBProjectCostMaster();
+            $tbProjectCostMaster5->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectCostMaster5->setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId($tbprojectCostHierarchyMasterGroup7);
+            $tbProjectCostMaster5->setName('コスト５');
+            $tbProjectCostMaster5->setCost(5);
+            $tbProjectCostMaster5->setSortNo(1);
+            $tbProjectCostMaster5->setDeleteFlag(false);
+            $tbProjectCostMaster5->setHierarchyPath('');
+            $this->em->persist($tbProjectCostMaster5);
+            $this->em->flush();
+
+
+
+
+            //実工数登録
+            $user5 = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(5);
+            $user6 = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(6);
+
+            //実工数２
+            $tbProductionCost2 = new TBProductionCost();
+            $tbProductionCost2->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster2);
+            $tbProductionCost2->setTBSystemUserSystemUserId($user5);
+            $tbProductionCost2->setWorkDate(new \DateTime("2013-08-1 0:0:0"));
+            $tbProductionCost2->setCost(12);
+            $tbProductionCost2->setNote('実工数２');
+            $tbProductionCost2->setDeleteFlag(false);
+            $this->em->persist($tbProductionCost2);
+            $this->em->flush();
+
+            //実工数２（削除）
+            $tbProductionCost2 = new TBProductionCost();
+            $tbProductionCost2->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster2);
+            $tbProductionCost2->setTBSystemUserSystemUserId($user6);
+            $tbProductionCost2->setWorkDate(new \DateTime("2013-08-2 0:0:0"));
+            $tbProductionCost2->setCost(1);
+            $tbProductionCost2->setNote('実工数２（削除）');
+            $tbProductionCost2->setDeleteFlag(true);
+            $this->em->persist($tbProductionCost2);
+            $this->em->flush();
+
+            //実工数３－１
+            $tbProductionCost31 = new TBProductionCost();
+            $tbProductionCost31->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster3);
+            $tbProductionCost31->setTBSystemUserSystemUserId($user5);
+            $tbProductionCost31->setWorkDate(new \DateTime("2013-08-2 0:0:0"));
+            $tbProductionCost31->setCost(11);
+            $tbProductionCost31->setNote('実工数３－１');
+            $tbProductionCost31->setDeleteFlag(false);
+            $this->em->persist($tbProductionCost31);
+            $this->em->flush();
+
+            //実工数３－２
+            $tbProductionCost32 = new TBProductionCost();
+            $tbProductionCost32->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster3);
+            $tbProductionCost32->setTBSystemUserSystemUserId($user6);
+            $tbProductionCost32->setWorkDate(new \DateTime("2013-08-3 0:0:0"));
+            $tbProductionCost32->setCost(2);
+            $tbProductionCost32->setNote('実工数３－２');
+            $tbProductionCost32->setDeleteFlag(false);
+            $this->em->persist($tbProductionCost32);
+            $this->em->flush();
+
+            //実工数４（削除）
+            $tbProductionCost4 = new TBProductionCost();
+            $tbProductionCost4->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster4);
+            $tbProductionCost4->setTBSystemUserSystemUserId($user6);
+            $tbProductionCost4->setWorkDate(new \DateTime("2013-08-10 0:0:0"));
+            $tbProductionCost4->setCost(24);
+            $tbProductionCost4->setNote('実工数４（削除）');
+            $tbProductionCost4->setDeleteFlag(true);
+            $this->em->persist($tbProductionCost4);
+            $this->em->flush();
+
+            //実工数５
+            $tbProductionCost5 = new TBProductionCost();
+            $tbProductionCost5->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster5);
+            $tbProductionCost5->setTBSystemUserSystemUserId($user5);
+            $tbProductionCost5->setWorkDate(new \DateTime("2013-08-4 0:0:0"));
+            $tbProductionCost5->setCost(15);
+            $tbProductionCost5->setNote('実工数５');
+            $tbProductionCost5->setDeleteFlag(false);
+            $this->em->persist($tbProductionCost5);
+            $this->em->flush();
+
+
+
+            //担当ユーザー追加
+            $projectUser1 = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(1);
+            $projectUser2 = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(2);
+            $projectUser3 = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(3);
+
+            //1
+            $tbProjectUser1 = new TBProjectUser();
+            $tbProjectUser1->setTBSystemUserSystemUserId($projectUser1);
+            $tbProjectUser1->setSystemUserId($projectUser1->getId());
+            $tbProjectUser1->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectUser1->setProjectMasterId($tbprojectMaster->getId());
+            $tbProjectUser1->setRoleNo(TBProjectUser::ROLE_MANAGER);
+            $this->em->persist($tbProjectUser1);
+            $this->em->flush();
+
+            //2
+            $tbProjectUser2 = new TBProjectUser();
+            $tbProjectUser2->setTBSystemUserSystemUserId($projectUser2);
+            $tbProjectUser2->setSystemUserId($projectUser1->getId());
+            $tbProjectUser2->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectUser2->setProjectMasterId($tbprojectMaster->getId());
+            $tbProjectUser2->setRoleNo(TBProjectUser::ROLE_GENERAL);
+            $this->em->persist($tbProjectUser2);
+            $this->em->flush();
+
+            //3
+            $tbProjectUser3 = new TBProjectUser();
+            $tbProjectUser3->setTBSystemUserSystemUserId($projectUser3);
+            $tbProjectUser3->setSystemUserId($projectUser1->getId());
+            $tbProjectUser3->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectUser3->setProjectMasterId($tbprojectMaster->getId());
+            $tbProjectUser3->setRoleNo(TBProjectUser::ROLE_READONLY);
+            $this->em->persist($tbProjectUser3);
+            $this->em->flush();
+
+
+
+            $this->em->getConnection()->commit();
+
+        }catch (\Exception $e){
+            $this->em->getConnection()->rollBack();
+            $this->em->close();
+            throw $e;
+        }
+
+        $this->em->clear();
+
+        return $tbprojectMaster;
+    }
+
+
+
+    private function deleteAllProjectRawData()
+    {
+
+        $connection = $this->em->getConnection();
+        $platform   = $connection->getDatabasePlatform();
+
+        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0;');
+
+        $truncateSql = $platform->getTruncateTableSQL('TBProductionCost');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBProjectCostMaster');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBProjectCostHierarchyMaster');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBProjectUser');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBProjectMaster');
+        $connection->executeUpdate($truncateSql);
+
+        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1;');
+
+
+//        $this->em->getConnection()->beginTransaction();
+//        try {
+//
+//            $productionCosts = $this->em->getRepository('ArtePCMSBizlogicBundle:TBProductionCost')->findAll();
+//            foreach($productionCosts as $value)
+//            {
+//                /* @var $value TBProductionCost */
+//                $this->em->remove($value);
+//            }
+//
+//            $projectCosts = $this->em->getRepository('ArtePCMSBizlogicBundle:TBProjectCostMaster')->findAll();
+//            foreach($projectCosts as $value)
+//            {
+//                /* @var $value TBProjectCostMaster */
+//                $this->em->remove($value);
+//            }
+//
+//            $projectHierarchies = $this->em->getRepository('ArtePCMSBizlogicBundle:TBProjectCostHierarchyMaster')->findAll();
+//            foreach($projectHierarchies as $value)
+//            {
+//                /* @var $value TBProjectCostHierarchyMaster */
+//                $this->em->remove($value);
+//            }
+//
+//            $projects = $this->em->getRepository('ArtePCMSBizlogicBundle:TBProjectMaster')->findAll();
+//            foreach($projects as $value)
+//            {
+//                /* @var $value TBProjectMaster */
+//                $this->em->remove($value);
+//            }
+//
+//            $this->em->flush();
+//            $this->em->getConnection()->commit();
+//
+//        }catch (\Exception $e){
+//            $this->em->getConnection()->rollBack();
+//            $this->em->close();
+//            throw $e;
+//        }
+
+        $this->em->clear();
+    }
+
+    /**
+     * テスト用データ登録　一覧用コスト付き
+     * @return TBProjectMaster
+     * @throws \Exception
+     */
+    private function createTargetRawDataWithCostForList($no)
+    {
+        $tbProjects = array();
+
+        $this->em->getConnection()->beginTransaction();
+        try {
+
+//            for($no=$start; $no<=$end; $no++)
+//            {
+
+                $customer = $this->em->getRepository('ArtePCMSBizlogicBundle:TBCustomer')->find(($no%3)+1);
+                $manager = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(($no%10)+1);
+
+                //案件マスタ
+                $startDate = new \DateTime("2013-01-1 0:0:0");
+                $endDate = new \DateTime("2013-02-1 0:0:0");
+                $startDate->modify($no.'day');
+                $endDate->modify($no.'day');
+                $tbprojectMaster = new TBProjectMaster();
+                $tbprojectMaster->setName(sprintf('一覧テスト%03d', $no));
+                $tbprojectMaster->setStatus(($no%3)+1);
+                $tbprojectMaster->setExplanation("一覧テスト.$no.説明\n一覧テスト.$no.説明");
+                $tbprojectMaster->setExplanation(sprintf("一覧テスト%03d説明\n一覧テスト%03d説明", $no, $no));
+                $tbprojectMaster->setTBCustomerCustomerId($customer);
+
+                if($no%5 == 0){
+                    $tbprojectMaster->setDeleteFlag(true);
+                }else{
+                    $tbprojectMaster->setDeleteFlag(false);
+                }
+
+                $tbprojectMaster->setPeriodStart($startDate);
+                $tbprojectMaster->setPeriodEnd($endDate);
+                $tbprojectMaster->setTBSystemUserManagerId($manager);
+                $tbprojectMaster->setEstimateFilePath('見積ファイルパス'.$no);
+                $tbprojectMaster->setScheduleFilePath('スケジュールファイルパス'.$no);
+                $this->em->persist($tbprojectMaster);
+                $this->em->flush();
+                $tbProjects[] = $tbprojectMaster;
+
+                //root
+                $tbprojectCostHierarchyMasterRoot = new TBProjectCostHierarchyMaster();
+                $tbprojectCostHierarchyMasterRoot->setTBProjectMasterTBProjectMasterId($tbprojectMaster);
+                $tbprojectCostHierarchyMasterRoot->setName("\\");
+                $tbprojectCostHierarchyMasterRoot->setSortNo(0);
+                $tbprojectCostHierarchyMasterRoot->setDeleteFlag(false);
+                $tbprojectCostHierarchyMasterRoot->setPath("\\");
+                $this->em->persist($tbprojectCostHierarchyMasterRoot);
+                $this->em->flush();
+
+                //コスト１
+                $tbProjectCostMaster1 = new TBProjectCostMaster();
+                $tbProjectCostMaster1->setTBProjectMasterProjectMasterId($tbprojectMaster);
+                $tbProjectCostMaster1->setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId($tbprojectCostHierarchyMasterRoot);
+                $tbProjectCostMaster1->setName('コスト１');
+                $tbProjectCostMaster1->setCost($no*10);
+                $tbProjectCostMaster1->setSortNo(1);
+                $tbProjectCostMaster1->setDeleteFlag(false);
+                $tbProjectCostMaster1->setHierarchyPath('');
+                $this->em->persist($tbProjectCostMaster1);
+                $this->em->flush();
+
+                //コスト２（削除）
+                $tbProjectCostMaster2 = new TBProjectCostMaster();
+                $tbProjectCostMaster2->setTBProjectMasterProjectMasterId($tbprojectMaster);
+                $tbProjectCostMaster2->setTBProjectCostHierarchyMasterTBProjectCostHierarchyMasterId($tbprojectCostHierarchyMasterRoot);
+                $tbProjectCostMaster2->setName('コスト２（削除）');
+                $tbProjectCostMaster2->setCost($no*20);
+                $tbProjectCostMaster2->setSortNo(1);
+                $tbProjectCostMaster2->setDeleteFlag(true);
+                $tbProjectCostMaster2->setHierarchyPath('');
+                $this->em->persist($tbProjectCostMaster2);
+                $this->em->flush();
+
+
+
+
+
+                //実工数登録
+                $user = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(($no%10)+1);
+
+                //実工数１
+                $workDate = new \DateTime("2013-10-1 0:0:0");
+                $workDate->modify($no.'day');
+                $tbProductionCost1 = new TBProductionCost();
+                $tbProductionCost1->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster1);
+                $tbProductionCost1->setTBSystemUserSystemUserId($user);
+                $tbProductionCost1->setWorkDate($workDate);
+                $tbProductionCost1->setCost($no);
+                $tbProductionCost1->setNote('実工数１');
+                $tbProductionCost1->setDeleteFlag(false);
+                $this->em->persist($tbProductionCost1);
+                $this->em->flush();
+
+                //実工数２（削除）
+                $workDate = new \DateTime("2013-10-2 0:0:0");
+                $workDate->modify($no.'day');
+                $tbProductionCost2 = new TBProductionCost();
+                $tbProductionCost2->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster1);
+                $tbProductionCost2->setTBSystemUserSystemUserId($user);
+                $tbProductionCost2->setWorkDate($workDate);
+                $tbProductionCost2->setCost($no);
+                $tbProductionCost2->setNote('実工数１（削除）');
+                $tbProductionCost2->setDeleteFlag(true);
+                $this->em->persist($tbProductionCost2);
+                $this->em->flush();
+
+    //            //実工数３
+    //            $workDate = new \DateTime("2013-10-3 0:0:0");
+    //            $workDate->modify($no.'day');
+    //            $tbProductionCost2 = new TBProductionCost();
+    //            $tbProductionCost2->setTBProjectCostMasterProjectCostMasterId($tbProjectCostMaster2);
+    //            $tbProductionCost2->setTBSystemUserSystemUserId($user);
+    //            $tbProductionCost2->setWorkDate($workDate);
+    //            $tbProductionCost2->setCost($no);
+    //            $tbProductionCost2->setNote('実工数３');
+    //            $tbProductionCost2->setDeleteFlag(false);
+    //            $this->em->persist($tbProductionCost2);
+    //            $this->em->flush();
+
+            //担当ユーザー追加
+            $projectUser1 = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(($no%10)+1);
+            $projectUser2 = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find((($no+1)%10)+1);
+
+            //1
+            $tbProjectUser1 = new TBProjectUser();
+            $tbProjectUser1->setTBSystemUserSystemUserId($projectUser1);
+            $tbProjectUser1->setSystemUserId($projectUser1->getId());
+            $tbProjectUser1->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectUser1->setProjectMasterId($tbprojectMaster->getId());
+            $tbProjectUser1->setRoleNo(($no%3)+1);
+            $this->em->persist($tbProjectUser1);
+            $this->em->flush();
+
+            //2
+            $tbProjectUser2 = new TBProjectUser();
+            $tbProjectUser2->setTBSystemUserSystemUserId($projectUser2);
+            $tbProjectUser2->setSystemUserId($projectUser2->getId());
+            $tbProjectUser2->setTBProjectMasterProjectMasterId($tbprojectMaster);
+            $tbProjectUser2->setProjectMasterId($tbprojectMaster->getId());
+            $tbProjectUser2->setRoleNo((($no+1)%3)+1);
+            $this->em->persist($tbProjectUser2);
+            $this->em->flush();
+
+//            }
+
+            $this->em->getConnection()->commit();
+
+        }catch (\Exception $e){
+            $this->em->getConnection()->rollBack();
+            $this->em->close();
+            throw $e;
+        }
+
+        $this->em->clear();
+
+        return $tbProjects;
+    }
+
+
     /**
      * テスト用データ登録　編集テスト用
      */
@@ -862,11 +1678,334 @@ class ProjectManagerTest extends WebTestCase {
     }
 
     /**
-     * プロジェクト取得　プロジェクト情報取得
+     * プロジェクト一覧取得１
      * @test
      * @group none
      */
-    function プロジェクト取得_プロジェクト情報取得()
+    function プロジェクト一覧取得１()
+    {
+
+        //データ作成
+        $this->deleteAllProjectRawData();
+        for($i=1; $i<=40; $i++)
+        {
+            $this->createTargetRawDataWithCostForList($i);
+        }
+
+        //一覧取得
+        $projects = $this->projectManager->getProjectList(1, 10);
+
+        //確認
+        $this->assertEquals(32, $projects['count']);
+        $this->assertEquals(10, count($projects['result']));
+//        $ids = array(1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33, 34, 36, 37, 38, 39);
+        $ids = array(1, 2, 3, 4, 6, 7, 8, 9, 11, 12);
+        $i=0;
+        foreach($projects['result'] as $value)
+        {
+            /** @var $value \Arte\PCMS\BizlogicBundle\Entity\VProjectView */
+            $this->assertEquals($ids[$i], $value->getId());
+            $i++;
+        }
+
+    }
+
+    /**
+     * プロジェクト一覧取得２
+     * @test
+     * @group none
+     */
+    function プロジェクト一覧取得２()
+    {
+
+        //データ作成
+        $this->deleteAllProjectRawData();
+        for($i=1; $i<=40; $i++)
+        {
+            $this->createTargetRawDataWithCostForList($i);
+        }
+
+        //一覧取得
+        $projects = $this->projectManager->getProjectList(2, 10);
+
+        //確認
+        $this->assertEquals(32, $projects['count']);
+        $this->assertEquals(10, count($projects['result']));
+        $ids = array(13, 14, 16, 17, 18, 19, 21, 22, 23, 24);
+        $i=0;
+        foreach($projects['result'] as $value)
+        {
+            /** @var $value \Arte\PCMS\BizlogicBundle\Entity\VProjectView */
+            $this->assertEquals($ids[$i], $value->getId());
+            $i++;
+        }
+    }
+
+    /**
+     * プロジェクト一覧取得３
+     * ソート　条件無し　２０件
+     * @test
+     * @group none
+     */
+    function プロジェクト一覧取得３()
+    {
+
+        //データ作成
+        $this->deleteAllProjectRawData();
+        for($i=1; $i<=40; $i++)
+        {
+            $this->createTargetRawDataWithCostForList($i);
+        }
+
+        //一覧取得
+        $projects = $this->projectManager->getProjectList(1, 20);
+
+        //確認
+        $this->assertEquals(32, $projects['count']);
+        $this->assertEquals(20, count($projects['result']));
+        $ids = array(1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24);
+        $i=0;
+        foreach($projects['result'] as $value)
+        {
+            /** @var $value \Arte\PCMS\BizlogicBundle\Entity\VProjectView */
+            $this->assertEquals($ids[$i], $value->getId());
+            $i++;
+        }
+    }
+
+    /**
+     * プロジェクト一覧_取得ソート案件名ASC検索無し
+     * @test
+     * @group none
+     */
+    function プロジェクト一覧_取得ソート案件名ASC検索無し()
+    {
+
+        //データ作成
+        $this->deleteAllProjectRawData();
+        for($i=1; $i<=40; $i++)
+        {
+            $this->createTargetRawDataWithCostForList($i);
+        }
+        $this->em->clear();
+
+        //一覧取得
+        $projects = $this->projectManager->getProjectList(1, 10, 'Name', 'ASC');
+
+        //確認
+        $this->assertEquals(32, $projects['count']);
+        $this->assertEquals(10, count($projects['result']));
+        $ids = array(1, 2, 3, 4, 6, 7, 8, 9, 11, 12);
+        $i=0;
+        foreach($projects['result'] as $value)
+        {
+            /** @var $value \Arte\PCMS\BizlogicBundle\Entity\VProjectView */
+            $this->assertEquals($ids[$i], $value->getId());
+            $i++;
+        }
+    }
+
+    /**
+     * プロジェクト一覧_取得ソート案件名DESC検索無し
+     * @test
+     * @group none
+     */
+    function プロジェクト一覧_取得ソート案件名DESC検索無し()
+    {
+
+        //データ作成
+        $this->deleteAllProjectRawData();
+        for($i=1; $i<=40; $i++)
+        {
+            $this->createTargetRawDataWithCostForList($i);
+        }
+        $this->em->clear();
+
+        //一覧取得
+        $projects = $this->projectManager->getProjectList(1, 10, 'Name', 'DESC');
+
+        //確認
+        $this->assertEquals(32, $projects['count']);
+        $this->assertEquals(10, count($projects['result']));
+//        $ids = array(1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33, 34, 36, 37, 38, 39);
+        $ids = array(39, 38, 37, 36, 34, 33, 32, 31, 29, 28);
+        $i=0;
+        foreach($projects['result'] as $value)
+        {
+            /** @var $value \Arte\PCMS\BizlogicBundle\Entity\VProjectView */
+            $this->assertEquals($ids[$i], $value->getId());
+            $i++;
+        }
+    }
+
+    /**
+     * プロジェクト一覧_取得ソート顧客名ASC検索無し
+     * @test
+     * @group none
+     */
+    function プロジェクト一覧_取得ソート顧客名ASC検索無し()
+    {
+        //データ作成
+        $this->deleteAllProjectRawData();
+        for($i=1; $i<=40; $i++)
+        {
+            $this->createTargetRawDataWithCostForList($i);
+        }
+        $this->em->clear();
+
+        //一覧取得
+        $projects = $this->projectManager->getProjectList(1, 10, 'CustomerName', 'ASC');
+
+        //確認
+        $this->assertEquals(32, $projects['count']);
+        $this->assertEquals(10, count($projects['result']));
+//        $ids = array(1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33, 34, 36, 37, 38, 39);
+        $ids = array(39, 36, 33, 27, 24, 21, 18, 12, 9, 6);
+        $i=0;
+        foreach($projects['result'] as $value)
+        {
+            /** @var $value \Arte\PCMS\BizlogicBundle\Entity\VProjectView */
+            $this->assertEquals($ids[$i], $value->getId());
+            $i++;
+        }
+    }
+
+    /**
+     * プロジェクト一覧_取得ソート顧客名DESC検索無し
+     * @test
+     * @group none
+     */
+    function プロジェクト一覧_取得ソート顧客名DESC検索無し()
+    {
+        //データ作成
+        $this->deleteAllProjectRawData();
+        for($i=1; $i<=40; $i++)
+        {
+            $this->createTargetRawDataWithCostForList($i);
+        }
+        $this->em->clear();
+
+        //一覧取得
+        $projects = $this->projectManager->getProjectList(1, 10, 'CustomerName', 'DESC');
+
+        //確認
+        $this->assertEquals(32, $projects['count']);
+        $this->assertEquals(10, count($projects['result']));
+//        $ids = array(1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33, 34, 36, 37, 38, 39);
+        $ids = array(38, 32, 29, 26, 23, 17, 14, 11, 8, 2);
+        $i=0;
+        foreach($projects['result'] as $value)
+        {
+            /** @var $value \Arte\PCMS\BizlogicBundle\Entity\VProjectView */
+            $this->assertEquals($ids[$i], $value->getId());
+            $i++;
+        }
+    }
+
+    /**
+     * プロジェクト一覧_取得ソート開始日ASC検索無し
+     * @test
+     * @group none
+     */
+    function プロジェクト一覧_取得ソート開始日ASC検索無し()
+    {
+        //データ作成
+        $this->deleteAllProjectRawData();
+        for($i=1; $i<=40; $i++)
+        {
+            $this->createTargetRawDataWithCostForList($i);
+        }
+        $this->em->clear();
+
+        //一覧取得
+        $projects = $this->projectManager->getProjectList(1, 10, 'PeriodStart', 'ASC');
+
+        //確認
+        $this->assertEquals(32, $projects['count']);
+        $this->assertEquals(10, count($projects['result']));
+//        $ids = array(1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33, 34, 36, 37, 38, 39);
+        $ids = array(1, 2, 3, 4, 6, 7, 8, 9, 11, 12);
+        $i=0;
+        foreach($projects['result'] as $value)
+        {
+            /** @var $value \Arte\PCMS\BizlogicBundle\Entity\VProjectView */
+            $this->assertEquals($ids[$i], $value->getId());
+            $i++;
+        }
+    }
+
+    /**
+     * プロジェクト一覧_取得ソート開始日DESC検索無し
+     * @test
+     * @group none
+     */
+    function プロジェクト一覧_取得ソート開始日DESC検索無し()
+    {
+        //データ作成
+        $this->deleteAllProjectRawData();
+        for($i=1; $i<=40; $i++)
+        {
+            $this->createTargetRawDataWithCostForList($i);
+        }
+        $this->em->clear();
+
+        //一覧取得
+        $projects = $this->projectManager->getProjectList(1, 10, 'PeriodStart', 'DESC');
+
+        //確認
+        $this->assertEquals(32, $projects['count']);
+        $this->assertEquals(10, count($projects['result']));
+//        $ids = array(1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33, 34, 36, 37, 38, 39);
+        $ids = array(39,38,37,36,34,33,32,31,29,28);
+        $i=0;
+        foreach($projects['result'] as $value)
+        {
+            /** @var $value \Arte\PCMS\BizlogicBundle\Entity\VProjectView */
+            $this->assertEquals($ids[$i], $value->getId());
+            $i++;
+        }
+    }
+
+    /**
+     * プロジェクト一覧_取得ソート無し検索案件名
+     * @test
+     * @group none
+     */
+    function プロジェクト一覧_取得ソート無し検索案件名()
+    {
+        //データ作成
+        $this->deleteAllProjectRawData();
+        for($i=1; $i<=40; $i++)
+        {
+            $this->createTargetRawDataWithCostForList($i);
+        }
+        $this->em->clear();
+
+        //一覧取得
+        $search = new TBProjectMasterSearchModel();
+        $search->setName("一覧テスト01");
+        $projects = $this->projectManager->getProjectList(1, 10, null, null, $search);
+
+        //確認
+        $this->assertEquals(8, $projects['count']);
+        $this->assertEquals(8, count($projects['result']));
+//        $ids = array(1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33, 34, 36, 37, 38, 39);
+        $ids = array(11,12,13,14,16,17,18,19);
+        $i=0;
+        foreach($projects['result'] as $value)
+        {
+            /** @var $value \Arte\PCMS\BizlogicBundle\Entity\VProjectView */
+            $this->assertEquals($ids[$i], $value->getId());
+            $i++;
+        }
+    }
+
+    /**
+     * プロジェクト取得　コスト無し
+     * @test
+     * @group none
+     */
+    function プロジェクト取得_コスト無し()
     {
         //テスト用データ登録
         $project = $this->createTargetRawDataForEdit();
@@ -989,6 +2128,164 @@ class ProjectManagerTest extends WebTestCase {
         $this->assertEquals(0, $checkCost5->getNowCost());
         $this->assertEquals(false, $checkCost5->getGroupFlag());
 
+    }
+
+    /**
+     * プロジェクト取得　コスト有り
+     * @test
+     * @group none
+     */
+    function プロジェクト取得_コスト有り()
+    {
+        //テスト用データ登録
+        $project = $this->createTargetRawDataWithCostForEdit();
+
+        //取得
+        $project = $this->projectManager->readProject($project->getId());
+
+        //確認
+        $this->assertEquals('新規登録テスト１', $project->getName());
+        $this->assertEquals(1, $project->getStatus());
+        $this->assertEquals("新規登録テスト１説明\n新規登録テスト１説明", $project->getExplanation());
+        $this->assertEquals(new \DateTime("2013-08-1 0:0:0"), $project->getPeriodStart());
+        $this->assertEquals(new \DateTime("2013-08-7 0:0:0"), $project->getPeriodEnd());
+        $this->assertEquals('見積ファイルパス', $project->getEstimateFilePath());
+        $this->assertEquals('スケジュールファイルパス', $project->getScheduleFilePath());
+        $this->assertEquals(15, $project->getProjectTotalCost());
+        $this->assertEquals(40, $project->getProductionTotalCost());
+        $this->assertEquals('顧客1', $project->getCustomer()->getName());
+        $this->assertEquals('てすと001', $project->getManager()->getDisplayName());
+
+        $checkRoots = $project->getCosts();
+        $this->assertEquals(1, $checkRoots->count());
+        /** @var $checkGroup1 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkGroup1 = $checkRoots[0];
+
+        $this->assertEquals('グループ１', $checkGroup1->getName());
+        $this->assertEquals(15, $checkGroup1->getCost());
+        $this->assertEquals(1, $checkGroup1->getSortNo());
+        $this->assertEquals(40, $checkGroup1->getNowCost());
+        $this->assertEquals(true, $checkGroup1->getGroupFlag());
+
+        $checkGroup1Costs = $checkGroup1->getChildCosts();
+        $this->assertEquals(2, $checkGroup1Costs->count());
+        /** @var $checkGroup2 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkGroup2 = $checkGroup1Costs[0];
+        /** @var $checkCost1 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkCost1 = $checkGroup1Costs[1];
+
+        $this->assertEquals('グループ２', $checkGroup2->getName());
+        $this->assertEquals(14, $checkGroup2->getCost());
+        $this->assertEquals(1, $checkGroup2->getSortNo());
+        $this->assertEquals(40, $checkGroup2->getNowCost());
+        $this->assertEquals(true, $checkGroup2->getGroupFlag());
+
+        $this->assertEquals('コスト１', $checkCost1->getName());
+        $this->assertEquals(1, $checkCost1->getCost());
+        $this->assertEquals(2, $checkCost1->getSortNo());
+        $this->assertEquals(0, $checkCost1->getNowCost());
+        $this->assertEquals(false, $checkCost1->getGroupFlag());
+
+        $checkGroup2Costs = $checkGroup2->getChildCosts();
+        $this->assertEquals(2, $checkGroup2Costs->count());
+        /** @var $checkGroup3 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkGroup3 = $checkGroup2Costs[0];
+        /** @var $checkGroup4 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkGroup4 = $checkGroup2Costs[1];
+
+        $this->assertEquals('グループ３', $checkGroup3->getName());
+        $this->assertEquals(7, $checkGroup3->getCost());
+        $this->assertEquals(1, $checkGroup3->getSortNo());
+        $this->assertEquals(13, $checkGroup3->getNowCost());
+        $this->assertEquals(true, $checkGroup3->getGroupFlag());
+
+        $this->assertEquals('グループ４', $checkGroup4->getName());
+        $this->assertEquals(7, $checkGroup4->getCost());
+        $this->assertEquals(2, $checkGroup4->getSortNo());
+        $this->assertEquals(27, $checkGroup4->getNowCost());
+        $this->assertEquals(true, $checkGroup4->getGroupFlag());
+
+        $checkGroup3Costs = $checkGroup3->getChildCosts();
+        $this->assertEquals(1, $checkGroup3Costs->count());
+        /** @var $checkGroup5 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkGroup5 = $checkGroup3Costs[0];
+
+        $this->assertEquals('グループ５', $checkGroup5->getName());
+        $this->assertEquals(7, $checkGroup5->getCost());
+        $this->assertEquals(1, $checkGroup5->getSortNo());
+        $this->assertEquals(13, $checkGroup5->getNowCost());
+        $this->assertEquals(true, $checkGroup5->getGroupFlag());
+
+        $checkGroup5Costs = $checkGroup5->getChildCosts();
+        $this->assertEquals(2, $checkGroup5Costs->count());
+        /** @var $checkCost3 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkCost3 = $checkGroup5Costs[0];
+        /** @var $checkCost4 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkCost4 = $checkGroup5Costs[1];
+
+        $this->assertEquals('コスト３', $checkCost3->getName());
+        $this->assertEquals(3, $checkCost3->getCost());
+        $this->assertEquals(1, $checkCost3->getSortNo());
+        $this->assertEquals(13, $checkCost3->getNowCost());
+        $this->assertEquals(false, $checkCost3->getGroupFlag());
+
+        $this->assertEquals('コスト４', $checkCost4->getName());
+        $this->assertEquals(4, $checkCost4->getCost());
+        $this->assertEquals(2, $checkCost4->getSortNo());
+        $this->assertEquals(0, $checkCost4->getNowCost());
+        $this->assertEquals(false, $checkCost4->getGroupFlag());
+
+        $checkGroup4Costs = $checkGroup4->getChildCosts();
+        $this->assertEquals(2, $checkGroup4Costs->count());
+        /** @var $checkCost2 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkCost2 = $checkGroup4Costs[0];
+        /** @var $checkGroup6 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkGroup6 = $checkGroup4Costs[1];
+
+        $this->assertEquals('コスト２', $checkCost2->getName());
+        $this->assertEquals(2, $checkCost2->getCost());
+        $this->assertEquals(1, $checkCost2->getSortNo());
+        $this->assertEquals(12, $checkCost2->getNowCost());
+        $this->assertEquals(false, $checkCost2->getGroupFlag());
+
+        $this->assertEquals('グループ６', $checkGroup6->getName());
+        $this->assertEquals(5, $checkGroup6->getCost());
+        $this->assertEquals(2, $checkGroup6->getSortNo());
+        $this->assertEquals(15, $checkGroup6->getNowCost());
+        $this->assertEquals(true, $checkGroup6->getGroupFlag());
+
+        $checkGroup6Costs = $checkGroup6->getChildCosts();
+        $this->assertEquals(2, $checkGroup6Costs->count());
+        /** @var $checkGroup7 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkGroup7 = $checkGroup6Costs[0];
+        /** @var $checkGroup8 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkGroup8 = $checkGroup6Costs[1];
+
+        $this->assertEquals('グループ７', $checkGroup7->getName());
+        $this->assertEquals(5, $checkGroup7->getCost());
+        $this->assertEquals(1, $checkGroup7->getSortNo());
+        $this->assertEquals(15, $checkGroup7->getNowCost());
+        $this->assertEquals(true, $checkGroup7->getGroupFlag());
+
+        $this->assertEquals('グループ８', $checkGroup8->getName());
+        $this->assertEquals(0, $checkGroup8->getCost());
+        $this->assertEquals(2, $checkGroup8->getSortNo());
+        $this->assertEquals(0, $checkGroup8->getNowCost());
+        $this->assertEquals(true, $checkGroup8->getGroupFlag());
+
+        $checkGroup7Costs = $checkGroup7->getChildCosts();
+        $this->assertEquals(1, $checkGroup7Costs->count());
+        /** @var $checkCost5 \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
+        $checkCost5 = $checkGroup7Costs[0];
+
+        $this->assertEquals('コスト５', $checkCost5->getName());
+        $this->assertEquals(5, $checkCost5->getCost());
+        $this->assertEquals(1, $checkCost5->getSortNo());
+        $this->assertEquals(15, $checkCost5->getNowCost());
+        $this->assertEquals(false, $checkCost5->getGroupFlag());
+
+        $checkGroup8Costs = $checkGroup8->getChildCosts();
+        $this->assertEquals(0, $checkGroup8Costs->count());
     }
 
 
@@ -1391,6 +2688,7 @@ class ProjectManagerTest extends WebTestCase {
     {
         //テスト用データ登録
         $project = $this->createTargetRawDataForEdit();
+
 
         //
         $project = $this->projectManager->readProject($project->getId());
@@ -4503,7 +5801,7 @@ class ProjectManagerTest extends WebTestCase {
     /**
      * 実工数編集　コスト３_１
      * @test
-     * @group debug
+     * @group none
      */
     function 実工数編集_コスト３_１()
     {
@@ -4593,120 +5891,187 @@ class ProjectManagerTest extends WebTestCase {
 
     }
 
-//    /**
-//     * プロジェクト情報取得
-//     */
-//    public function test1readProject()
-//    {
-//        $data = $this->projectManager->readProject(1);
-//        $this->assertEquals('案件3', $data->getName());
-//        $this->assertEquals(1, $data->getStatus());
-//        $this->assertEquals('案件3説明', $data->getExplanation());
-//        $this->assertEquals(new \DateTime("2013-08-1 0:0:0"), $data->getPeriodStart());
-//        $this->assertEquals(new \DateTime("2013-08-5 0:0:0"), $data->getPeriodEnd());
-//        $this->assertEquals('estimate3', $data->getEstimateFilePath());
-//        $this->assertEquals('schedule3', $data->getScheduleFilePath());
-//        $this->assertEquals('顧客1', $data->getCustomer()->getName());
-//        $this->assertEquals('てすと001', $data->getManager()->getName());
-//
-//        $costs = $data->getCosts();
-//        /** @var $cost \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
-//        $cost = $costs[0];
-//        $this->assertEquals('納品', $cost->getName());
-//        $this->assertEquals(480, $cost->getCost());
-//        $this->assertEquals(1, $cost->getSortNo());
-//        $this->assertEquals(0, $cost->getNowCost());
-//        $this->assertEquals(false, $cost->getGroupFlag());
-//
-//        /** @var $cost \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
-//        $cost = $costs[1];
-//        $this->assertEquals('製造', $cost->getName());
-//        $this->assertEquals(10080, $cost->getCost());
-//        $this->assertEquals(2, $cost->getSortNo());
-//        $this->assertEquals(780, $cost->getNowCost());
-//        $this->assertEquals(true, $cost->getGroupFlag());
-//
-//        $childCosts1 = $cost->getChildCosts();
-//
-//        //製造＞一般側
-//        /** @var $cost \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
-//        $cost = $childCosts1[0];
-//        $this->assertEquals('一般側', $cost->getName());
-//        $this->assertEquals(5280, $cost->getCost());
-//        $this->assertEquals(1, $cost->getSortNo());
-//        $this->assertEquals(0, $cost->getNowCost());
-//        $this->assertEquals(true, $cost->getGroupFlag());
-//
-//        $childCosts2 = $cost->getChildCosts();
-//
-//        //製造＞一般側＞申請管理
-//        /** @var $cost \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
-//        $cost = $childCosts2[0];
-//        $this->assertEquals('申請管理', $cost->getName());
-//        $this->assertEquals(4320, $cost->getCost());
-//        $this->assertEquals(1, $cost->getSortNo());
-//        $this->assertEquals(0, $cost->getNowCost());
-//        $this->assertEquals(false, $cost->getGroupFlag());
-//
-//        //製造＞一般側＞ログイン
-//        /** @var $cost \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
-//        $cost = $childCosts2[1];
-//        $this->assertEquals('ログイン', $cost->getName());
-//        $this->assertEquals(960, $cost->getCost());
-//        $this->assertEquals(2, $cost->getSortNo());
-//        $this->assertEquals(0, $cost->getNowCost());
-//        $this->assertEquals(false, $cost->getGroupFlag());
-//
-//        //製造＞管理側
-//        /** @var $cost \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
-//        $cost = $childCosts1[1];
-//        $this->assertEquals('管理側', $cost->getName());
-//        $this->assertEquals(4800, $cost->getCost());
-//        $this->assertEquals(2, $cost->getSortNo());
-//        $this->assertEquals(780, $cost->getNowCost());
-//        $this->assertEquals(true, $cost->getGroupFlag());
-//
-//        $childCosts2 = $cost->getChildCosts();
-//
-//        //製造＞管理側＞ユーザー管理
-//        /** @var $cost \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
-//        $cost = $childCosts2[0];
-//        $this->assertEquals('ユーザー管理', $cost->getName());
-//        $this->assertEquals(2880, $cost->getCost());
-//        $this->assertEquals(1, $cost->getSortNo());
-//        $this->assertEquals(780, $cost->getNowCost());
-//        $this->assertEquals(false, $cost->getGroupFlag());
-//
-//        //製造＞一般側＞顧客管理
-//        /** @var $cost \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
-//        $cost = $childCosts2[1];
-//        $this->assertEquals('顧客管理', $cost->getName());
-//        $this->assertEquals(1920, $cost->getCost());
-//        $this->assertEquals(2, $cost->getSortNo());
-//        $this->assertEquals(0, $cost->getNowCost());
-//        $this->assertEquals(false, $cost->getGroupFlag());
-//
-//
-//
-//        //設計
-//        /** @var $cost \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
-//        $cost = $costs[2];
-//        $this->assertEquals('設計', $cost->getName());
-//        $this->assertEquals(2400, $cost->getCost());
-//        $this->assertEquals(3, $cost->getSortNo());
-//        $this->assertEquals(0, $cost->getNowCost());
-//        $this->assertEquals(false, $cost->getGroupFlag());
-//
-//        //要件定義
-//        /** @var $cost \Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost */
-//        $cost = $costs[3];
-//        $this->assertEquals('要件定義', $cost->getName());
-//        $this->assertEquals(1440, $cost->getCost());
-//        $this->assertEquals(4, $cost->getSortNo());
-//        $this->assertEquals(600, $cost->getNowCost());
-//        $this->assertEquals(false, $cost->getGroupFlag());
-//
-//    }
+    /**
+     * プロジェクトユーザー取得１
+     * @test
+     * @group none
+     */
+    function プロジェクトユーザー取得１()
+    {
+        //データ削除
+        $this->deleteAllProjectRawData();
+
+        //データ作成
+        $this->createDataPatern1();
+        $this->createDataPatern2();
+
+        //実行
+        $tbProjectUsers = $this->projectManager->getProjectUsers(1);
+
+        //確認
+        $this->assertEquals(1, count($tbProjectUsers));
+        /** @var $tbProjectUser TBProjectUser*/
+        $tbProjectUser = $tbProjectUsers[0];
+        $this->assertEquals(TBProjectUser::ROLE_MANAGER, $tbProjectUser->getRoleNo());
+        $this->assertEquals(1, $tbProjectUser->getTBSystemUserSystemUserId()->getId());
+
+    }
+
+    /**
+     * プロジェクトユーザー取得２
+     * @test
+     * @group none
+     */
+    function プロジェクトユーザー取得２()
+    {
+        //データ削除
+        $this->deleteAllProjectRawData();
+
+        //データ作成
+        $this->createDataPatern1();
+        $this->createDataPatern2();
+
+        //実行
+        $tbProjectUsers = $this->projectManager->getProjectUsers(2);
+
+        //確認
+        $this->assertEquals(2, count($tbProjectUsers));
+        /** @var $tbProjectUser TBProjectUser*/
+        $tbProjectUser = $tbProjectUsers[0];
+        $this->assertEquals(TBProjectUser::ROLE_MANAGER, $tbProjectUser->getRoleNo());
+        $this->assertEquals(1, $tbProjectUser->getTBSystemUserSystemUserId()->getId());
+
+        /** @var $tbProjectUser TBProjectUser*/
+        $tbProjectUser = $tbProjectUsers[1];
+        $this->assertEquals(TBProjectUser::ROLE_READONLY, $tbProjectUser->getRoleNo());
+        $this->assertEquals(3, $tbProjectUser->getTBSystemUserSystemUserId()->getId());
+
+    }
+
+    /**
+     * プロジェクトユーザー登録１
+     * @test
+     * @group none
+     */
+    function プロジェクトユーザー登録１()
+    {
+        //データ削除
+        $this->deleteAllProjectRawData();
+
+        //データ作成
+        $this->createDataPatern1();
+        $this->createDataPatern2();
+
+        $tbProjectUserArray = array();
+
+        //実行
+        $this->projectManager->createProjectUsers(1, $tbProjectUserArray);
+        $this->em->clear();
+
+        //DB取得
+        $tbProjectUsers = $this->em->getRepository('ArtePCMSBizlogicBundle:TBProjectUser')->findBy(array('ProjectMasterId' => 1));
+
+        //確認
+        $this->assertEquals(1, count($tbProjectUsers));
+
+        /** @var $tbProjectUser TBProjectUser*/
+        $tbProjectUser = $tbProjectUsers[0];
+        $this->assertEquals(TBProjectUser::ROLE_MANAGER, $tbProjectUser->getRoleNo());
+        $this->assertEquals(1, $tbProjectUser->getProjectMasterId());
+        $this->assertEquals(1, $tbProjectUser->getSystemUserId());
+
+    }
+
+    /**
+     * プロジェクトユーザー登録２
+     * @test
+     * @group none
+     */
+    function プロジェクトユーザー登録２()
+    {
+        //データ削除
+        $this->deleteAllProjectRawData();
+
+        //データ作成
+        $this->createDataPatern1();
+        $this->createDataPatern2();
+
+        $tbProjectUserArray = array();
+        $tbSystemUser = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(8);
+        $tbProjectUserArray[0]['user'] = $tbSystemUser;
+        $tbProjectUserArray[0]['role'] = TBProjectUser::ROLE_MANAGER;
+        $tbSystemUser = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(9);
+        $tbProjectUserArray[1]['user'] = $tbSystemUser;
+        $tbProjectUserArray[1]['role'] = TBProjectUser::ROLE_GENERAL;
+        $tbSystemUser = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(10);
+        $tbProjectUserArray[2]['user'] = $tbSystemUser;
+        $tbProjectUserArray[2]['role'] = TBProjectUser::ROLE_READONLY;
+
+        //実行
+        $this->projectManager->createProjectUsers(1, $tbProjectUserArray);
+        $this->em->clear();
+
+        //DB取得
+        $tbProjectUsers = $this->em->getRepository('ArtePCMSBizlogicBundle:TBProjectUser')->findBy(array('ProjectMasterId' => 1));
+
+        //確認
+        $this->assertEquals(4, count($tbProjectUsers));
+
+        /** @var $tbProjectUser TBProjectUser*/
+        $tbProjectUser = $tbProjectUsers[0];
+        $this->assertEquals(TBProjectUser::ROLE_MANAGER, $tbProjectUser->getRoleNo());
+        $this->assertEquals(1, $tbProjectUser->getTBSystemUserSystemUserId()->getId());
+
+        /** @var $tbProjectUser TBProjectUser*/
+        $tbProjectUser = $tbProjectUsers[1];
+        $this->assertEquals(TBProjectUser::ROLE_MANAGER, $tbProjectUser->getRoleNo());
+        $this->assertEquals(8, $tbProjectUser->getTBSystemUserSystemUserId()->getId());
+
+        /** @var $tbProjectUser TBProjectUser*/
+        $tbProjectUser = $tbProjectUsers[2];
+        $this->assertEquals(TBProjectUser::ROLE_GENERAL, $tbProjectUser->getRoleNo());
+        $this->assertEquals(9, $tbProjectUser->getTBSystemUserSystemUserId()->getId());
+
+        /** @var $tbProjectUser TBProjectUser*/
+        $tbProjectUser = $tbProjectUsers[3];
+        $this->assertEquals(TBProjectUser::ROLE_READONLY, $tbProjectUser->getRoleNo());
+        $this->assertEquals(10, $tbProjectUser->getTBSystemUserSystemUserId()->getId());
+
+    }
+
+    /**
+     * コスト一覧_ソート無し検索無し
+     * @test
+     * @group debug
+     */
+    function コスト一覧_ソート無し検索無し()
+    {
+
+        //データ作成
+        $this->deleteAllProjectRawData();
+        for($i=1; $i<=40; $i++)
+        {
+            $this->createTargetRawDataWithCostForList($i);
+        }
+
+        //一覧取得
+        $costs = $this->projectManager->getCostList(1, 10);
+
+        //確認
+        $this->assertEquals(80, $costs['count']);
+        $this->assertEquals(10, count($costs['result']));
+//        $ids = array(1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33, 34, 36, 37, 38, 39);
+        $ids = array(19, 20, 39, 40, 59, 60, 79, 80, 1, 2);
+        $i=0;
+        foreach($costs['result'] as $value)
+        {
+            /** @var $value \Arte\PCMS\BizlogicBundle\Entity\TBProductionCost */
+            $this->assertEquals($ids[$i], $value->getId());
+            $i++;
+        }
+
+    }
+
 
     public static function setUpBeforeClass()
     {

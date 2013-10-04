@@ -1,9 +1,17 @@
-{% extends 'ArtePCMSPublicBundle:TBProjectMaster:layout.html.twig' %}
+{% extends 'ArtePCMSPublicBundle:TBProductionCost:layout.html.twig' %}
+
+{% block stylesheets %}
+    <style type="text/css">
+        .calender-box {
+            white-space: nowrap;
+        }
+    </style>
+{% endblock %}
 
 {% block body -%}
-<form action="{{ path('project') }}" novalidate method="post" {{ form_enctype(form) }} name="project_list">
+<form action="{{ path('cost') }}" novalidate method="post" {{ form_enctype(form) }} name="cost_list">
     <header>
-        <h1>案件一覧</h1>
+        <h1>作業工数一覧</h1>
     </header>
     <section class="section">
         <h1 class="caption">検索</h1>
@@ -20,15 +28,13 @@
             <table cellspacing="0">
                 <tbody>
                     <tr>
-                        <th>{{ form_label(form.search.Name) }}</th>
+                        <th>{{ form_label(form.search.TBProjectMaster) }}</th>
                         <td>
                             <div class="error_validation_inline">
-                                {{ form_errors(form.search.Name) }}
+                                {{ form_errors(form.search.TBProjectMaster) }}
                             </div>
-                            {{ form_widget(form.search.Name) }}
+                            {{ form_widget(form.search.TBProjectMaster, {'attr': {'style': 'width: 300px;'}}) }}
                         </td>
-                    </tr>
-                    <tr>
                         <th>{{ form_label(form.search.Status) }}</th>
                         <td>
                             <div class="error_validation_inline">
@@ -37,54 +43,41 @@
                             {{ form_widget(form.search.Status) }}
                         </td>
                     </tr>
-
-
-
                     <tr>
-                        <th>{{ form_label(form.search.PeriodStart) }}</th>
+                        <th>作業日</th>
                         <td>
                             <div class="error_validation_inline">
                                 {{ form_errors(form.search.PeriodStart) }}
                             </div>
-                            {{ form_widget(form.search.PeriodStart) }}
+                            <div class="calender-box">
+                                {{ form_widget(form.search.PeriodStart, {'attr': {'style': 'width: 150px;'}}) }}
+                            ～
+                            </div>
                         </td>
-                    </tr>
-                    <tr>
-                        <th>{{ form_label(form.search.PeriodEnd) }}</th>
-                        <td>
+                        <td colspan="2">
                             <div class="error_validation_inline">
                                 {{ form_errors(form.search.PeriodEnd) }}
                             </div>
-                            {{ form_widget(form.search.PeriodEnd) }}
-                        </td>
-                    </tr>
-
-
-
-                    <tr>
-                        <th>{{ form_label(form.search.TBCustomerCustomerId) }}</th>
-                        <td>
-                            <div class="error_validation_inline">
-                                {{ form_errors(form.search.TBCustomerCustomerId) }}
+                            <div class="calender-box">
+                                {{ form_widget(form.search.PeriodEnd, {'attr': {'style': 'width: 150px;'}}) }}
                             </div>
-                            {{ form_widget(form.search.TBCustomerCustomerId) }}
                         </td>
                     </tr>
                     <tr>
-                        <th>{{ form_label(form.search.TBSystemUserManagerId) }}</th>
-                        <td>
+                        <th>{{ form_label(form.search.TBSystemUser) }}</th>
+                        <td colspan="3">
                             <div class="error_validation_inline">
-                                {{ form_errors(form.search.TBSystemUserManagerId) }}
+                                {{ form_errors(form.search.TBSystemUser) }}
                             </div>
-                            {{ form_widget(form.search.TBSystemUserManagerId) }}
+                            {{ form_widget(form.search.TBSystemUser, {'attr': {'style': 'width: 100px;'}}) }}
                         </td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td nowrap>
+                        <td colspan="4">
                             <input class="button_100" type="submit" value="検索">
-                            <a href="{{ path('project') }}">条件リセット</a>
+                            <a href="{{ path('cost') }}">条件リセット</a>
                         </td>
                     </tr>
                 </tfoot>
@@ -96,7 +89,7 @@
         <div class="functionListArea">
             <ul class="functionList clearfix">
                 <li class="home">
-                    <a href="{{ path('project_new', {ret: returnUrlParam}) }}">
+                    <a href="{{ path('cost_new', {ret: returnUrlParam}) }}">
                         新規作成
                     </a>
                 </li>
@@ -139,32 +132,42 @@
             <tbody class="evenRows">
             {% for entity in entities %}
                 <tr>
-                    <td><a href="{{ path('project_show', { 'id': entity.id, ret: returnUrlParam }) }}">{{ entity.Name }}</a></td>
-                    <td>{{ entity.TBCustomerCustomerId is null ? "" : entity.TBCustomerCustomerId.Name }}</td>
-                    <td>{% if entity.PeriodStart %}{{ entity.PeriodStart|date('Y-m-d') }}{% endif %}</td>
-                    <td>{% if entity.PeriodEnd %}{{ entity.PeriodEnd|date('Y-m-d') }}{% endif %}</td>
-                    <td>{{ entity.TBSystemUserManagerId is null ? "" : entity.TBSystemUserManagerId.Name }}</td>
-                    <td>{{ entity.Status }}</td>
+                    <td>{{ entity.TBProjectCostMasterProjectCostMasterId.TBProjectMasterProjectMasterId.Name }}</td>
+                    <td>{{ entity.TBProjectCostMasterProjectCostMasterId.Name }}</td>
+                    {% if entity.TBProjectCostMasterProjectCostMasterId.TBProjectMasterProjectMasterId.Status == 1 %}
+                        <td>仕掛かり</td>
+                    {% elseif entity.TBProjectCostMasterProjectCostMasterId.TBProjectMasterProjectMasterId.Status == 2 %}
+                        <td>受注</td>
+                    {% elseif entity.TBProjectCostMasterProjectCostMasterId.TBProjectMasterProjectMasterId.Status == 3 %}
+                        <td>終了</td>
+                    {% endif %}
 
-                    <td>{{ entity.ProjectTotalCost }}</td>
-                    <td>{{ entity.ProductionTotalCost }}</td>
+
+                    <td>{% if entity.WorkDate %}{{ entity.WorkDate|date('Y-m-d') }}{% endif %}</td>
+                    <td>{{ entity.TBSystemUserSystemUserId.DisplayName }}</td>
+                    <td>{{ entity.Cost }}</td>
 {#
-                    <td>{% if pcmTotal[entity.id] is defined %}{{ pcmTotal[entity.id] }}{% endif %}</td>
-                    <td>{% if pcTotal[entity.id] is defined %}{{ pcTotal[entity.id] }}{% endif %}</td>
+                    <td><a href="{{ path('cost_show', { 'id': entity.id, ret: returnUrlParam }) }}">{{ entity.id }}</a></td>
+                    <td>{{ entity.ProjectCostMasterId }}</td>
+                    <td>{{ entity.SystemUserId }}</td>
+                    <td>{% if entity.WorkDate %}{{ entity.WorkDate|date('Y-m-d') }}{% endif %}</td>
+                    <td>{{ entity.Cost }}</td>
+                    <td>{{ entity.Note }}</td>
+                    <td>{{ entity.DeleteFlag }}</td>
 #}
                     <td class="function_icon_cell">
-                        <a href="{{ path('project_show', { 'id': entity.id, ret: returnUrlParam }) }}"><img src="{{ asset('bundles/pingdecopongpdpgenerator/img/table.png') }}" width="16" height="16"></a>
+                        <a href="{{ path('cost_show', { 'id': entity.id, ret: returnUrlParam }) }}"><img src="{{ asset('bundles/pingdecopongpdpgenerator/img/table.png') }}" width="16" height="16"></a>
                     </td>
                     <td class="function_icon_cell">
-                        <a href="{{ path('project_edit', { 'id': entity.id, ret: returnUrlParam }) }}"><img src="{{ asset('bundles/pingdecopongpdpgenerator/img/ico_pencil.png') }}" width="16" height="16"></a>
+                        <a href="{{ path('cost_edit', { 'id': entity.id, ret: returnUrlParam }) }}"><img src="{{ asset('bundles/pingdecopongpdpgenerator/img/ico_pencil.png') }}" width="16" height="16"></a>
                     </td>
                     <td class="function_icon_cell">
-                        <a href="{{ path('project_delete', { 'id': entity.id, ret: returnUrlParam }) }}"><img src="{{ asset('bundles/pingdecopongpdpgenerator/img/asico_del_bl.png') }}" width="16" height="16" alt="削除"></a>
+                        <a href="{{ path('cost_delete', { 'id': entity.id, ret: returnUrlParam }) }}"><img src="{{ asset('bundles/pingdecopongpdpgenerator/img/asico_del_bl.png') }}" width="16" height="16" alt="削除"></a>
                     </td>
                 </tr>
             {% else %}
                 <tr >
-                    <td colspan="11">該当案件がありません。</td>
+                    <td colspan="9">該当の作業工数がありません。</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -241,33 +244,33 @@
 
 {% endblock %}
 
-    {% block javascripts %}
-        <script src="{{ asset('bundles/pingdecopongpdpgenerator/js/jquery/jquery-ui-1.10.3.custom.min.js') }}" ></script>
-        <script src="{{ asset('bundles/pingdecopongpdpgenerator/js/jquery/jquery.ui.datepicker-ja.js') }}" ></script>
-        <link href="{{ asset('bundles/pingdecopongpdpgenerator/css/jqueryui/jquery-ui-1.10.3.custom.min.css') }}" rel="stylesheet" type="text/css">
-        <script type="text/javascript">
-            //<![CDATA[
-            $(function() {
-                $( "#{{ form.search.PeriodStart.vars.id }}" ).datepicker({
-                    showOn: "button",
-                    buttonImage: "{{ asset('bundles/pingdecopongpdpgenerator/img/calendar.png') }}",
-                    buttonImageOnly: true,
-                    dateFormat: 'yy/mm/dd',
-                    beforeShow : function() {
-                        $('#ui-datepicker-div').css( 'font-size', '70%' );
-                    }
-                });
-
-                $( "#{{ form.search.PeriodEnd.vars.id }}" ).datepicker({
-                    showOn: "button",
-                    buttonImage: "{{ asset('bundles/pingdecopongpdpgenerator/img/calendar.png') }}",
-                    buttonImageOnly: true,
-                    dateFormat: 'yy/mm/dd',
-                    beforeShow : function() {
-                        $('#ui-datepicker-div').css( 'font-size', '70%' );
-                    }
-                });
+{% block javascripts %}
+    <script src="{{ asset('bundles/pingdecopongpdpgenerator/js/jquery/jquery-ui-1.10.3.custom.min.js') }}" ></script>
+    <script src="{{ asset('bundles/pingdecopongpdpgenerator/js/jquery/jquery.ui.datepicker-ja.js') }}" ></script>
+    <link href="{{ asset('bundles/pingdecopongpdpgenerator/css/jqueryui/jquery-ui-1.10.3.custom.min.css') }}" rel="stylesheet" type="text/css">
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function() {
+            $( "#{{ form.search.PeriodStart.vars.id }}" ).datepicker({
+                showOn: "button",
+                buttonImage: "{{ asset('bundles/pingdecopongpdpgenerator/img/calendar.png') }}",
+                buttonImageOnly: true,
+                dateFormat: 'yy/mm/dd',
+                beforeShow : function() {
+                    $('#ui-datepicker-div').css( 'font-size', '70%' );
+                }
             });
-            //]]>
-        </script>
-    {% endblock %}
+
+            $( "#{{ form.search.PeriodEnd.vars.id }}" ).datepicker({
+                showOn: "button",
+                buttonImage: "{{ asset('bundles/pingdecopongpdpgenerator/img/calendar.png') }}",
+                buttonImageOnly: true,
+                dateFormat: 'yy/mm/dd',
+                beforeShow : function() {
+                    $('#ui-datepicker-div').css( 'font-size', '70%' );
+                }
+            });
+        });
+        //]]>
+    </script>
+{% endblock %}

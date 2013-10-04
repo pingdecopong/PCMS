@@ -16,7 +16,7 @@
         </div>
         {% endif %}
 
-        <form action="{{ path('project_edit', { 'id': ID }) }}" method="post" {{ form_enctype(form) }} name="project_edit_form">
+        <form action="{{ path('project_edit', { 'id': ID }) }}" novalidate method="post" {{ form_enctype(form) }} name="project_edit_form">
 
             <div class="error_validation">
                 {{ form_errors(form) }}
@@ -112,11 +112,13 @@
             {% if mode == 'input' %}
                 <div class="functionListArea">
                     <ul class="functionList clearfix">
+{#
                         <li class="home">
                             <a href="">
                                 項目追加
                             </a>
                         </li>
+#}
                         <li class="home">
                             {{ form_widget(form.AddSubForm) }}
                         </li>
@@ -281,20 +283,47 @@
 {% endmacro %}
 
 {% block javascripts %}
+    <script src="{{ asset('bundles/pingdecopongpdpgenerator/js/jquery/jquery-ui-1.10.3.custom.min.js') }}" ></script>
+    <script src="{{ asset('bundles/pingdecopongpdpgenerator/js/jquery/jquery.ui.datepicker-ja.js') }}" ></script>
+    <link href="{{ asset('bundles/pingdecopongpdpgenerator/css/jqueryui/jquery-ui-1.10.3.custom.min.css') }}" rel="stylesheet" type="text/css">
     <script type="text/javascript">
         //<![CDATA[
         function postConfirm(){
-            document.project_edit_form["{{ form.subform.buttonAction.vars.full_name }}"].value = "confirm";
-            document.project_edit_form.submit();
+            document.project_new_form["{{ form.subform.buttonAction.vars.full_name }}"].value = "confirm";
+            document.project_new_form.submit();
         }
         function postSubmit(){
-            document.project_edit_form["{{ form.subform.buttonAction.vars.full_name }}"].value = "submit";
-            document.project_edit_form.submit();
+            document.project_new_form["{{ form.subform.buttonAction.vars.full_name }}"].value = "submit";
+            document.project_new_form.submit();
         }
         function postBack(){
-            document.project_edit_form["{{ form.subform.buttonAction.vars.full_name }}"].value = "";
-            document.project_edit_form.submit();
+            document.project_new_form["{{ form.subform.buttonAction.vars.full_name }}"].value = "";
+            document.project_new_form.submit();
         }
+
+        {% if mode == 'input' %}
+        $(function() {
+            $( "#{{ form.TBProjectMaster.PeriodStart.vars.id }}" ).datepicker({
+                showOn: "button",
+                buttonImage: "{{ asset('bundles/pingdecopongpdpgenerator/img/calendar.png') }}",
+                buttonImageOnly: true,
+                dateFormat: 'yy/mm/dd',
+                beforeShow : function() {
+                    $('#ui-datepicker-div').css( 'font-size', '70%' );
+                }
+            });
+
+            $( "#{{ form.TBProjectMaster.PeriodEnd.vars.id }}" ).datepicker({
+                showOn: "button",
+                buttonImage: "{{ asset('bundles/pingdecopongpdpgenerator/img/calendar.png') }}",
+                buttonImageOnly: true,
+                dateFormat: 'yy/mm/dd',
+                beforeShow : function() {
+                    $('#ui-datepicker-div').css( 'font-size', '70%' );
+                }
+            });
+        });
+        {% endif %}
         //]]>
     </script>
 {% endblock %}

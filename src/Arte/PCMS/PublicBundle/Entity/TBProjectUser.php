@@ -1,6 +1,6 @@
 <?php
 
-namespace Arte\PCMS\BizlogicBundle\Entity;
+namespace Arte\PCMS\PublicBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -9,36 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TBProjectUser
 {
-    /**
-     * 管理者
-     */
-    const ROLE_MANAGER = 1;
-    /**
-     * 一般担当者
-     */
-    const ROLE_GENERAL = 2;
-    /**
-     * 表示のみ
-     */
-    const ROLE_READONLY = 3;
-
-    /**
-     * 権限一覧取得
-     * @return array　権限一覧
-     */
-    public static function getRoleLists()
-    {
-        return array(
-            self::ROLE_MANAGER,
-            self::ROLE_GENERAL,
-            self::ROLE_READONLY,
-        );
-    }
-//    /**
-//     * @var integer
-//     */
-//    private $id;
-
     /**
      * @var integer
      */
@@ -55,25 +25,15 @@ class TBProjectUser
     private $RoleNo;
 
     /**
-     * @var \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser
+     * @var \Arte\PCMS\PublicBundle\Entity\TBSystemUser
      */
     private $TBSystemUserSystemUserId;
 
     /**
-     * @var \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster
+     * @var \Arte\PCMS\PublicBundle\Entity\TBProjectMaster
      */
     private $TBProjectMasterProjectMasterId;
 
-
-//    /**
-//     * Get id
-//     *
-//     * @return integer
-//     */
-//    public function getId()
-//    {
-//        return $this->id;
-//    }
 
     /**
      * Set SystemUserId
@@ -147,10 +107,10 @@ class TBProjectUser
     /**
      * Set TBSystemUserSystemUserId
      *
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUserSystemUserId
+     * @param \Arte\PCMS\PublicBundle\Entity\TBSystemUser $tBSystemUserSystemUserId
      * @return TBProjectUser
      */
-    public function setTBSystemUserSystemUserId(\Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $tBSystemUserSystemUserId = null)
+    public function setTBSystemUserSystemUserId(\Arte\PCMS\PublicBundle\Entity\TBSystemUser $tBSystemUserSystemUserId = null)
     {
         $this->TBSystemUserSystemUserId = $tBSystemUserSystemUserId;
     
@@ -160,7 +120,7 @@ class TBProjectUser
     /**
      * Get TBSystemUserSystemUserId
      *
-     * @return \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser 
+     * @return \Arte\PCMS\PublicBundle\Entity\TBSystemUser 
      */
     public function getTBSystemUserSystemUserId()
     {
@@ -170,10 +130,10 @@ class TBProjectUser
     /**
      * Set TBProjectMasterProjectMasterId
      *
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMasterProjectMasterId
+     * @param \Arte\PCMS\PublicBundle\Entity\TBProjectMaster $tBProjectMasterProjectMasterId
      * @return TBProjectUser
      */
-    public function setTBProjectMasterProjectMasterId(\Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $tBProjectMasterProjectMasterId = null)
+    public function setTBProjectMasterProjectMasterId(\Arte\PCMS\PublicBundle\Entity\TBProjectMaster $tBProjectMasterProjectMasterId = null)
     {
         $this->TBProjectMasterProjectMasterId = $tBProjectMasterProjectMasterId;
     
@@ -183,7 +143,7 @@ class TBProjectUser
     /**
      * Get TBProjectMasterProjectMasterId
      *
-     * @return \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster 
+     * @return \Arte\PCMS\PublicBundle\Entity\TBProjectMaster 
      */
     public function getTBProjectMasterProjectMasterId()
     {

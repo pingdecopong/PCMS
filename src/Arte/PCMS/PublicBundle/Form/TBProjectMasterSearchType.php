@@ -38,10 +38,14 @@ class TBProjectMasterSearchType extends AbstractType
             ->add('PeriodStart', 'date', array(
                 'label'     => '開始日',
                 'required'  => false,
+                'widget' => 'single_text',
+                'format' => 'yyyy/MM/dd',
             ))
             ->add('PeriodEnd', 'date', array(
                 'label'     => '終了日',
                 'required'  => false,
+                'widget' => 'single_text',
+                'format' => 'yyyy/MM/dd',
             ))
 //            ->add('ManagerId', 'text', array(
 //                'label'     => 'ManagerId',
