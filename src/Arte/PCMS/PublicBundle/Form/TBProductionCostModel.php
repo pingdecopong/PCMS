@@ -1,26 +1,30 @@
 <?php
-
 namespace Arte\PCMS\PublicBundle\Form;
+
 
 use Symfony\Component\Validator\Constraints as Assert;
 
 class TBProductionCostModel {
 
-    /**
-     * @var \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster
-     */
-    private $TBProjectMaster;
+//    /**
+//     * @var \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster
+//     */
+//    private $TBProjectMaster;
     /**
      * @var \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser
+     * @Assert\NotBlank()
      */
     private $TBSystemUser;
     /**
      * @var \DateTime
+     * @Assert\NotBlank()
      */
     private $WorkDate;
     /**
      * @var integer
      * @Assert\NotBlank()
+     * @Assert\Type(type="integer")
+     * @Assert\Range(min = 1)
      */
     private $Cost;
     /**
@@ -30,6 +34,7 @@ class TBProductionCostModel {
 
     /**
      * @var \Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster
+     * @Assert\NotBlank()
      */
     private $TBProjectCost;
 
@@ -65,21 +70,21 @@ class TBProductionCostModel {
         return $this->Note;
     }
 
-    /**
-     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $TBProjectMaster
-     */
-    public function setTBProjectMaster($TBProjectMaster)
-    {
-        $this->TBProjectMaster = $TBProjectMaster;
-    }
-
-    /**
-     * @return \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster
-     */
-    public function getTBProjectMaster()
-    {
-        return $this->TBProjectMaster;
-    }
+//    /**
+//     * @param \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster $TBProjectMaster
+//     */
+//    public function setTBProjectMaster($TBProjectMaster)
+//    {
+//        $this->TBProjectMaster = $TBProjectMaster;
+//    }
+//
+//    /**
+//     * @return \Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster
+//     */
+//    public function getTBProjectMaster()
+//    {
+//        return $this->TBProjectMaster;
+//    }
 
     /**
      * @param \Arte\PCMS\BizlogicBundle\Entity\TBSystemUser $TBSystemUser

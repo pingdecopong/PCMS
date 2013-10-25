@@ -1,0 +1,31 @@
+{% extends 'ArtePCMSAdminBundle::layout.html.twig' %}
+
+
+{% block body -%}
+    <header>
+        <h1>{{ title }}</h1>
+    </header>
+    <section class="section">
+        <h1 class="caption"><span id="selectFolderName">{{ title }}</span></h1>
+
+        <div>{{ message }}</div>
+
+        {% if type == 'systemuser_new' or type == 'systemuser_edit' or type == 'password_edit' %}
+            <a href="{{ path('systemuser_show', { 'id': id }) }}?ret={{ app.request.get('ret')|url_encode() }}">戻る</a>
+        {% elseif type == 'systemuser_delete' %}
+            <a href="{{ path('systemuser') }}?{{ returnUrlParam }}">一覧へもどる</a>
+        {% endif %}
+
+
+        <div class="functionListArea">
+            <ul class="functionList clearfix">
+                {#<li class="home"><a href="{{ path('systemuser') }}?{{ returnUrlParam|raw }}">一覧へもどる</a></li>#}
+                {#<li class="home"><a href="{{ path('systemuser_edit', { 'id': entity.id }) }}?ret={{ app.request.get('ret')|raw }}">編集</a></li>#}
+                {#<li class="home"><a href="{{ path('systemuser_password', { 'id': entity.id }) }}?ret={{ app.request.get('ret')|raw }}">パスワード変更</a></li>#}
+                {#<li class="home"><a href="{{ path('systemuser_delete', { 'id': entity.id }) }}?ret={{ app.request.get('ret')|raw }}">削除</a></li>#}
+            </ul>
+        </div>
+
+    </section>
+
+{% endblock %}

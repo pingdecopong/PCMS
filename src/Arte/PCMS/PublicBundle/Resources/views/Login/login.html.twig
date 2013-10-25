@@ -4,7 +4,8 @@
 
 {% block body %}
     {% if error %}
-        <div>{{ error.message }}</div>
+        {#<div>{{ error.message }}</div>#}
+        <div>ログインに失敗しました。正しいログインIDとパスワードを入力して下さい。</div>
     {% endif %}
 
     <form action="{{ path('auth_login_check') }}" method="post">
@@ -19,6 +20,6 @@
         <input type="hidden" name="_target_path" value="/" />
         #}
 
-        <input type="submit" name="login" />
+        <input type="submit" name="login" value="ログイン" />
     </form>
 {% endblock %}

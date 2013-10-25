@@ -1,0 +1,74 @@
+{% extends 'ArtePCMSAdminBundle::layout.html.twig' %}
+
+
+{% form_theme form 'pingdecopongFormFreezeBundle:Form:form_layout.html.twig' %}
+
+
+
+{% block body -%}
+    <header>
+        <h1>案件編集</h1>
+    </header>
+    <section class="section">
+        <h1 class="caption"><span id="selectFolderName">担当者編集</span></h1>
+
+        {% if mode == 'input' %}
+        <div class="functionListArea" style="margin: 10px 0;">
+            <ul class="functionList clearfix">
+                <li class="home"><a href="{{ path('project_show', { 'id': ID }) }}">案件詳細へもどる</a></li>
+            </ul>
+        </div>
+        {% endif %}
+
+        <form action="{{ path('project_worker_edit', { 'id': ID }) }}" novalidate method="post" {{ form_enctype(form) }} name="project_worker_edit">
+
+            <div class="error_validation">
+                {{ form_errors(form) }}
+            </div>
+
+            <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
+                <tr>
+                    <th scope="row">{{ form_label(form.WorkerEditForm.Users) }}</th>
+                    <td>
+                        <div class="error_validation_inline">
+                            {{ form_errors(form.WorkerEditForm.Users) }}
+                        </div>
+                        {{ form_widget(form.WorkerEditForm.Users) }}
+                    </td>
+                </tr>
+            </table>
+
+            {% for WorkerEditRoleForm in form.WorkerEdit2Form.WorkerEditRoleForms %}
+                {{ form_widget(WorkerEditRoleForm.Id) }}
+                {#{{ form_widget(WorkerEditRoleForm.Role) }}#}
+                {% for child in WorkerEditRoleForm.Role %}
+                    {% if child.vars.checked %}
+                        <input type="hidden" id="{{ child.vars.id }}" name="{{ child.vars.full_name }}" {% if child.vars.value is not empty %}value="{{ child.vars.value }}" {% endif %} />
+                    {% endif %}
+                    {% do child.setRendered %}
+                {% endfor %}
+            {% else %}
+                {% do form.WorkerEdit2Form.WorkerEditRoleForms.setRendered %}
+            {% endfor %}
+
+            <div class="submit_box">
+                {{ form_widget(form.NextTo2) }}
+                {% do form.ReturnTo1.setRendered %}
+                {% do form.Confirm.setRendered %}
+                {% do form.ReturnTo2.setRendered %}
+                {% do form.Submit.setRendered %}
+            </div>
+
+        {{ form_end(form) }}
+
+    </section>
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <script type="text/javascript">
+        //<![CDATA[
+        //]]>
+    </script>
+{% endblock %}

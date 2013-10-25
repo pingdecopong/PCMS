@@ -2,6 +2,7 @@
 
 namespace Arte\PCMS\AdminBundle\Controller;
 
+use Arte\PCMS\BizlogicBundle\Lib\SystemUserManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use pingdecopong\PagerBundle\Pager\Pager;
@@ -21,15 +22,22 @@ use Arte\PCMS\AdminBundle\Form\TBSystemUserSearchType;
  */
 class TBSystemUserController extends Controller
 {
+    /**
+     * @Route("/")
+     */
+    public function indexAction()
+    {
+        return $this->redirect($this->generateUrl('systemuser'));
+    }
 
     /**
      * Lists all TBSystemUser entities.
      *
-     * @Route("/", name="systemuser")
+     * @Route("/list", name="systemuser")
      * @Method({"GET", "POST"})
      * @Template()
      */
-    public function indexAction()
+    public function listAction()
     {
         $request = $this->getRequest();
         $formFactory = $this->get('form.factory');
@@ -61,6 +69,7 @@ class TBSystemUserController extends Controller
             ->addColumn('5', array(
                 'label' => '部署名',
                 'sort_enable' => true,
+                'db_column_name' => 'TBDepartment',
             ))
             ->addColumn('6', array(
                 'label' => '最終ログイン',
@@ -96,103 +105,41 @@ class TBSystemUserController extends Controller
             return $this->redirect($this->generateUrl($request->get('_route')));
         }
 
-        //db
-        /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
-        $queryBuilder = $this->getDoctrine()
-            ->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')
-            ->createQueryBuilder('u')
-            ->leftJoin('u.TBDepartmentDepartmentId', 'd')
-            ->select(array('u', 'd'))
-            ->andWhere('u.DeleteFlag = :DeleteFlag')
-            ->setParameter('DeleteFlag', false);
-
         //検索
         $data = $form->getData();
-        /** @var $searchParam TBSystemUser */
+        /** @var $searchParam \Arte\PCMS\PublicBundle\Form\TBProjectMasterSearchModel */
         $searchParam = $data['search'];
-        //Username
-        $searchUsername = $searchParam->getUsername();
-        if(isset($searchUsername) && $form['search']['Username']->isValid())
-        {
-            $queryBuilder = $queryBuilder->andWhere('u.Username LIKE :Username')
-                ->setParameter('Username', '%'.$searchUsername.'%');
-        }
-        //Active
-        $searchActive = $searchParam->getActive();
-        if(isset($searchActive) && $form['search']['Active']->isValid())
-        {
-            $queryBuilder = $queryBuilder->andWhere('u.Active LIKE :Active')
-                ->setParameter('Active', '%'.$searchActive.'%');
-        }
-        //DisplayName
-        $searchDisplayname = $searchParam->getDisplayname();
-        if(isset($searchDisplayname) && $form['search']['DisplayName']->isValid())
-        {
-            $queryBuilder = $queryBuilder->andWhere('u.DisplayName LIKE :Displayname')
-                ->setParameter('Displayname', '%'.$searchDisplayname.'%');
-        }
-        //MailAddress
-        $searchMailaddress = $searchParam->getMailaddress();
-        if(isset($searchMailaddress) && $form['search']['MailAddress']->isValid())
-        {
-            $queryBuilder = $queryBuilder->andWhere('u.MailAddress LIKE :Mailaddress')
-                ->setParameter('Mailaddress', '%'.$searchMailaddress.'%');
-        }
-
-        //relation 検索
-        //TBDepartmentDepartmentId
-        $searchTbdepartmentdepartmentid = $searchParam->getTbdepartmentdepartmentid();
-        if(isset($searchTbdepartmentdepartmentid) && $form['search']['TBDepartmentDepartmentId']->isValid())
-        {
-            $queryBuilder = $queryBuilder->andWhere('u.TBDepartmentDepartmentId = :Tbdepartmentdepartmentid')
-                ->setParameter('Tbdepartmentdepartmentid', $searchTbdepartmentdepartmentid);
-        }
-
-        //全件数取得
-        $queryBuilderCount = clone $queryBuilder;
-        $queryBuilderCount = $queryBuilderCount->select('count(u.id)');
-        $queryCount = $queryBuilderCount->getQuery();
-        $allCount = $queryCount->getSingleScalarResult();
-        $pager->setAllCount($allCount);
 
         //ソート
         $pageSortName = $pager->getSortName();
         $pageSortType = $pager->getSortType();
-        if($pageSortName != null && $pageSortType != null)
-        {
-            switch($pageSortName)
-            {
-                case '5':
-                    $queryBuilder = $queryBuilder->orderBy('d.Name', $pageSortType);
-                    break;
-                default:
-                    $sortColumn = $pager->getColumn($pageSortName);
-                    $queryBuilder = $queryBuilder->orderBy('u.'.$sortColumn['db_column_name'], $pageSortType);
-                    break;
-            }
-        }
 
         //ページング
         $pageSize = $pager->getPageSize();
         $pageNo = $pager->getPageNo();
+
+        //
+        $em = $this->getDoctrine()->getManager();
+        /** @var \Arte\PCMS\BizlogicBundle\Lib\SystemUserManager $systemUserManager */
+        $systemUserManager = $this->get('Arte.PCMS.Lib.SystemUserManager');
+        $sortColumn = $pager->getColumn($pageSortName);
+        $projects = $systemUserManager->getTBSystemUserList($pageNo, $pageSize, $sortColumn['db_column_name'], $pageSortType, $searchParam);
+        $pager->setAllCount($projects['count']);
         if($pager->getMaxPageNum() < $pageNo){
             return $this->redirect($request->get('_route'));
         }
-        $queryBuilder = $queryBuilder->setFirstResult($pageSize*($pageNo-1))
-            ->setMaxResults($pageSize);
-
-        //クエリー実行
-        $entities = $queryBuilder->getQuery()->getResult();
+        $entities = $projects['result'];
 
         //returnURL生成
         $returnUrlQueryDataArray = $pager->getAllFormQueryStrings();
-        $returnUrlQueryString = urlencode(http_build_query($returnUrlQueryDataArray));
+//        $returnUrlQueryString = urlencode(http_build_query($returnUrlQueryDataArray));
 
         return array(
             'form' => $formView,
             'pager' => $pager->createView(),
             'entities' => $entities,
-            'returnUrlParam' => $returnUrlQueryString,
+//            'returnUrlParam' => $returnUrlQueryString,
+            'returnUrlParam' => http_build_query($returnUrlQueryDataArray),
         );
     }
 
@@ -205,108 +152,135 @@ class TBSystemUserController extends Controller
      */
     public function newAction()
     {
-
         $request = $this->getRequest();
-        $formFactory = $this->get('form.factory');
+        $returnParam = $request->get('ret');
 
         $formModel = new TBSystemUser();
         $formType = new TBSystemUserType();
-        $subFormModel = new SubFormModel();
-        $subFormType = new SubFormType();
-        $subFormModel->setReturnAddress($request->get('ret'));
 
-        /* @var $builder \Symfony\Component\Form\FormBuilderInterface */
-        $builder =$formFactory->createBuilder();
-        $mainFormBuilder = $formFactory->createBuilder($formType, $formModel);
-        $subFormBuilder = $formFactory->createBuilder($subFormType, $subFormModel);
-        $form = $builder->add($mainFormBuilder)
-            ->add($subFormBuilder)
+        $formBuilder = $this->createTBSystemUserForm($formType, $formModel, array('form', 'newform'));
+        /* @var $form \Symfony\Component\Form\Form */
+        $form = $formBuilder->setAction($this->generateUrl($request->get('_route')))
+            ->setMethod('POST')
             ->getForm();
+        $form->get('ret')->setData($returnParam);
 
         if($request->isMethod('POST'))
         {
-            $form->bind($request);
+            $form->submit($request);
+            $returnParam = $form->get('ret')->getData();
 
-            //button_action
-            $buttonAction = $subFormModel->getButtonAction();
-
-            if($buttonAction == "confirm" || $buttonAction == "submit")
+            if($form->get('Confirm')->isClicked() || $form->get('Submit')->isClicked())
             {
                 if($form->isValid())
                 {
-                    if($buttonAction == "confirm")
+                    if($form->get('Confirm')->isClicked())
                     {
                         //確認画面
-                        $builder->setAttribute('freeze', true);
-                        $confirmForm = $builder->getForm();
+                        $formBuilder = $this->createTBSystemUserForm($formType, $formModel, array('form', 'newform'), true);
+                        /* @var $form \Symfony\Component\Form\Form */
+                        $form = $formBuilder->setAction($this->generateUrl($request->get('_route')))
+                            ->setMethod('POST')
+                            ->getForm();
+                        $form->submit($request);
 
                         return array(
+                            'title' => 'ユーザー　登録確認',
+                            'type' => 'new',
                             'mode' => "confirm",
                             'entity' => $formModel,
-                            'form' => $confirmForm->createView(),
-                            'returnUrlParam' => urldecode($subFormModel->getReturnAddress()),
+                            'form' => $form->createView(),
                         );
 
-                    }else if($buttonAction == "submit")
+                    }else if($form->get('Submit')->isClicked())
                     {
                         //登録実行
-                        try{
-                            $em = $this->getDoctrine()->getManager();
+                        /** @var \Arte\PCMS\BizlogicBundle\Lib\SystemUserManager $systemUserManager */
+                        $systemUserManager = $this->get('Arte.PCMS.Lib.SystemUserManager');
+                        $tbSystemUser = $systemUserManager->createSystemUser($formModel, $formModel->getTBDepartmentDepartmentId(), $formModel->getFormPassword());
 
-                            $formModel->setSalt('aaa');
-                            $formModel->setPassword('bbb');
-                            $formModel->setDeleteFlag(false);
-
-                            $em->persist($formModel);
-                            $em->flush();
-
-                        }catch (\Exception $e){
-                            throw $e;
-                        }
-                            return $this->redirect($this->generateUrl('systemuser_show', array('id' => $formModel->getId(), 'ret' => $subFormModel->getReturnAddress())));
+                        return $this->redirect($this->generateUrl('systemuser_message', array('type' => 1,'id' => $tbSystemUser->getId(), 'ret' => $returnParam)));
                     }
                 }
             }else
             {
                 //ドロップダウンなどのポストバック
-                $builder->setAttribute('novalidation', true);
-                $form = $builder->getForm();
+                $formBuilder = $this->createTBSystemUserForm($formType, $formModel, false);
+                /* @var $form \Symfony\Component\Form\Form */
+                $form = $formBuilder->setAction($this->generateUrl($request->get('_route')))
+                    ->setMethod('POST')
+                    ->getForm();
+                $form->submit($request);
             }
         }
 
-
         return array(
+            'title' => 'ユーザー　登録',
+            'type' => 'new',
             'mode' => "input",
             'validate' => false,
             'entity' => $formModel,
             'form' => $form->createView(),
-            'returnUrlParam' => urldecode($subFormModel->getReturnAddress()),
+            'returnUrlParam' => urldecode($returnParam),
         );
+
+    }
+
+    private function createTBSystemUserForm($formType, $formModel, $validationGroups = null, $freeze = false)
+    {
+        /* @var $formFactory \Symfony\Component\Form\FormFactory */
+        $formFactory = $this->get('form.factory');
+
+        $option = array();
+        if($validationGroups !== null){
+            $option['validation_groups'] = $validationGroups;
+        }
+
+        if($freeze){
+            $option['freeze'] = true;
+        }
+        /* @var $builder \Symfony\Component\Form\FormBuilderInterface */
+        $builder =$formFactory->createBuilder('form', null, $option);
+        $mainFormBuilder = $formFactory->createBuilder($formType, $formModel, $option);
+
+        /* @var $form \Symfony\Component\Form\Form */
+        $formBuilder = $builder->add($mainFormBuilder)
+            ->add('Confirm', 'submit', array(
+                'label' => '確認'
+            ))
+            ->add('Return', 'submit', array(
+                'label' => '戻る'
+            ))
+            ->add('Submit', 'submit', array(
+                'label' => '登録'
+            ))
+            ->add('ret', 'hidden', array(
+            ));
+
+        return $formBuilder;
     }
 
     /**
      * TBSystemUser詳細
      *
-     * @Route("/{id}", name="systemuser_show")
+     * @Route("/show/{id}", name="systemuser_show")
      * @Method("GET")
      * @Template()
      */
     public function showAction($id)
     {
         $request = $this->getRequest();
-        $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find($id);
+        /** @var \Arte\PCMS\BizlogicBundle\Lib\SystemUserManager $systemUserManager */
+        $systemUserManager = $this->get('Arte.PCMS.Lib.SystemUserManager');
 
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find TBSystemUser entity.');
-        }
+        $tbSystemUser = $systemUserManager->getTbSystemUser($id);
 
         //returnUrlデコード
         $returnUrlQueryString = urldecode($request->get('ret'));
 
         return array(
-            'entity'      => $entity,
+            'entity' => $tbSystemUser,
             'returnUrlParam' => $returnUrlQueryString,
         );
     }
@@ -316,86 +290,86 @@ class TBSystemUserController extends Controller
      *
      * @Route("/edit/{id}", name="systemuser_edit")
      * @Method({"GET", "POST"})
-     * @Template()
+     * @Template("ArtePCMSAdminBundle:TBSystemUser:new.html.twig")
      */
     public function editAction($id)
     {
-
         $request = $this->getRequest();
-        $formFactory = $this->get('form.factory');
+        $returnParam = $request->get('ret');
 
+//        $formModel = new TBSystemUser();
         $formType = new TBSystemUserType();
-        $subFormModel = new SubFormModel();
-        $subFormType = new SubFormType();
-        $subFormModel->setReturnAddress($request->get('ret'));
 
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find($id);
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find SystemUser entity.');
-        }
+        /** @var \Arte\PCMS\BizlogicBundle\Lib\SystemUserManager $systemUserManager */
+        $systemUserManager = $this->get('Arte.PCMS.Lib.SystemUserManager');
+        $formModel = $systemUserManager->getTbSystemUser($id);
 
-        /* @var $builder \Symfony\Component\Form\FormBuilderInterface */
-        $builder =$formFactory->createBuilder();
-        $mainFormBuilder = $formFactory->createBuilder($formType, $entity);
-        $subFormBuilder = $formFactory->createBuilder($subFormType, $subFormModel);
-        $form = $builder->add($mainFormBuilder)
-            ->add($subFormBuilder)
+        $formBuilder = $this->createTBSystemUserForm($formType, $formModel, array('form'));
+        /* @var $form \Symfony\Component\Form\Form */
+        $form = $formBuilder->setAction($this->generateUrl($request->get('_route'), array('id' => $id)))
+            ->setMethod('POST')
             ->getForm();
+        $form->get('ret')->setData($returnParam);
 
         if($request->isMethod('POST'))
         {
-            $form->bind($request);
+            $form->submit($request);
+            $returnParam = $form->get('ret')->getData();
 
-            //button_action
-            $buttonAction = $subFormModel->getButtonAction();
-
-            if($buttonAction == "confirm" || $buttonAction == "submit")
+            if($form->get('Confirm')->isClicked() || $form->get('Submit')->isClicked())
             {
                 if($form->isValid())
                 {
-                    if($buttonAction == "confirm")
+                    if($form->get('Confirm')->isClicked())
                     {
                         //確認画面
-                        $builder->setAttribute('freeze', true);
-                        $confirmForm = $builder->getForm();
+                        $formBuilder = $this->createTBSystemUserForm($formType, $formModel, array('form'), true);
+                        /* @var $form \Symfony\Component\Form\Form */
+                        $form = $formBuilder->setAction($this->generateUrl($request->get('_route'), array('id' => $formModel->getId())))
+                            ->setMethod('POST')
+                            ->getForm();
+                        $form->submit($request);
 
                         return array(
+                            'title' => 'ユーザー　変更確認',
+                            'type' => 'edit',
                             'mode' => "confirm",
-                            'entity' => $entity,
-                            'form' => $confirmForm->createView(),
-                            'returnUrlParam' => urldecode($subFormModel->getReturnAddress()),
+                            'entity' => $formModel,
+                            'form' => $form->createView(),
                         );
 
-                    }else if($buttonAction == "submit")
+                    }else if($form->get('Submit')->isClicked())
                     {
-                        //登録実行
-                        try{
-                            $em->persist($entity);
-                            $em->flush();
+                        //編集実行
+                        $tbSystemUser = $systemUserManager->updateSystemUser($formModel->getId(), $formModel, $formModel->getTBDepartmentDepartmentId());
 
-                        }catch (\Exception $e){
-                            throw $e;
-                        }
-                        return $this->redirect($this->generateUrl('systemuser_show', array('id' => $entity->getId(), 'ret' => $subFormModel->getReturnAddress())));
+                        return $this->redirect($this->generateUrl('systemuser_message', array('type' => 2,'id' => $tbSystemUser->getId(), 'ret' => $returnParam)));
                     }
                 }
             }else
             {
                 //ドロップダウンなどのポストバック
-                $builder->setAttribute('novalidation', true);
-                $form = $builder->getForm();
+                $formBuilder = $this->createTBSystemUserForm($formType, $formModel, false);
+                /* @var $form \Symfony\Component\Form\Form */
+                $form = $formBuilder->setAction($this->generateUrl($request->get('_route'), array('id' => $id)))
+                    ->setMethod('POST')
+                    ->getForm();
+                $form->submit($request);
             }
         }
 
         return array(
+            'title' => 'ユーザー　変更',
+            'type' => 'edit',
             'mode' => "input",
             'validate' => false,
-            'entity' => $entity,
+            'entity' => $formModel,
             'form' => $form->createView(),
-            'returnUrlParam' => urldecode($subFormModel->getReturnAddress()),
+            'returnUrlParam' => urldecode($returnParam),
         );
+
     }
+
     /**
      * TBSystemUser削除
      *
@@ -406,50 +380,162 @@ class TBSystemUserController extends Controller
     public function deleteAction($id)
     {
         $request = $this->getRequest();
-        //returnUrlデコード
-        $returnUrlQueryString = urldecode($request->get('ret'));
+        $returnParam = $request->get('ret');
 
-        $form = $this->createFormBuilder(array('id' => $id, 'returnAddress' => $returnUrlQueryString))
-            ->add('id', 'hidden')
-            ->add('buttonAction', 'hidden')
-            ->add('returnAddress', 'hidden')
+        //データ取得
+        /** @var \Arte\PCMS\BizlogicBundle\Lib\SystemUserManager $systemUserManager */
+        $systemUserManager = $this->get('Arte.PCMS.Lib.SystemUserManager');
+        $entity = $systemUserManager->getTbSystemUser($id);
+
+        //フォーム作成
+        $form = $this->createFormBuilder(array('ret' => urldecode($returnParam)))
+            ->setAction($this->generateUrl($request->get('_route'), array('id' => $id)))
+            ->setMethod('POST')
+            ->add('ret', 'hidden')
+            ->add('Submit', 'submit', array(
+                'label' => '削除'
+            ))
             ->getForm();
-
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find TBSystemUser entity.');
-        }
 
         if($request->isMethod('POST'))
         {
-            $form->bind($request);
-            if ($form->isValid()) {
+            $form->submit($request);
+            $returnParam = $form->get('ret')->getData();
 
-                try{
-
-                    $entity->setDeleteFlag(true);
-
-                    $em->persist($entity);
-                    $em->flush();
-
-                }catch (\Exception $e){
-                    throw $e;
-                }
-                $data = $form->getData();
-                //returnUrlデコード
-                $returnUrlQueryString = urldecode($data['returnAddress']);
-                return $this->redirect($this->generateUrl('systemuser').'?'.$returnUrlQueryString);
+            if($form->get('Submit')->isClicked() && $form->isValid())
+            {
+                $systemUserManager->deleteSystemUser($id);
+                return $this->redirect($this->generateUrl('systemuser_message', array('type' => 3, 'ret' => $returnParam)));
+//                return $this->redirect($this->generateUrl('systemuser').'?'.urldecode($returnParam));
             }
         }
 
         return array(
-            'entity' => $entity,
+            'entity'      => $entity,
             'form' => $form->createView(),
-            'returnUrlParam' => $returnUrlQueryString,
+            'returnUrlParam' => urldecode($returnParam),
+        );
+
+    }
+
+    /**
+     * パスワード変更
+     *
+     * @Route("/password/{id}", name="systemuser_password")
+     * @Method({"GET", "POST"})
+     * @Template()
+     */
+    public function passwordAction($id)
+    {
+        $request = $this->getRequest();
+        $returnParam = $request->get('ret');
+
+        $formModel = new TBSystemUser();
+        $formType = new TBSystemUserType();
+
+        /** @var \Arte\PCMS\BizlogicBundle\Lib\SystemUserManager $systemUserManager */
+        $systemUserManager = $this->get('Arte.PCMS.Lib.SystemUserManager');
+        $tbSystemUser = $systemUserManager->getTbSystemUser($id);
+
+        $formBuilder = $this->createTBSystemUserForm($formType, $formModel, array('editform'));
+        /* @var $form \Symfony\Component\Form\Form */
+        $form = $formBuilder->setAction($this->generateUrl($request->get('_route'), array('id' => $id)))
+            ->setMethod('POST')
+            ->getForm();
+        $form->get('ret')->setData($returnParam);
+
+        if($request->isMethod('POST'))
+        {
+            $form->submit($request);
+            $returnParam = $form->get('ret')->getData();
+
+            if($form->get('Submit')->isClicked())
+            {
+                if($form->isValid())
+                {
+
+                    //編集実行
+                    $systemUserManager->updatePassword($id, $formModel->getFormPassword());
+
+                    return $this->redirect($this->generateUrl('systemuser_message', array('type' => 4, 'id' => $id, 'ret' => $returnParam)));
+
+                }
+            }else
+            {
+                //ドロップダウンなどのポストバック
+                $formBuilder = $this->createTBSystemUserForm($formType, $formModel, false);
+                /* @var $form \Symfony\Component\Form\Form */
+                $form = $formBuilder->setAction($this->generateUrl($request->get('_route'), array('id' => $id)))
+                    ->setMethod('POST')
+                    ->getForm();
+                $form->submit($request);
+            }
+        }
+
+        return array(
+            'title' => 'パスワード　変更',
+            'type' => 'password_edit',
+            'mode' => "input",
+            'validate' => false,
+            'entity' => $tbSystemUser,
+            'form' => $form->createView(),
+            'returnUrlParam' => urldecode($returnParam),
+            'ret' => $returnParam
         );
     }
 
+    /**
+     * メッセージ表示
+     *
+     * @Route("/message/{type}", name="systemuser_message")
+     * @Method({"GET"})
+     * @Template()
+     */
+    public function messageAction($type)
+    {
+        $request = $this->getRequest();
+
+        switch($type){
+            case 1://新規登録
+                $id = $request->get('id');
+
+                return array(
+                    'title' => 'ユーザー　登録完了',
+                    'type' => 'systemuser_new',
+                    'message' => 'ユーザーの登録が完了しました。',
+                    'id' => $id,
+                );
+                break;
+            case 2://編集
+                $id = $request->get('id');
+
+                return array(
+                    'title' => 'ユーザー　編集完了',
+                    'type' => 'systemuser_edit',
+                    'message' => 'ユーザーの編集が完了しました。',
+                    'id' => $id,
+                );
+                break;
+            case 3://削除
+                $returnUrlQueryString = urldecode($request->get('ret'));
+                return array(
+                    'title' => 'ユーザー　削除完了',
+                    'type' => 'systemuser_delete',
+                    'message' => 'ユーザーの削除が完了しました。',
+                    'returnUrlParam' => $returnUrlQueryString,
+                );
+                break;
+            case 4://パスワード変更
+                $id = $request->get('id');
+
+                return array(
+                    'title' => 'パスワード変更　完了',
+                    'type' => 'password_edit',
+                    'message' => 'パスワードを変更しました。',
+                    'id' => $id,
+                );
+                break;
+        }
+    }
 
 }

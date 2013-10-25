@@ -4,17 +4,41 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <!--
-    <parameters>
-        <parameter key="arte_pcms_bizlogic.example.class">Arte\PCMS\BizlogicBundle\Example</parameter>
-    </parameters>
-
     <services>
-        <service id="arte_pcms_bizlogic.example" class="%arte_pcms_bizlogic.example.class%">
-            <argument type="service" id="service_id" />
-            <argument>plain_value</argument>
-            <argument>%parameter_name%</argument>
+        <service id="Arte.PCMS.Lib.SystemUserManager" class="Arte\PCMS\BizlogicBundle\Lib\SystemUserManager">
+            <argument type="service" id="doctrine.orm.default_entity_manager" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="security.encoder_factory" />
         </service>
-    </services>
-    -->
+        <service id="Arte.PCMS.Validator.ExistsUsernameValidator" class="Arte\PCMS\BizlogicBundle\Validator\Constraints\ExistsUsernameValidator">
+            <argument type="service" id="Arte.PCMS.Lib.SystemUserManager" />
+            <tag name="validator.constraint_validator" alias="ExistsUsernameValidator" />
+        </service>
+        <service id="app_core.listener.login" class="Arte\PCMS\BizlogicBundle\Lib\SecurityListener">
+            <tag name="kernel.event_listener" event="security.interactive_login" method="onLogin"/>
+            <argument type="service" id="security.context"/>
+            <argument type="service" id="Arte.PCMS.Lib.SystemUserManager" />
+        </service>
+        <!--
+        <service id="Arte.PCMS.Validator.ExistsUsernameValidator" class="Arte\PCMS\BizlogicBundle\Validator\Constraints\ExistsUsernameValidator">
+            <argument type="service" id="doctrine.orm.default_entity_manager" />
+            <argument type="service" id="validator" />
+            <tag name="validator.constraint_validator" alias="ExistsUsernameValidator" />
+        </service>
+        -->
+</services>
+
+<!--
+<parameters>
+    <parameter key="arte_pcms_bizlogic.example.class">Arte\PCMS\BizlogicBundle\Example</parameter>
+</parameters>
+
+<services>
+    <service id="arte_pcms_bizlogic.example" class="%arte_pcms_bizlogic.example.class%">
+        <argument type="service" id="service_id" />
+        <argument>plain_value</argument>
+        <argument>%parameter_name%</argument>
+    </service>
+</services>
+-->
 </container>

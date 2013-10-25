@@ -1,0 +1,178 @@
+{% extends 'ArtePCMSAdminBundle::layout.html.twig' %}
+
+{% block body -%}
+    <header>
+        <h1>案件詳細</h1>
+    </header>
+    <section class="section">
+
+        <div class="functionListArea" style="margin: 10px 0;">
+            <ul class="functionList clearfix">
+                <li class="home"><a href="{{ path('project') }}?{{ returnUrlParam|raw }}">一覧へもどる</a></li>
+                {% if SystemRoleAdmin == true or ProjectRole == 1 %}
+                <li class="home"><a href="{{ path('project_edit', { 'id': project.id }) }}?ret={{ app.request.get('ret')|raw }}">案件編集</a></li>
+                <li class="home"><a href="{{ path('project_worker_edit', { 'id': project.id }) }}">担当者編集</a></li>
+                <li class="home"><a href="{{ path('project_delete', { 'id': project.id }) }}?ret={{ app.request.get('ret')|raw }}">削除</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <h1 class="caption"><span id="selectFolderName">案件詳細</span></h1>
+        <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
+
+            <tr>
+                <th scope="row">案件名</th>
+                <td colspan="3">{{ project.Name }}</td>
+            </tr>
+            <tr>
+                <th scope="row">顧客名</th>
+                <td>{{ project.Customer is null ? "" : project.Customer.Name }}</td>
+                <th scope="row">見積工数</th>
+                <td>{{ project.ProjectTotalCost/60 }}h({{ (project.ProjectTotalCost/60/8)|number_format(1) }}人日)</td>
+            </tr>
+            <tr>
+                <th scope="row">期間</th>
+                <td>
+                    {% if project.PeriodStart %}{{ project.PeriodStart|date('Y年m月d日') }}{% endif %}
+                    ～
+                    {% if project.PeriodEnd %}{{ project.PeriodEnd|date('Y年m月d日') }}{% endif %}
+                </td>
+                <th scope="row">実工数</th>
+                <td>{{ project.ProductionTotalCost/60 }}h({{ (project.ProductionTotalCost/60/8)|number_format(1) }}人日)</td>
+            </tr>
+            <tr>
+                <th scope="row">管理者</th>
+                <td>{{ project.Manager is null ? "" : project.Manager.Name }}</td>
+                <th scope="row">残工数</th>
+                <td {% if project.ProjectTotalCost/60 - project.ProductionTotalCost/60 < 0 %}style="color: #ff0000"{% endif %}>
+                    {{ project.ProjectTotalCost/60 - project.ProductionTotalCost/60 }}h({{ ((project.ProjectTotalCost/60 - project.ProductionTotalCost/60)/8)|number_format(1) }}人日)
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">状態</th>
+                <td>
+                {% if project.Status == 1 %}
+                    仕掛り
+                {% elseif project.Status == 2 %}
+                    受注
+                {% elseif project.Status == 3 %}
+                    終了
+                {% endif %}
+                </td>
+                <th scope="row">工数使用率</th>
+                <td {% if project.ProductionTotalCost != 0 and ((project.ProductionTotalCost/project.ProjectTotalCost)*100) > 100 %}style="color: #ff0000"{% endif %}>
+                    {% if project.ProductionTotalCost != 0 %}
+                        {#{{ ((project.ProductionTotalCost/project.ProjectTotalCost)*100)|number_format(1) }}％<br>#}
+                        {{ '%.1f'|format((project.ProductionTotalCost/project.ProjectTotalCost)*100) }}％
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">見積ファイルパス</th>
+                <td colspan="3">{{ project.EstimateFilePath }}</td>
+            </tr>
+            <tr>
+                <th scope="row">スケジュールファイルパス</th>
+                <td colspan="3">{{ project.ScheduleFilePath }}</td>
+            </tr>
+        </table>
+
+        <h1 class="caption"><span id="selectFolderName">担当者一覧</span></h1>
+        <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
+            <tr>
+                <th scope="row" style="border-right: 1px solid #CCCCCC;">管理者権限</th>
+                <th scope="row" style="border-right: 1px solid #CCCCCC;">一般権限</th>
+                <th scope="row">表示のみ権限</th>
+            </tr>
+            <tr>
+                <td  style="border-right: 1px solid #CCCCCC;">
+                    {% for value in users %}
+                        {% if value.RoleNo == 1 %}
+                            {{ value.TBSystemUserSystemUserId.DisplayName }}<br>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td  style="border-right: 1px solid #CCCCCC;">
+                    {% for value in users %}
+                        {% if value.RoleNo == 2 %}
+                            {{ value.TBSystemUserSystemUserId.DisplayName }}<br>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for value in users %}
+                        {% if value.RoleNo == 3 %}
+                            {{ value.TBSystemUserSystemUserId.DisplayName }}<br>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+
+
+        <h1 class="caption"><span id="selectFolderName">項目一覧</span></h1>
+        <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
+            <tr>
+                <th scope="row">項目</th>
+                <th scope="row">見積工数</th>
+                <th scope="row">実工数</th>
+                <th scope="row">残工数</th>
+                <th scope="row">工数使用率</th>
+            </tr>
+            {% for cost in project.costs %}
+
+                <tr>
+                    <th scope="row">{{ cost.Name }}</th>
+                    <td>{{ cost.Cost/60 }}h({{ (cost.Cost/60/8)|number_format(1) }}人日)</td>
+                    <td>{{ cost.nowCost/60 }}h({{ (cost.nowCost/60/8)|number_format(1) }}人日)</td>
+                    {#<td>{{ cost.Cost/60 - cost.nowCost/60 }}</td>#}
+                    <td {% if (cost.Cost/60 - cost.nowCost/60) < 0 %}style="color: #ff0000"{% endif %}>{{ cost.Cost/60 - cost.nowCost/60 }}h({{ ((cost.Cost/60 - cost.nowCost/60)/8)|number_format(1) }}人日)</td>
+                    <td {% if cost.Cost != 0 and ((cost.nowCost/cost.Cost)*100) > 100 %}style="color: #ff0000"{% endif %}>
+                        {% if cost.Cost != 0 %}
+                            {{ '%.1f'|format((cost.nowCost/cost.Cost)*100) }}％
+                        {% endif %}
+                    </td>
+                </tr>
+
+                {{ _self.sub_forms(cost.childCosts, 1) }}
+
+            {% else %}
+                <tr>
+                    <td colspan="5">無し</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+    </section>
+
+{% endblock %}
+
+{% macro sub_forms(Datas, level) %}
+    {% for Data in Datas %}
+
+        <tr>
+            <th scope="row" style="padding-left: {{ (level*20)+10 }}px;">{{ Data.Name }}</th>
+            <td>{{ Data.Cost/60 }}h({{ (Data.Cost/60/8)|number_format(1) }}人日)</td>
+            <td>{{ Data.nowCost/60 }}h({{ (Data.nowCost/60/8)|number_format(1) }}人日)</td>
+            <td {% if (Data.Cost/60 - Data.nowCost/60) < 0 %}style="color: #ff0000"{% endif %}>{{ Data.Cost/60 - Data.nowCost/60 }}h({{ ((Data.Cost/60 - Data.nowCost/60)/8)|number_format(1) }}人日)</td>
+
+            <td {% if Data.Cost != 0 and ((Data.nowCost/Data.Cost)*100) > 100 %}style="color: #ff0000"{% endif %}>
+                {% if Data.Cost != 0 %}
+                    {{ '%.1f'|format((Data.nowCost/Data.Cost)*100) }}％
+                {% endif %}
+            </td>
+{#
+            <td>
+                {% if Data.Cost != 0 %}
+                    {{ '%.1f'|format((Data.nowCost/Data.Cost)*100) }}％
+                {% endif %}
+            </td>
+#}
+        </tr>
+
+        {% if Data.childCosts|length != 0 %}
+            {{ _self.sub_forms(Data.childCosts, level+1) }}
+        {% endif %}
+
+    {% endfor %}
+{% endmacro %}

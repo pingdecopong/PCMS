@@ -1,0 +1,142 @@
+{% extends 'ArtePCMSPublicBundle::layout.html.twig' %}
+{% form_theme form 'pingdecopongFormFreezeBundle:Form:form_layout.html.twig' %}
+
+{% block body -%}
+    <header>
+        <h1>{{ title }}</h1>
+    </header>
+    <section class="section">
+        <h1 class="caption">
+            <span id="selectFolderName">{{ title }}</span>
+        </h1>
+
+        {% if mode == 'input' %}
+        <div class="functionListArea">
+            <ul class="functionList clearfix">
+                <li class="home"><a href="{{ path('public_cost') }}?{{ returnUrlParam|raw }}">一覧へもどる</a></li>
+            </ul>
+        </div>
+        {% endif %}
+
+        {#<form action="{{ path('cost_new') }}" novalidate method="post" {{ form_enctype(form) }} name="cost_new_form">#}
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+            <div class="error_validation">
+                {{ form_errors(form) }}
+            </div>
+
+            <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
+                <tr>
+                    <th scope="row">{{ form_label(form.TBProductionCost.TBProjectMaster) }}</th>
+                    <td>
+                        <div class="error_validation_inline">
+                            {{ form_errors(form.TBProductionCost.TBProjectMaster) }}
+                        </div>
+                            {{ form_widget(form.TBProductionCost.TBProjectMaster) }}
+                        <br/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">{{ form_label(form.TBProductionCost.TBProjectCost) }}</th>
+                    <td>
+                        <div class="error_validation_inline">
+                            {{ form_errors(form.TBProductionCost.TBProjectCost) }}
+                        </div>
+                        {{ form_widget(form.TBProductionCost.TBProjectCost) }}
+                        <br/>
+                    </td>
+                </tr>
+{#
+                <tr>
+                    <th scope="row">{{ form_label(form.TBProductionCost.TBSystemUser) }}</th>
+                    <td>
+                        <div class="error_validation_inline">
+                            {{ form_errors(form.TBProductionCost.TBSystemUser) }}
+                        </div>
+                            {{ form_widget(form.TBProductionCost.TBSystemUser) }}
+                        <br/>
+                    </td>
+                </tr>
+#}
+                {#{% do form.TBProductionCost.TBSystemUser.setRendered %}#}
+                <tr>
+                    <th scope="row">{{ form_label(form.TBProductionCost.WorkDate) }}</th>
+                    <td>
+                        <div class="error_validation_inline">
+                            {{ form_errors(form.TBProductionCost.WorkDate) }}
+                        </div>
+                            {{ form_widget(form.TBProductionCost.WorkDate) }}
+                        <br/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">{{ form_label(form.TBProductionCost.Cost) }}</th>
+                    <td>
+                        <div class="error_validation_inline">
+                            {{ form_errors(form.TBProductionCost.Cost) }}
+                        </div>
+                        {% if mode == 'input' %}
+                            {{ form_widget(form.TBProductionCost.Cost) }}
+                        {% elseif mode =='confirm' %}
+                            {{ form_widget(form.TBProductionCost.Cost) }}({{ form.TBProductionCost.Cost.vars.value/60 }}h)
+                        {% endif %}
+                        <br/>
+                        {% if mode == 'input' %}<span class="input_notes">単位は分で入力して下さい。</span>{% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">{{ form_label(form.TBProductionCost.Note) }}</th>
+                    <td>
+                        <div class="error_validation_inline">
+                            {{ form_errors(form.TBProductionCost.Note) }}
+                        </div>
+                            {{ form_widget(form.TBProductionCost.Note) }}
+                        <br/>
+                    </td>
+                </tr>
+            </table>
+            <div class="submit_box">
+                {% if mode == 'input' %}
+                    {{ form_widget(form.Confirm) }}
+                    {% do form.Return.setRendered %}
+                    {% do form.Submit.setRendered %}
+                {% elseif mode == 'confirm' %}
+                    {% do form.Confirm.setRendered %}
+                    {{ form_widget(form.Return) }}
+                    {{ form_widget(form.Submit) }}
+                {% endif %}
+            </div>
+
+        {{ form_end(form) }}
+
+    </section>
+
+{% endblock %}
+
+{% block javascripts %}
+    {% if mode == 'input' %}
+    <script src="{{ asset('bundles/pingdecopongpdpgenerator/js/jquery/jquery-ui-1.10.3.custom.min.js') }}" ></script>
+    <script src="{{ asset('bundles/pingdecopongpdpgenerator/js/jquery/jquery.ui.datepicker-ja.js') }}" ></script>
+    <link href="{{ asset('bundles/pingdecopongpdpgenerator/css/jqueryui/jquery-ui-1.10.3.custom.min.css') }}" rel="stylesheet" type="text/css">
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function() {
+            $("#{{ form.TBProductionCost.TBProjectMaster.vars.id }}").change(function(){
+                $("#{{ form.TBProductionCost.TBProjectCost.vars.id }}").val("");
+                $('form').submit();
+//                document.cost_new_form.submit();
+            });
+            $( "#{{ form.TBProductionCost.WorkDate.vars.id }}" ).datepicker({
+                showOn: "button",
+                buttonImage: "{{ asset('bundles/pingdecopongpdpgenerator/img/calendar.png') }}",
+                buttonImageOnly: true,
+                dateFormat: 'yy/mm/dd',
+                beforeShow : function() {
+                    $('#ui-datepicker-div').css( 'font-size', '70%' );
+                }
+            });
+        });
+        //]]>
+    </script>
+    {% endif %}
+{% endblock %}

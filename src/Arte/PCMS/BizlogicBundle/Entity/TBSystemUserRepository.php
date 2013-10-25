@@ -24,6 +24,8 @@ class TBSystemUserRepository extends EntityRepository implements UserProviderInt
         $q = $this
             ->createQueryBuilder('u')
             ->where('u.Username = :Username')
+            ->andWhere('u.DeleteFlag = false')
+            ->andWhere('u.Active = true')
             ->setParameter('Username', $username)
             ->getQuery();
 
@@ -54,14 +56,29 @@ class TBSystemUserRepository extends EntityRepository implements UserProviderInt
             );
         }
 
-        $builder = $this->createQueryBuilder('u');
-        $builder ->leftJoin('u.TBDepartmentDepartmentId', 'd')
-            ->select(array('u', 'd'))
+        /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
+        $queryBuilder = $this->createQueryBuilder('u')
+            ->leftjoin('u.TBDepartmentDepartmentId', 'd')
+            ->andWhere('u.DeleteFlag = false')
             ->andWhere('u.id = :id')
-            ->andWhere('u.DeleteFlag = :DeleteFlag')
             ->setParameter('id', $user->getId())
-            ->setParameter('DeleteFlag', false);
-        return $builder->getQuery()->getSingleResult();
+            ->select(array(
+                'u',
+                'd',
+            ))
+        ;
+        return $queryBuilder->getQuery()->getSingleResult();
+
+
+
+//        $builder = $this->createQueryBuilder('u');
+//        $builder ->leftJoin('u.TBDepartmentDepartmentId', 'd')
+//            ->select(array('u', 'd'))
+//            ->andWhere('u.id = :id')
+//            ->andWhere('u.DeleteFlag = :DeleteFlag')
+//            ->setParameter('id', $user->getId())
+//            ->setParameter('DeleteFlag', false);
+//        return $builder->getQuery()->getSingleResult();
 
 //        return $this->find($user->getId());
     }

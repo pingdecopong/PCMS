@@ -1,0 +1,134 @@
+{% extends 'ArtePCMSAdminBundle::layout.html.twig' %}
+
+{% block body -%}
+    <header>
+        <h1>案件削除</h1>
+    </header>
+
+    <section class="section">
+        <h1 class="caption"><span id="selectFolderName">案件編集</span></h1>
+        <div class="functionListArea">
+            <ul class="functionList clearfix">
+                <li class="home"><a href="{{ path('project') }}?{{ returnUrlParam|raw }}">一覧へもどる</a></li>
+            </ul>
+        </div>
+        <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
+
+            <tr>
+                <th scope="row">案件名</th>
+                <td colspan="3">{{ project.Name }}</td>
+            </tr>
+            <tr>
+                <th scope="row">顧客名</th>
+                <td>{{ project.Customer is null ? "" : project.Customer.Name }}</td>
+                <th scope="row">見積工数</th>
+                <td>{{ project.ProjectTotalCost }}h({{ (project.ProjectTotalCost/8)|number_format(1) }}人日)</td>
+            </tr>
+            <tr>
+                <th scope="row">期間</th>
+                <td>
+                    {% if project.PeriodStart %}{{ project.PeriodStart|date('Y年m月d日') }}{% endif %}
+                    ～
+                    {% if project.PeriodEnd %}{{ project.PeriodEnd|date('Y年m月d日') }}{% endif %}
+                </td>
+                <th scope="row">実工数</th>
+                <td>{{ project.ProductionTotalCost }}h({{ (project.ProductionTotalCost/8)|number_format(1) }}人日)</td>
+            </tr>
+            <tr>
+                <th scope="row">管理者</th>
+                <td>{{ project.Manager is null ? "" : project.Manager.Name }}</td>
+                <th scope="row">残工数</th>
+                <td>{{ project.ProjectTotalCost - project.ProductionTotalCost }}h({{ ((project.ProjectTotalCost - project.ProductionTotalCost)/8)|number_format(1) }}人日)</td>
+            </tr>
+            <tr>
+                <th scope="row">状態</th>
+                <td>
+                    {% if project.Status == 1 %}
+                        仕掛り
+                    {% elseif project.Status == 2 %}
+                        受注
+                    {% elseif project.Status == 3 %}
+                        終了
+                    {% endif %}
+                </td>
+                <th scope="row">工数使用率</th>
+                <td>
+                    {% if project.ProductionTotalCost != 0 %}
+                        {{ ((project.ProductionTotalCost/project.ProjectTotalCost)*100)|number_format(1) }}％
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">見積ファイルパス</th>
+                <td colspan="3">{{ project.EstimateFilePath }}</td>
+            </tr>
+            <tr>
+                <th scope="row">スケジュールファイルパス</th>
+                <td colspan="3">{{ project.ScheduleFilePath }}</td>
+            </tr>
+        </table>
+
+        <h1 class="caption"><span id="selectFolderName">項目一覧</span></h1>
+        <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
+            <tr>
+                <th scope="row">項目</th>
+                <th scope="row">見積工数</th>
+                <th scope="row">実工数</th>
+                <th scope="row">残工数</th>
+                <th scope="row">工数使用率</th>
+            </tr>
+            {% for cost in project.costs %}
+
+                <tr>
+                    <th scope="row">{{ cost.Name }}</th>
+                    <td>{{ cost.Cost }}</td>
+                    <td>{{ cost.nowCost }}</td>
+                    <td>{{ cost.Cost - cost.nowCost }}</td>
+                    <td>
+                        {% if cost.Cost != 0 %}
+                            {{ (cost.nowCost/cost.Cost)*100|number_format(1) }}％
+                        {% endif %}
+                    </td>
+                </tr>
+
+                {{ _self.sub_forms(cost.childCosts, 1) }}
+
+            {% else %}
+                <tr>
+                    <td colspan="5">無し</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <form action="{{ path('project_delete', { 'id': project.id }) }}" novalidate method="post" {{ form_enctype(form) }} name="project_delete_form">
+
+            <div class="submit_box">
+                <input type="submit" value="削除" style="width:100px;"/>
+            </div>
+
+            {{ form_end(form) }}
+    </section>
+
+{% endblock %}
+
+{% macro sub_forms(Datas, level) %}
+    {% for Data in Datas %}
+
+        <tr>
+            <th scope="row" style="padding-left: {{ (level*20)+10 }}px;">{{ Data.Name }}</th>
+            <td>{{ Data.Cost }}</td>
+            <td>{{ Data.nowCost }}</td>
+            <td>{{ Data.Cost - Data.nowCost }}</td>
+            <td>
+                {% if Data.Cost != 0 %}
+                    {{ (Data.nowCost/Data.Cost)*100|number_format(1) }}％
+                {% endif %}
+            </td>
+        </tr>
+
+        {% if Data.childCosts|length != 0 %}
+            {{ _self.sub_forms(Data.childCosts, level+1) }}
+        {% endif %}
+
+    {% endfor %}
+{% endmacro %}

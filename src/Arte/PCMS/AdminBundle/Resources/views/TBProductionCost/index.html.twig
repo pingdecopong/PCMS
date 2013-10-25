@@ -1,0 +1,277 @@
+{% extends 'ArtePCMSAdminBundle::layout.html.twig' %}
+
+
+{% block stylesheets %}
+    <style type="text/css">
+        .calender-box {
+            white-space: nowrap;
+        }
+    </style>
+{% endblock %}
+
+{% block body -%}
+<form action="{{ path('cost') }}" novalidate method="post" {{ form_enctype(form) }} name="cost_list">
+    <header>
+        <h1>作業工数一覧</h1>
+    </header>
+    <section class="section">
+        <h1 class="caption">検索</h1>
+
+
+        {{ pdp_pager_hidden_render(pager) }}
+
+        <div class="search_box">
+
+            <div class="error_validation">
+                {{ form_errors(form) }}
+            </div>
+
+            <table cellspacing="0">
+                <tbody>
+                    <tr>
+                        <th>{{ form_label(form.search.TBProjectMaster) }}</th>
+                        <td>
+                            <div class="error_validation_inline">
+                                {{ form_errors(form.search.TBProjectMaster) }}
+                            </div>
+                            {{ form_widget(form.search.TBProjectMaster, {'attr': {'style': 'width: 300px;'}}) }}
+                        </td>
+                        <th>{{ form_label(form.search.Status) }}</th>
+                        <td>
+                            <div class="error_validation_inline">
+                                {{ form_errors(form.search.Status) }}
+                            </div>
+                            {{ form_widget(form.search.Status) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>作業日</th>
+                        <td>
+                            <div class="error_validation_inline">
+                                {{ form_errors(form.search.PeriodStart) }}
+                            </div>
+                            <div class="calender-box">
+                                {{ form_widget(form.search.PeriodStart, {'attr': {'style': 'width: 150px;'}}) }}
+                            ～
+                            </div>
+                        </td>
+                        <td colspan="2">
+                            <div class="error_validation_inline">
+                                {{ form_errors(form.search.PeriodEnd) }}
+                            </div>
+                            <div class="calender-box">
+                                {{ form_widget(form.search.PeriodEnd, {'attr': {'style': 'width: 150px;'}}) }}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ form_label(form.search.TBSystemUser) }}</th>
+                        <td colspan="3">
+                            <div class="error_validation_inline">
+                                {{ form_errors(form.search.TBSystemUser) }}
+                            </div>
+                            {{ form_widget(form.search.TBSystemUser, {'attr': {'style': 'width: 100px;'}}) }}
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4">
+                            <input class="button_100" type="submit" value="検索">
+                            <a href="{{ path('cost') }}">条件リセット</a>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <h1 class="caption"><span id="selectFolderName">一覧</span></h1>
+
+        <div class="functionListArea">
+            <ul class="functionList clearfix">
+                <li class="home">
+                    <a href="{{ path('cost_new', {ret: returnUrlParam}) }}">
+                        新規作成
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <table class="gridTable" style="width:100%;">
+            <thead>
+                <tr>
+
+                    {% for header in pager.PagerColumn.Rows %}
+                        <th class="mainTh sort_cell">
+                            {% if header.Enable %}
+                                {% if header.sortSelected %}
+                                    {% if header.SortType == 'asc' %}
+                                        <a class="sort_asc" href="{{ path(pager.LinkRouteName, header.query)|raw }}" >
+                                            {{ header.label }}
+                                        </a>
+                                    {% elseif header.SortType == 'desc' %}
+                                        <a class="sort_desc" href="{{ path(pager.LinkRouteName, header.query)|raw }}" >
+                                            {{ header.label }}
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ path(pager.LinkRouteName, header.query)|raw }}" >
+                                        {{ header.label }}
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                {{ header.label }}
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+
+                    <th class="mainTh function_icon_cell"></th>
+                    <th class="mainTh function_icon_cell"></th>
+                    <th class="mainTh function_icon_cell"></th>
+                </tr>
+            </thead>
+            <tbody class="evenRows">
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.TBProjectCostMasterProjectCostMasterId.TBProjectMasterProjectMasterId.Name }}</td>
+                    <td>{{ entity.TBProjectCostMasterProjectCostMasterId.Name }}</td>
+                    {% if entity.TBProjectCostMasterProjectCostMasterId.TBProjectMasterProjectMasterId.Status == 1 %}
+                        <td>仕掛かり</td>
+                    {% elseif entity.TBProjectCostMasterProjectCostMasterId.TBProjectMasterProjectMasterId.Status == 2 %}
+                        <td>受注</td>
+                    {% elseif entity.TBProjectCostMasterProjectCostMasterId.TBProjectMasterProjectMasterId.Status == 3 %}
+                        <td>終了</td>
+                    {% endif %}
+
+
+                    <td>{% if entity.WorkDate %}{{ entity.WorkDate|date('Y-m-d') }}{% endif %}</td>
+                    <td>{{ entity.TBSystemUserSystemUserId.DisplayName }}</td>
+                    <td>{{ (entity.Cost/60)|number_format(2) }}h</td>
+{#
+                    <td><a href="{{ path('cost_show', { 'id': entity.id, ret: returnUrlParam }) }}">{{ entity.id }}</a></td>
+                    <td>{{ entity.ProjectCostMasterId }}</td>
+                    <td>{{ entity.SystemUserId }}</td>
+                    <td>{% if entity.WorkDate %}{{ entity.WorkDate|date('Y-m-d') }}{% endif %}</td>
+                    <td>{{ entity.Cost }}</td>
+                    <td>{{ entity.Note }}</td>
+                    <td>{{ entity.DeleteFlag }}</td>
+#}
+                    <td class="function_icon_cell">
+                        <a href="{{ path('cost_show', { 'id': entity.id, ret: returnUrlParam }) }}"><img src="{{ asset('bundles/pingdecopongpdpgenerator/img/table.png') }}" width="16" height="16"></a>
+                    </td>
+                    <td class="function_icon_cell">
+                        <a href="{{ path('cost_edit', { 'id': entity.id, ret: returnUrlParam }) }}"><img src="{{ asset('bundles/pingdecopongpdpgenerator/img/ico_pencil.png') }}" width="16" height="16"></a>
+                    </td>
+                    <td class="function_icon_cell">
+                        <a href="{{ path('cost_delete', { 'id': entity.id, ret: returnUrlParam }) }}"><img src="{{ asset('bundles/pingdecopongpdpgenerator/img/asico_del_bl.png') }}" width="16" height="16" alt="削除"></a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr >
+                    <td colspan="9">該当の作業工数がありません。</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagerArea clearfix">
+            <div class="pagerAreaLeft">
+                    <ul class="pager">
+
+                        {% if pager.PagerSelector.PageNo.PrevPageStatus %}
+                            <li>
+                                <a href="{{ path(pager.LinkRouteName, pager.PagerSelector.PageNo.PrevPageQuery)|raw }}" >前のページ</a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="#" >前のページ</a>
+                            </li>
+                        {% endif %}
+
+                        {% for page in pager.PagerSelector.PageNo.Rows %}
+
+                            {% if page.select %}
+                                <li class="nowPage">
+                                    <a href="#">{{ page.label }}</a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a href="{{ path(pager.LinkRouteName, page.query)|raw }}" >{{ page.label }}</a>
+                                </li>
+                            {% endif %}
+
+                        {% endfor %}
+
+                        {% if pager.PagerSelector.PageNo.NextPageStatus %}
+                            <li>
+                                <a href="{{ path(pager.LinkRouteName, pager.PagerSelector.PageNo.NextPageQuery)|raw }}" >次のページ</a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="#" >次のページ</a>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                    <label>表示件数
+
+                        {{ form_widget(pager.PagerFormView.s.pageSize) }}
+                        <script type="text/javascript">
+                            //<![CDATA[
+                            $('#{{ pager.PagerFormView.s.pageSize.vars.id }}').change(function(){
+                                switch($(this).children(':selected').val()){
+
+                                    {% for key, param_list in pager.PageSizeParamList %}
+
+                                    case '{{ key }}':
+                                        location.href = "{{ path(pager.LinkRouteName, param_list)|raw }}";
+                                        break;
+
+                                    {% endfor %}
+
+                                }
+                            });
+                            //]]>
+                        </script>
+                    </label>
+            </div>
+            <div class="pagerAreaRight">全 {{ pager.AllCount }} 件</div>
+        </div>
+
+
+
+
+    </section>
+    {{ form_end(form) }}
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/pingdecopongpdpgenerator/js/jquery/jquery-ui-1.10.3.custom.min.js') }}" ></script>
+    <script src="{{ asset('bundles/pingdecopongpdpgenerator/js/jquery/jquery.ui.datepicker-ja.js') }}" ></script>
+    <link href="{{ asset('bundles/pingdecopongpdpgenerator/css/jqueryui/jquery-ui-1.10.3.custom.min.css') }}" rel="stylesheet" type="text/css">
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function() {
+            $( "#{{ form.search.PeriodStart.vars.id }}" ).datepicker({
+                showOn: "button",
+                buttonImage: "{{ asset('bundles/pingdecopongpdpgenerator/img/calendar.png') }}",
+                buttonImageOnly: true,
+                dateFormat: 'yy/mm/dd',
+                beforeShow : function() {
+                    $('#ui-datepicker-div').css( 'font-size', '70%' );
+                }
+            });
+
+            $( "#{{ form.search.PeriodEnd.vars.id }}" ).datepicker({
+                showOn: "button",
+                buttonImage: "{{ asset('bundles/pingdecopongpdpgenerator/img/calendar.png') }}",
+                buttonImageOnly: true,
+                dateFormat: 'yy/mm/dd',
+                beforeShow : function() {
+                    $('#ui-datepicker-div').css( 'font-size', '70%' );
+                }
+            });
+        });
+        //]]>
+    </script>
+{% endblock %}

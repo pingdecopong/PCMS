@@ -15,7 +15,7 @@ class TBSystemUserSearchType extends AbstractType
             ->add('Username', 'text', array(
                 'label'     => 'ログインID',
                 'required'  => false,
-                'max_length' => 50,
+                'max_length' => 40,
 //                'attr'      => array(
 //                    'style' => "width: 33%;",
 //                ),
@@ -112,7 +112,8 @@ class TBSystemUserSearchType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Arte\PCMS\AdminBundle\Form\TBSystemUserSearchModel'
+//            'data_class' => 'Arte\PCMS\AdminBundle\Form\TBSystemUserSearchModel',
+            'data_class' => 'Arte\PCMS\BizlogicBundle\Lib\TBSystemUserSearchModel',
         ));
     }
 

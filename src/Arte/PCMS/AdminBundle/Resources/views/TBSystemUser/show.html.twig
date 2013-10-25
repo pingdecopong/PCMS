@@ -1,23 +1,21 @@
-{% extends 'ArtePCMSAdminBundle:TBSystemUser:layout.html.twig' %}
+{% extends 'ArtePCMSAdminBundle::layout.html.twig' %}
+
 
 {% block body -%}
     <header>
-        <h1>TBSystemUser詳細</h1>
+        <h1>ユーザー詳細</h1>
     </header>
     <section class="section">
-        <h1 class="caption"><span id="selectFolderName">TBSystemUser詳細</span></h1>
+        <h1 class="caption"><span id="selectFolderName">詳細情報</span></h1>
         <div class="functionListArea">
             <ul class="functionList clearfix">
                 <li class="home"><a href="{{ path('systemuser') }}?{{ returnUrlParam|raw }}">一覧へもどる</a></li>
-                <li class="home"><a href="{{ path('systemuser_edit', { 'id': entity.id }) }}?ret={{ app.request.get('ret')|raw }}">編集</a></li>
-                <li class="home"><a href="{{ path('systemuser_delete', { 'id': entity.id }) }}?ret={{ app.request.get('ret')|raw }}">削除</a></li>
+                <li class="home"><a href="{{ path('systemuser_edit', { 'id': entity.id }) }}?ret={{ app.request.get('ret')|url_encode() }}">編集</a></li>
+                <li class="home"><a href="{{ path('systemuser_password', { 'id': entity.id }) }}?ret={{ app.request.get('ret')|url_encode() }}">パスワード変更</a></li>
+                <li class="home"><a href="{{ path('systemuser_delete', { 'id': entity.id }) }}?ret={{ app.request.get('ret')|url_encode() }}">削除</a></li>
             </ul>
         </div>
         <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
-                <tr>
-                    <th scope="row">Id</th>
-                        <td>{{ entity.id }}</td>
-                </tr>
                 <tr>
                     <th scope="row">ログインID</th>
                         <td>{{ entity.Username }}</td>
@@ -40,7 +38,13 @@
                 </tr>
                 <tr>
                     <th scope="row">権限</th>
-                        <td>{{ entity.SystemRoleId }}</td>
+                        <td>
+                            {% if entity.SystemRoleId == 1 %}
+                                管理者
+                            {% elseif entity.SystemRoleId == 2 %}
+                                一般
+                            {% endif %}
+                        </td>
                 </tr>
                 <tr>
                     <th scope="row">メールアドレス</th>

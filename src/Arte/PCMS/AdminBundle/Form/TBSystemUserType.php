@@ -12,17 +12,46 @@ class TBSystemUserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('LoginId', 'text', array(
+            ->add('Username', 'text', array(
                 'label'     => 'ログインID',
                 'required'  => false,
             ))
-            ->add('Active', 'checkbox', array(
-                'label'     => '有効状態',
+//            ->add('FormPassword', 'repeated', array(
+//                'type' => 'password',
+//                'label'     => 'パスワード',
+//                'required'  => false,
+//                'invalid_message' => '同じではありません。',
+//                'first_options'  => array('label' => 'パスワード'),
+//                'second_options' => array('label' => 'Repeat パスワード確認'),
+//            ))
+            ->add('FormPassword', 'password', array(
+                'label'     => 'パスワード',
                 'required'  => false,
             ))
-            ->add('SystemRoleId', 'text', array(
-                'label'     => '権限',
+            ->add('FormPasswordConfirm', 'password', array(
+                'label'     => 'パスワード確認',
                 'required'  => false,
+            ))
+            ->add('Active', 'choice', array(
+                'label'     => '有効状態',
+                'required'  => true,
+                'choices'   => array(
+                    0   => '無効',
+                    1 => '有効',
+                ),
+                'expanded' => true,
+                'multiple'  => false,
+            ))
+            ->add('SystemRoleId', 'choice', array(
+                'label'     => '権限',
+                'required'  => true,
+//                'empty_value' => '指定無し',
+                'choices'   => array(
+                    '1'   => '管理者',
+                    '2' => '一般',
+                ),
+                'expanded' => true,
+                'multiple'  => false,
             ))
             ->add('DisplayName', 'text', array(
                 'label'     => 'ユーザー名',

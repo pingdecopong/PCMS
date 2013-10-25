@@ -1,35 +1,69 @@
-{% extends 'ArtePCMSAdminBundle:TBSystemUser:layout.html.twig' %}
+{% extends 'ArtePCMSAdminBundle::layout.html.twig' %}
+
 {% form_theme form 'pingdecopongFormFreezeBundle:Form:form_layout.html.twig' %}
 
 {% block body -%}
     <header>
-        <h1>TBSystemUser 新規作成</h1>
+        <h1>{{ title }}</h1>
     </header>
     <section class="section">
-        <h1 class="caption"><span id="selectFolderName">TBSystemUser 新規作成</span></h1>
-        <div class="functionListArea">
-            <ul class="functionList clearfix">
-                <li class="home"><a href="{{ path('systemuser') }}?{{ returnUrlParam|raw }}">一覧へもどる</a></li>
-            </ul>
-        </div>
-        <form action="{{ path('systemuser_new') }}" novalidate method="post" {{ form_enctype(form) }} name="systemuser_new_form">
+        <h1 class="caption">
+            <span id="selectFolderName">{{ title }}</span>
+        </h1>
 
-            <div class="error_validation">
+        {% if mode == 'input' %}
+            <div class="functionListArea">
+                <ul class="functionList clearfix">
+                    <li class="home"><a href="{{ path('systemuser') }}?{{ returnUrlParam|raw }}">一覧へもどる</a></li>
+                </ul>
+            </div>
+        {% endif %}
+
+        {#<form action="{{ path('systemuser_new') }}" novalidate method="post" {{ form_enctype(form) }} name="systemuser_new_form">#}
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+        <div class="error_validation">
                 {{ form_errors(form) }}
             </div>
 
             <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
                 <tr>
-                    <th scope="row">{{ form_label(form.TBSystemUser.LoginId) }}</th>
+                    <th scope="row">{{ form_label(form.TBSystemUser.Username) }}</th>
                     <td>
                         <div class="error_validation_inline">
-                            {{ form_errors(form.TBSystemUser.LoginId) }}
+                            {{ form_errors(form.TBSystemUser.Username) }}
                         </div>
-                            {{ form_widget(form.TBSystemUser.LoginId) }}
+                            {{ form_widget(form.TBSystemUser.Username) }}
                         <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.LoginId.vars.name }}</span>
                     </td>
                 </tr>
+
+                {% if type == 'new' %}
+                <tr>
+                    <th scope="row">{{ form_label(form.TBSystemUser.FormPassword) }}</th>
+                    <td>
+                        <div class="error_validation_inline">
+                            {{ form_errors(form.TBSystemUser.FormPassword) }}
+                        </div>
+                        {{ form_widget(form.TBSystemUser.FormPassword) }}
+                        <br/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">{{ form_label(form.TBSystemUser.FormPasswordConfirm) }}</th>
+                    <td>
+                        <div class="error_validation_inline">
+                            {{ form_errors(form.TBSystemUser.FormPasswordConfirm) }}
+                        </div>
+                        {{ form_widget(form.TBSystemUser.FormPasswordConfirm) }}
+                        <br/>
+                    </td>
+                </tr>
+                {% else %}
+                    {% do form.TBSystemUser.setRendered %}
+                    {% do form.TBSystemUser.setRendered %}
+                {% endif %}
+
                 <tr>
                     <th scope="row">{{ form_label(form.TBSystemUser.DisplayName) }}</th>
                     <td>
@@ -38,7 +72,6 @@
                         </div>
                         {{ form_widget(form.TBSystemUser.DisplayName) }}
                         <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.DisplayName.vars.name }}</span>
                     </td>
                 </tr>
                 <tr>
@@ -49,7 +82,6 @@
                         </div>
                         {{ form_widget(form.TBSystemUser.DisplayNameKana) }}
                         <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.DisplayNameKana.vars.name }}</span>
                     </td>
                 </tr>
                 <tr>
@@ -60,7 +92,6 @@
                         </div>
                         {{ form_widget(form.TBSystemUser.NickName) }}
                         <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.NickName.vars.name }}</span>
                     </td>
                 </tr>
 
@@ -72,7 +103,6 @@
                         </div>
                         {{ form_widget(form.TBSystemUser.TBDepartmentDepartmentId) }}
                         <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.TBDepartmentDepartmentId.vars.name }}</span>
                     </td>
                 </tr>
 
@@ -84,7 +114,6 @@
                         </div>
                         {{ form_widget(form.TBSystemUser.MailAddress) }}
                         <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.MailAddress.vars.name }}</span>
                     </td>
                 </tr>
 
@@ -96,7 +125,6 @@
                         </div>
                             {{ form_widget(form.TBSystemUser.SystemRoleId) }}
                         <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.SystemRoleId.vars.name }}</span>
                     </td>
                 </tr>
 
@@ -108,26 +136,28 @@
                         </div>
                         {{ form_widget(form.TBSystemUser.Active) }}
                         <br/>
-                        <span class="input_notes">{{ form.TBSystemUser.Active.vars.name }}</span>
                     </td>
                 </tr>
 
 
 
             </table>
+
             <div class="submit_box">
                 {% if mode == 'input' %}
-                <input type="button" onclick="postConfirm()" value="確認" style="width:100px;"/>
+                    {{ form_widget(form.Confirm) }}
+                    {% do form.Return.setRendered %}
+                    {% do form.Submit.setRendered %}
                 {% elseif mode == 'confirm' %}
-                <input type="button" onclick="postBack()" value="戻る"/>
-                <input type="button" onclick="postSubmit()" value="登録" style="width:100px;"/>
+                    {% do form.Confirm.setRendered %}
+                    {{ form_widget(form.Return) }}
+                    {{ form_widget(form.Submit) }}
                 {% endif %}
             </div>
 
-            {{ form_widget(form.subform.buttonAction) }}
-            {{ form_widget(form.subform.returnAddress) }}
+            {{ form_end(form) }}
 
-        {{ form_end(form) }}
+
 
     </section>
 
@@ -136,18 +166,7 @@
 {% block javascripts %}
     <script type="text/javascript">
         //<![CDATA[
-        function postConfirm(){
-            document.systemuser_new_form["{{ form.subform.buttonAction.vars.full_name }}"].value = "confirm";
-            document.systemuser_new_form.submit();
-        }
-        function postSubmit(){
-            document.systemuser_new_form["{{ form.subform.buttonAction.vars.full_name }}"].value = "submit";
-            document.systemuser_new_form.submit();
-        }
-        function postBack(){
-            document.systemuser_new_form["{{ form.subform.buttonAction.vars.full_name }}"].value = "";
-            document.systemuser_new_form.submit();
-        }
+
         //]]>
     </script>
 {% endblock %}

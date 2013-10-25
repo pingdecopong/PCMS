@@ -1,0 +1,48 @@
+{% extends 'ArtePCMSAdminBundle::layout.html.twig' %}
+
+{% block body -%}
+    <header>
+        <h1>作業工数　詳細</h1>
+    </header>
+    <section class="section">
+        <h1 class="caption"><span id="selectFolderName">作業工数　詳細</span></h1>
+        <div class="functionListArea">
+            <ul class="functionList clearfix">
+                <li class="home"><a href="{{ path('cost') }}?{{ returnUrlParam|raw }}">一覧へもどる</a></li>
+                <li class="home"><a href="{{ path('cost_edit', { 'id': entity.id }) }}?ret={{ app.request.get('ret')|raw }}">編集</a></li>
+                <li class="home"><a href="{{ path('cost_delete', { 'id': entity.id }) }}?ret={{ app.request.get('ret')|raw }}">削除</a></li>
+            </ul>
+        </div>
+        <table width="600" border="0" cellpadding="0" cellspacing="0" class="detailTable">
+                <tr>
+                    <th scope="row">案件</th>
+                        <td>{{ ProjectCost.TBProjectMasterProjectMasterId.Name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">作業名</th>
+                        <td>{{ ProjectCost.Name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">作業者</th>
+                        <td>{{ entity.Worker.Name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">作業日</th>
+                    <td>{% if entity.WorkDate %}
+                            {% set weeks = ['日', '月', '火', '水', '木', '金', '土'] %}
+                            {{ entity.WorkDate|date('Y年m月d日') }}（{{ weeks[entity.WorkDate|date('w')] }}）
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">作業工数</th>
+                        <td>{{ entity.Cost }}({{ (entity.Cost/60)|number_format(2) }}h)</td>
+                </tr>
+                <tr>
+                    <th scope="row">メモ</th>
+                        <td>{{ entity.Note }}</td>
+                </tr>
+        </table>
+    </section>
+
+{% endblock %}

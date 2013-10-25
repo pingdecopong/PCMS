@@ -2,16 +2,19 @@
 
 namespace Arte\PCMS\BizlogicBundle\Tests\Lib;
 
+use Arte\PCMS\BizlogicBundle\Entity\TBCustomer;
+use Arte\PCMS\BizlogicBundle\Entity\TBDepartment;
 use Arte\PCMS\BizlogicBundle\Entity\TBProductionCost;
 use Arte\PCMS\BizlogicBundle\Entity\TBProjectCostHierarchyMaster;
 use Arte\PCMS\BizlogicBundle\Entity\TBProjectCostMaster;
 use Arte\PCMS\BizlogicBundle\Entity\TBProjectMaster;
 use Arte\PCMS\BizlogicBundle\Entity\TBProjectUser;
+use Arte\PCMS\BizlogicBundle\Entity\TBSystemUser;
 use Arte\PCMS\BizlogicBundle\Lib\ProjectManager;
 use Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProductionCost;
 use Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProject;
 use Arte\PCMS\BizlogicBundle\Lib\ProjectManagerProjectCost;
-use Arte\PCMS\PublicBundle\Form\TBProjectMasterSearchModel;
+use Arte\PCMS\BizlogicBundle\Lib\TBProjectMasterSearchModel;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -2288,6 +2291,41 @@ class ProjectManagerTest extends WebTestCase {
         $this->assertEquals(0, $checkGroup8Costs->count());
     }
 
+    /**
+     * プロジェクト一覧取得 参加ユーザー指定あり
+     * @test
+     * @group none
+     */
+    function プロジェクト一覧取得_参加ユーザー指定あり()
+    {
+
+        //データ作成
+        $this->deleteAllProjectRawData();
+        for($i=1; $i<=40; $i++)
+        {
+            $this->createTargetRawDataWithCostForList($i);
+        }
+
+        $operateUser = $this->em->getRepository('ArtePCMSBizlogicBundle:TBSystemUser')->find(1);
+        //一覧取得
+        $projects = $this->projectManager->getProjectList(1, 10, null, null, null, $operateUser);
+
+        //確認
+        $this->assertEquals(4, $projects['count']);
+        $this->assertEquals(4, count($projects['result']));
+        $this->assertEquals(array(9, 19, 29, 39), $this->extractIds($projects['result']));
+
+    }
+
+    protected function extractIds($entities)
+    {
+        $ret = array();
+        foreach($entities as $value)
+        {
+            $ret[] = $value->getId();
+        }
+        return $ret;
+    }
 
     /**
      * プロジェクト新規作成　新規作成１
@@ -6072,10 +6110,244 @@ class ProjectManagerTest extends WebTestCase {
 
     }
 
+    /**
+     * 全テーブルTruncate
+     */
+    private function deleteDBData()
+    {
+
+        $connection = $this->em->getConnection();
+        $platform   = $connection->getDatabasePlatform();
+
+        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0;');
+
+        $truncateSql = $platform->getTruncateTableSQL('TBProductionCost');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBProjectCostMaster');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBProjectCostHierarchyMaster');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBProjectUser');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBProjectMaster');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBCustomer');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBDepartment');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBSystemUser');
+        $connection->executeUpdate($truncateSql);
+
+        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1;');
+    }
 
     public static function setUpBeforeClass()
     {
 //        fwrite(STDOUT, __METHOD__ . "\n");
+
+        $localKernel = static::createKernel();
+        $localKernel->boot();
+        $em = $localKernel->getContainer()->get('doctrine.orm.entity_manager');
+//        $validation = $localKernel->getContainer()->get('validator');
+//        $encoder = $localKernel->getContainer()->get('security.encoder_factory');
+
+        //delete
+        $connection = $em->getConnection();
+        $platform   = $connection->getDatabasePlatform();
+
+        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0;');
+
+        $truncateSql = $platform->getTruncateTableSQL('TBProductionCost');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBProjectCostMaster');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBProjectCostHierarchyMaster');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBProjectUser');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBProjectMaster');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBCustomer');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBDepartment');
+        $connection->executeUpdate($truncateSql);
+        $truncateSql = $platform->getTruncateTableSQL('TBSystemUser');
+        $connection->executeUpdate($truncateSql);
+
+        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1;');
+
+        $em->getConnection()->beginTransaction();
+        try {
+
+            //Department
+            $departments = array();
+
+            ///1
+            $tbDepartment = new TBDepartment();
+            $tbDepartment->setName('部署01');
+            $tbDepartment->setSortNo(1);
+            $tbDepartment->setDeleteFlag(false);
+            $em->persist($tbDepartment);
+            $em->flush();
+            $departments[0] = $tbDepartment;
+
+            ///2
+            $tbDepartment = new TBDepartment();
+            $tbDepartment->setName('部署02');
+            $tbDepartment->setSortNo(2);
+            $tbDepartment->setDeleteFlag(true);
+            $em->persist($tbDepartment);
+            $em->flush();
+            $departments[1] = $tbDepartment;
+
+            ///3
+            $tbDepartment = new TBDepartment();
+            $tbDepartment->setName('部署03');
+            $tbDepartment->setSortNo(3);
+            $tbDepartment->setDeleteFlag(false);
+            $em->persist($tbDepartment);
+            $em->flush();
+            $departments[2] = $tbDepartment;
+
+            $createdDateTime = new \DateTime("2012-01-04 0:0:0");
+            for($i=4; $i<=5; $i++)
+            {
+                $tbDepartment = new TBDepartment();
+                $tbDepartment->setName('部署'.sprintf('%02d', $i));
+                $tbDepartment->setSortNo($i);
+                $tbDepartment->setDeleteFlag(false);
+
+                $em->persist($tbDepartment);
+                $em->flush();
+                $departments[] = $tbDepartment;
+
+                $createdDateTime->modify('+1 day');
+            }
+
+
+            //SystemUser2
+            $systemUsers = array();
+            ///1
+            $tbSystemUser = new TBSystemUser();
+            $tbSystemUser->setUsername('test001');
+            $tbSystemUser->setSalt(null);
+            $tbSystemUser->setPassword('a');
+            $tbSystemUser->setActive(true);
+            $tbSystemUser->setSystemRoleId(1);
+            $tbSystemUser->setDisplayName('てすと001');
+            $tbSystemUser->setDisplayNameKana('テスト001');
+            $tbSystemUser->setNickName('t001');
+            $tbSystemUser->setMailAddress('test001@test.com');
+            $tbSystemUser->setTBDepartmentDepartmentId($departments[0]);
+            $tbSystemUser->setLastLoginDatetime(new \DateTime("2012-07-01 0:0:0"));
+            $tbSystemUser->setDeleteFlag(false);
+            $em->persist($tbSystemUser);
+            $em->flush();
+            $systemUsers[0] = $tbSystemUser;
+
+            ///2 削除データ
+            $tbSystemUser = new TBSystemUser();
+            $tbSystemUser->setUsername('test002');
+            $tbSystemUser->setSalt(null);
+            $tbSystemUser->setPassword('a');
+            $tbSystemUser->setActive(true);
+            $tbSystemUser->setSystemRoleId(1);
+            $tbSystemUser->setDisplayName('てすと002');
+            $tbSystemUser->setDisplayNameKana('テスト002');
+            $tbSystemUser->setNickName('t002');
+            $tbSystemUser->setMailAddress('test002@test.com');
+            $tbSystemUser->setTBDepartmentDepartmentId($departments[0]);
+            $tbSystemUser->setLastLoginDatetime(new \DateTime("2012-07-02 0:0:0"));
+            $tbSystemUser->setDeleteFlag(true);
+            $em->persist($tbSystemUser);
+            $em->flush();
+            $systemUsers[1] = $tbSystemUser;
+
+            ///3 無効データ
+            $tbSystemUser = new TBSystemUser();
+            $tbSystemUser->setUsername('test003');
+            $tbSystemUser->setSalt(null);
+            $tbSystemUser->setPassword('a');
+            $tbSystemUser->setActive(false);
+            $tbSystemUser->setSystemRoleId(1);
+            $tbSystemUser->setDisplayName('てすと003');
+            $tbSystemUser->setDisplayNameKana('テスト003');
+            $tbSystemUser->setNickName('t003');
+            $tbSystemUser->setMailAddress('test003@test.com');
+            $tbSystemUser->setTBDepartmentDepartmentId($departments[0]);
+            $tbSystemUser->setLastLoginDatetime(new \DateTime("2012-07-03 0:0:0"));
+            $tbSystemUser->setDeleteFlag(false);
+            $em->persist($tbSystemUser);
+            $em->flush();
+            $systemUsers[2] = $tbSystemUser;
+
+            $lastLoginDateTime = new \DateTime("2013-07-04 0:0:0");
+            $createdDateTime = new \DateTime("2012-01-04 0:0:0");
+            for($i=4; $i<=10; $i++)
+            {
+                $tbSystemUser = new TBSystemUser();
+                $tbSystemUser->setUsername('test'.sprintf('%03d', $i));
+                $tbSystemUser->setSalt(null);
+                $tbSystemUser->setPassword('a');
+                $tbSystemUser->setActive(true);
+                $tbSystemUser->setSystemRoleId(1);
+                $tbSystemUser->setDisplayName('てすと'.sprintf('%03d', $i));
+                $tbSystemUser->setDisplayNameKana('テスト'.sprintf('%03d', $i));
+                $tbSystemUser->setNickName('t'.sprintf('%03d', $i));
+                $tbSystemUser->setMailAddress('test'.sprintf('%03d', $i).'@test.com');
+                $tbSystemUser->setTBDepartmentDepartmentId($departments[0]);
+                $tbSystemUser->setLastLoginDatetime($lastLoginDateTime);
+                $tbSystemUser->setDeleteFlag(false);
+
+                $em->persist($tbSystemUser);
+                $em->flush();
+                $systemUsers[] = $tbSystemUser;
+
+                $createdDateTime->modify('+1 day');
+                $lastLoginDateTime->modify('+1 day');
+            }
+
+            //TBCustomer
+            $customers = array();
+            ///1
+            $tbCustomer = new TBCustomer();
+            $tbCustomer->setName('顧客1');
+            $tbCustomer->setDeleteFlag(false);
+            $em->persist($tbCustomer);
+            $em->flush();
+            $customers[0] = $tbCustomer;
+
+            ///2
+            $tbCustomer = new TBCustomer();
+            $tbCustomer->setName('顧客2');
+            $tbCustomer->setDeleteFlag(true);
+            $em->persist($tbCustomer);
+            $em->flush();
+            $customers[1] = $tbCustomer;
+
+            ///3
+            $tbCustomer = new TBCustomer();
+            $tbCustomer->setName('顧客3');
+            $tbCustomer->setDeleteFlag(false);
+            $em->persist($tbCustomer);
+            $em->flush();
+            $customers[2] = $tbCustomer;
+
+//            $bundle = $localKernel->getBundle('ArtePCMSBizlogicBundle');
+//            $bundlePath = $bundle->getPath();
+//            $dbDumpFilePath = $bundlePath . '/Resources/sql/dumpfile.sql';
+//            $sql = file_get_contents($dbDumpFilePath);
+//            $em->getConnection()->query($sql);
+
+            $em->getConnection()->commit();
+
+        }catch (\Exception $e){
+            $em->getConnection()->rollBack();
+            $em->close();
+            throw $e;
+        }
+
+
     }
 
     protected function setUp()

@@ -4,9 +4,16 @@ namespace Arte\PCMS\BizlogicBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\ExecutionContextInterface;
+use Arte\PCMS\BizlogicBundle\Validator\Constraints as CustomAssert;
+
+//use Symfony\Component\Validator\ExecutionContext;
+
 
 /**
  * TBSystemUser
+ * @Assert\Callback(methods={"isFormPasswordEqualValid"}, groups={"newform", "editform"})
  */
 class TBSystemUser implements UserInterface, \Serializable
 {
@@ -17,46 +24,78 @@ class TBSystemUser implements UserInterface, \Serializable
 
     /**
      * @var string
+     * @Assert\Type(type="string", groups={"db"})
+     * @Assert\NotBlank(groups={"form", "db"})
+     * @Assert\NotNull(groups={"db"})
+     * @Assert\Length(min = "6", max="40", groups={"form", "db"})
+     * @CustomAssert\ExistsUsername(groups={"newform"})
      */
     private $Username;
 
     /**
      * @var string
+     * @Assert\NotBlank(groups={"db"})
+     * @Assert\NotNull(groups={"db"})
+     * @Assert\Length(min = "8", groups={"db"})
      */
     private $Salt;
 
     /**
      * @var string
+     * @Assert\NotBlank(groups={"db"})
+     * @Assert\NotNull(groups={"db"})
+     * @Assert\Length(min = "8", groups={"db"})
      */
     private $Password;
 
     /**
      * @var boolean
+     * @Assert\NotNull(groups={"db"})
      */
     private $Active;
 
     /**
      * @var integer
+     * @Assert\Type(type="int", groups={"db"})
+     * @Assert\NotBlank(groups={"form", "db"})
+     * @Assert\NotNull(groups={"db"})
+     * @Assert\Choice(choices = {1, 2}, groups={"form", "db"})
      */
     private $SystemRoleId;
 
     /**
      * @var string
+     * @Assert\Type(type="string", groups={"db"})
+     * @Assert\NotBlank(groups={"form", "db"})
+     * @Assert\NotNull(groups={"db"})
+     * @Assert\Length(max="50", groups={"form", "db"})
      */
     private $DisplayName;
 
     /**
      * @var string
+     * @Assert\Type(type="string", groups={"db"})
+     * @Assert\NotBlank(groups={"form", "db"})
+     * @Assert\NotNull(groups={"db"})
+     * @Assert\Length(max="50", groups={"form", "db"})
      */
     private $DisplayNameKana;
 
     /**
      * @var string
+     * @Assert\Type(type="string", groups={"db"})
+     * @Assert\NotBlank(groups={"form", "db"})
+     * @Assert\NotNull(groups={"db"})
+     * @Assert\Length(max="10", groups={"form", "db"})
      */
     private $NickName;
 
     /**
      * @var string
+     * @Assert\Type(type="string", groups={"db"})
+     * @Assert\NotBlank(groups={"form", "db"})
+     * @Assert\NotNull(groups={"db"})
+     * @Assert\Length(max="100", groups={"form", "db"})
      */
     private $MailAddress;
 
@@ -72,6 +111,7 @@ class TBSystemUser implements UserInterface, \Serializable
 
     /**
      * @var boolean
+     * @Assert\NotNull(groups={"db"})
      */
     private $DeleteFlag;
 
@@ -102,14 +142,31 @@ class TBSystemUser implements UserInterface, \Serializable
 
     /**
      * @var \Arte\PCMS\BizlogicBundle\Entity\TBDepartment
+     * @Assert\NotBlank(groups={"form", "db"})
+     * @Assert\NotNull(groups={"db"})
      */
     private $TBDepartmentDepartmentId;
+
+    /**
+     * @var string フォーム入力用 パスワード
+     * @Assert\NotBlank(groups={"newform", "editform"})
+     * @Assert\Length(min = "8", max="50", groups={"newform", "editform"})
+     */
+    private $FormPassword;
+
+    /**
+     * @var string フォーム入力用 パスワード確認
+     * @Assert\NotBlank(groups={"newform", "editform"})
+     */
+    private $FormPasswordConfirm;
 
     /**
      * Constructor
      */
     public function __construct()
     {
+        $this->Salt = md5(uniqid(null, true));
+
         $this->TBProjectUsersSystemUserId = new \Doctrine\Common\Collections\ArrayCollection();
         $this->TBProjectMastersManagerId = new \Doctrine\Common\Collections\ArrayCollection();
         $this->VProjectUsersSystemUserId = new \Doctrine\Common\Collections\ArrayCollection();
@@ -119,7 +176,17 @@ class TBSystemUser implements UserInterface, \Serializable
 
     public function getRoles()
     {
-        return array('ROLE_USER');
+        $role = array();
+        switch($this->getSystemRoleId()){
+            case 1:
+                $role[] = 'ROLE_ADMIN';
+                break;
+            case 2:
+                $role[] = 'ROLE_USER';
+                break;
+        }
+
+        return $role;
     }
     public function eraseCredentials()
     {
@@ -244,7 +311,7 @@ class TBSystemUser implements UserInterface, \Serializable
     /**
      * Get Active
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getActive()
     {
@@ -621,5 +688,58 @@ class TBSystemUser implements UserInterface, \Serializable
     public function getTBDepartmentDepartmentId()
     {
         return $this->TBDepartmentDepartmentId;
+    }
+
+    /**
+     * @param string $FormPassword
+     */
+    public function setFormPassword($FormPassword)
+    {
+        $this->FormPassword = $FormPassword;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormPassword()
+    {
+        return $this->FormPassword;
+    }
+
+    /**
+     * @param string $FormPasswordConfirm
+     */
+    public function setFormPasswordConfirm($FormPasswordConfirm)
+    {
+        $this->FormPasswordConfirm = $FormPasswordConfirm;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormPasswordConfirm()
+    {
+        return $this->FormPasswordConfirm;
+    }
+
+//    /**
+//     * パスワードとパスワード確認が同じ文字列か確認する
+//     * @Assert\True(message = "「パスワード」と「パスワード確認」が同じではありません。", groups={"form"})
+//     */
+//    public function isFormPasswordConfirmValid()
+//    {
+//        return $this->FormPassword == $this->FormPasswordConfirm;
+//    }
+
+    /**
+     * パスワードとパスワード確認が同じ文字列か確認する
+     * @param ExecutionContextInterface $context
+     */
+    public function isFormPasswordEqualValid(ExecutionContextInterface $context)
+    {
+        if ($this->FormPassword !== $this->FormPasswordConfirm)
+        {
+            $context->addViolationAt('FormPasswordConfirm', '「パスワード」と「パスワード確認」が同じではありません。', array(), null);
+        }
     }
 }
